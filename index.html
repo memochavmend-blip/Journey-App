@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FAF8F3">
+<script>
+/* Aplica el tema guardado antes del primer pintado, para evitar parpadeo */
+try{
+  var _s = localStorage.getItem("practica:estado:v1");
+  var _t = _s ? ((JSON.parse(_s).ajustes)||{}).tema : null; _t = _t || "sistema";
+  var _oscuro = _t === "oscuro" || (_t === "sistema" && matchMedia("(prefers-color-scheme:dark)").matches);
+  document.documentElement.dataset.modo = _oscuro ? "oscuro" : "claro";
+  document.documentElement.style.background = _oscuro ? "#0E0D0C" : "#FAF8F3";
+  var _m = document.querySelector('meta[name="theme-color"]');
+  if(_m) _m.setAttribute("content", _oscuro ? "#0E0D0C" : "#FAF8F3");
+}catch(e){}
+</script>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Práctica">
+<title>Práctica</title>
+<style>
+:root{
+  color-scheme:light;
+  --noche:#FAF8F3;
+  --panel:#EFE9DF;
+  --tinta:#2B2621;
+  --tinta-baja:#5E554B;
+  --tinta-tenue:#877E73;
+  --cera:#C9B896;
+  --llama:#E0942A;
+  --brasa:#B4491C;
+  --oro:#8A6A3E;
+  --linea:rgba(43,38,33,.10);
+  --linea-fuerte:rgba(43,38,33,.20);
+  --serif:ui-serif,"New York",Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
+  --vela-x:20px;
+}
+/* Ritual de Noche dentro de tema claro: atardecer cálido, no blanco clínico */
+html:not([data-modo="oscuro"]) body.tema-noche{
+  --noche:#F3ECE0;
+  --panel:#E9E0D1;
+  --tinta:#312720;
+  --tinta-baja:#655A4C;
+  --llama:#CE7B2A;
+  --brasa:#A9451B;
+  --oro:#7E5F37;
+  --linea:rgba(49,39,32,.11);
+  --linea-fuerte:rgba(49,39,32,.20);
+}
+html[data-modo="oscuro"]{
+  color-scheme:dark;
+  --noche:#0E0D0C;
+  --panel:#171513;
+  --tinta:#ECE6DB;
+  --tinta-baja:#A79C8D;
+  --tinta-tenue:#726859;
+  --cera:#CFC0A0;
+  --llama:#F0A63C;
+  --brasa:#C56A3C;
+  --oro:#B79366;
+  --linea:rgba(236,230,219,.08);
+  --linea-fuerte:rgba(236,230,219,.16);
+}
+/* Ritual de Noche dentro de tema oscuro: más profundo y cálido, apto para dormir */
+html[data-modo="oscuro"] body.tema-noche{
+  --noche:#0A0705;
+  --panel:#120C08;
+  --tinta:#E4C6A0;
+  --tinta-baja:#A18F79;
+  --tinta-tenue:#5F5140;
+  --cera:#B9A783;
+  --llama:#E4903A;
+  --brasa:#C56A3C;
+  --oro:#B08A5C;
+  --linea:rgba(228,198,160,.08);
+  --linea-fuerte:rgba(228,198,160,.15);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--noche);
+  color:var(--tinta);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  overflow-x:hidden;
+  transition:background .5s ease,color .5s ease;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;padding:0}
+input,select{font:inherit;color:inherit}
+
+/* ─── LA VELADORA ─── */
+#vela{
+  position:fixed;left:var(--vela-x);top:0;bottom:0;width:3px;z-index:60;pointer-events:none;
+  padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+}
+.vela-tubo{position:relative;height:100%;width:3px}
+.vela-cera{
+  position:absolute;inset:0;border-radius:2px;
+  background:linear-gradient(180deg,var(--cera),color-mix(in srgb,var(--cera) 45%,transparent));
+  opacity:.34;
+}
+.vela-quemada{
+  position:absolute;top:0;left:0;right:0;height:0%;border-radius:2px;
+  background:rgba(0,0,0,.85);
+  transition:height .28s linear;
+}
+.vela-llama{
+  position:absolute;left:50%;top:0;width:9px;height:9px;margin-left:-4.5px;margin-top:-4.5px;
+  border-radius:50%;
+  background:radial-gradient(circle at 50% 45%,#FFF3D4 0%,var(--llama) 42%,rgba(240,166,60,0) 72%);
+  box-shadow:0 0 14px 4px color-mix(in srgb,var(--llama) 55%,transparent),
+             0 0 40px 14px color-mix(in srgb,var(--llama) 18%,transparent);
+  transition:top .28s linear,opacity .6s ease;
+  opacity:.55;
+}
+body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinite}
+@keyframes parpadeo{
+  0%,100%{transform:scale(1);filter:brightness(1)}
+  28%{transform:scale(1.14);filter:brightness(1.18)}
+  55%{transform:scale(.94);filter:brightness(.9)}
+  76%{transform:scale(1.06);filter:brightness(1.08)}
+}
+
+/* ─── ESTRUCTURA ─── */
+.lienzo{
+  max-width:640px;margin:0 auto;
+  padding:calc(env(safe-area-inset-top) + 44px) 26px calc(env(safe-area-inset-bottom) + 56px) 52px;
+}
+.oculto{display:none !important}
+
+/* rúbricas — instrucciones en rojo, como en un misal */
+.rubrica{
+  font-family:var(--sans);font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.22em;color:var(--brasa);
+  margin:0 0 14px;
+}
+.rubrica-tenue{color:var(--tinta-tenue);letter-spacing:.2em;font-weight:500}
+
+/* ─── INICIO ─── */
+.saludo{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.9rem,7vw,2.5rem);line-height:1.14;letter-spacing:-.015em;
+  margin:0 0 4px;
+}
+.fecha{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 40px}
+
+.racha{
+  display:flex;align-items:baseline;gap:12px;
+  padding:16px 0;border-top:1px solid var(--linea);border-bottom:1px solid var(--linea);
+  margin-bottom:38px;
+}
+.racha-n{font-family:var(--mono);font-size:26px;line-height:1;color:var(--llama)}
+.racha-t{font-size:12px;color:var(--tinta-baja);letter-spacing:.03em;flex:1}
+.marcas{display:flex;gap:7px}
+.marca{
+  font-family:var(--mono);font-size:9px;letter-spacing:.1em;
+  padding:5px 8px;border:1px solid var(--linea-fuerte);border-radius:2px;
+  color:var(--tinta-tenue);
+}
+.marca.hecho{color:var(--noche);background:var(--llama);border-color:var(--llama)}
+
+.ritos{display:flex;flex-direction:column;gap:10px;margin-bottom:34px}
+.rito{
+  display:block;width:100%;text-align:left;background:var(--panel);
+  border:1px solid var(--linea);border-radius:16px;
+  padding:20px 20px;position:relative;
+  transition:transform .2s ease,border-color .2s ease,background .2s ease;
+}
+.rito:hover,.rito:focus-visible{transform:translateY(-1px);border-color:var(--linea-fuerte)}
+.rito:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.rito-alto{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.rito-num{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--tinta-tenue);
+  display:block;margin-bottom:8px;
+}
+.rito-nom{font-family:var(--serif);font-size:1.45rem;line-height:1;letter-spacing:-.01em}
+.rito-dur{font-family:var(--mono);font-size:10.5px;color:var(--tinta-baja);white-space:nowrap}
+.rito-sub{font-size:12.5px;color:var(--tinta-baja);margin-top:7px}
+.rito.sugerido .rito-nom{color:var(--llama)}
+.rito.sugerido .rito-num{color:var(--brasa)}
+
+.menu{display:flex;flex-wrap:wrap;gap:0}
+.menu-item{
+  flex:1 1 0;min-width:96px;padding:16px 0;text-align:left;
+  border-top:1px solid var(--linea);
+  font-size:14px;letter-spacing:.005em;color:var(--tinta-baja);
+  transition:color .2s ease;
+}
+.menu-item:hover,.menu-item:focus-visible{color:var(--tinta)}
+.menu-item:focus-visible{outline:1px solid var(--llama);outline-offset:3px}
+.aviso{
+  margin-top:26px;padding:16px 18px;border-left:3px solid var(--brasa);
+  border-radius:0 12px 12px 0;
+  background:var(--panel);font-size:13px;line-height:1.6;color:var(--tinta-baja);
+}
+.aviso b{color:var(--tinta);font-weight:600}
+
+/* ─── PRÁCTICA ─── */
+#practica{
+  position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;
+  background:var(--noche);
+  padding:calc(env(safe-area-inset-top) + 22px) 24px calc(env(safe-area-inset-bottom) + 20px) 52px;
+}
+.p-alto{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:22px}
+.p-mov{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--tinta-tenue)}
+.p-salir{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-baja);padding:6px 0 6px 12px}
+.p-salir:focus-visible{outline:1px solid var(--llama);outline-offset:3px}
+
+.p-centro{flex:1;display:flex;flex-direction:column;justify-content:center;padding:22px 0}
+.p-bloque{
+  font-family:var(--serif);font-size:.95rem;letter-spacing:.02em;color:var(--oro);
+  margin:0 0 6px;font-style:italic;
+}
+.p-linea{
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.55rem,5.6vw,2.4rem);line-height:1.32;letter-spacing:-.012em;
+  margin:0;
+  animation:entra .7s cubic-bezier(.2,.7,.3,1);
+}
+@keyframes entra{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+.p-nota{margin-top:22px;font-size:13px;color:var(--tinta-baja);line-height:1.6;max-width:34ch}
+
+/* respiración */
+.respiro{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
+.respiro-aro{
+  width:78px;height:78px;border-radius:50%;
+  border:1px solid var(--linea-fuerte);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform 4s cubic-bezier(.4,0,.5,1),border-color 1.4s ease;
+}
+.respiro-aro.dentro{transform:scale(1.55);border-color:var(--llama)}
+.respiro-nucleo{width:9px;height:9px;border-radius:50%;background:var(--llama);opacity:.75}
+.respiro-txt{font-family:var(--serif);font-size:1.5rem;color:var(--tinta)}
+
+.p-bajo{transition:opacity .5s ease}
+.p-bajo.dormido{opacity:.16}
+.p-barra{display:flex;align-items:center;gap:6px;margin-bottom:14px}
+.p-btn{
+  padding:13px 15px;border:1px solid var(--linea-fuerte);border-radius:2px;
+  font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-baja);
+  transition:border-color .2s ease,color .2s ease;
+}
+.p-btn:hover,.p-btn:focus-visible{border-color:var(--tinta-baja);color:var(--tinta)}
+.p-btn:focus-visible{outline:none;border-color:var(--llama)}
+.p-btn.principal{flex:1;color:var(--tinta);border-color:var(--linea-fuerte);text-align:center}
+.p-btn.acento{color:var(--llama);border-color:color-mix(in srgb,var(--llama) 45%,transparent)}
+.p-pie{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--mono);font-size:10px;color:var(--tinta-tenue);letter-spacing:.08em}
+
+/* lista de audio */
+.audio-lista{overflow-y:auto;flex:1;padding:8px 0 20px}
+.audio-bloque{margin-bottom:26px}
+.audio-linea{font-family:var(--serif);font-size:1.02rem;line-height:1.6;color:var(--tinta-baja);margin:0 0 5px}
+
+/* ─── HOJAS (modales) ─── */
+.hoja{
+  position:fixed;inset:0;z-index:70;background:rgba(6,5,4,.86);
+  display:flex;align-items:flex-end;justify-content:center;
+  animation:vela-in .3s ease;
+}
+@keyframes vela-in{from{opacity:0}to{opacity:1}}
+.hoja-caja{
+  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;
+  background:var(--panel);border-top:1px solid var(--linea-fuerte);
+  border-radius:22px 22px 0 0;
+  padding:30px 28px calc(env(safe-area-inset-bottom) + 30px);
+  animation:sube .34s cubic-bezier(.2,.8,.3,1);
+}
+@keyframes sube{from{transform:translateY(26px)}to{transform:none}}
+.hoja-tit{font-family:var(--serif);font-size:1.5rem;margin:0 0 6px;letter-spacing:-.01em}
+.hoja-sub{font-size:13px;color:var(--tinta-baja);line-height:1.6;margin:0 0 26px}
+.campo{margin-bottom:24px}
+.campo-et{display:block;font-size:13px;letter-spacing:0;text-transform:none;font-weight:600;color:var(--tinta);margin-bottom:10px}
+/* control segmentado (tema) */
+.segmento{display:flex;gap:5px;background:var(--noche);border:1px solid var(--linea);border-radius:13px;padding:5px}
+.seg{flex:1;padding:11px 6px;border-radius:9px;font-size:13.5px;color:var(--tinta-baja);text-align:center;transition:background .2s ease,color .2s ease}
+.seg.activo{background:color-mix(in srgb,var(--llama) 20%,transparent);color:var(--tinta);font-weight:600}
+.seg:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.campo-in,.campo-sel{
+  width:100%;background:transparent;border:none;border-bottom:1px solid var(--linea-fuerte);
+  padding:9px 0;font-family:var(--serif);font-size:1.12rem;outline:none;
+  border-radius:0;
+}
+.campo-in:focus,.campo-sel:focus{border-bottom-color:var(--llama)}
+.campo-in::placeholder{color:var(--tinta-tenue)}
+.campo-sel{font-family:var(--sans);font-size:.95rem;appearance:none;cursor:pointer}
+.campo-sel option{background:var(--panel);color:var(--tinta)}
+input[type=range].campo-in{
+  appearance:none;-webkit-appearance:none;height:26px;padding:0;border-bottom:none;cursor:pointer;background:transparent;
+}
+input[type=range].campo-in::-webkit-slider-runnable-track{height:1px;background:var(--linea-fuerte)}
+input[type=range].campo-in::-moz-range-track{height:1px;background:var(--linea-fuerte)}
+input[type=range].campo-in::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;background:var(--llama);margin-top:-6px;
+  box-shadow:0 0 10px 2px color-mix(in srgb,var(--llama) 40%,transparent);
+}
+input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;border-radius:50%;background:var(--llama)}
+.campo-ayuda{font-size:12px;color:var(--tinta-baja);margin-top:8px;line-height:1.55}
+
+.fila{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:15px 0;border-bottom:1px solid var(--linea)}
+.fila-txt{font-size:14px}
+.fila-ayuda{font-size:12px;color:var(--tinta-baja);margin-top:3px;line-height:1.5}
+.switch{
+  width:44px;height:25px;border-radius:13px;border:1px solid var(--linea-fuerte);
+  position:relative;flex-shrink:0;transition:background .25s ease,border-color .25s ease;
+}
+.switch::after{
+  content:"";position:absolute;top:3px;left:3px;width:17px;height:17px;border-radius:50%;
+  background:var(--tinta-tenue);transition:transform .25s cubic-bezier(.3,.8,.4,1),background .25s ease;
+}
+.switch.on{background:color-mix(in srgb,var(--llama) 22%,transparent);border-color:var(--llama)}
+.switch.on::after{transform:translateX(19px);background:var(--llama)}
+.switch:focus-visible{outline:1px solid var(--llama);outline-offset:3px}
+
+.check{display:flex;align-items:flex-start;gap:14px;padding:15px 0;border-bottom:1px solid var(--linea);width:100%;text-align:left}
+.check-caja{
+  width:19px;height:19px;border:1px solid var(--linea-fuerte);flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--noche);
+  transition:background .2s ease,border-color .2s ease;
+}
+.check.on .check-caja{background:var(--llama);border-color:var(--llama)}
+.check-txt{font-size:14.5px;line-height:1.45}
+.check-n{font-family:var(--mono);font-size:10px;color:var(--tinta-tenue);margin-right:9px}
+.veredicto{
+  margin-top:20px;padding:15px 16px;border-left:2px solid var(--llama);background:rgba(0,0,0,.25);
+  font-family:var(--serif);font-size:1.05rem;line-height:1.5;
+}
+.acciones{display:flex;gap:9px;margin-top:26px}
+.accion{
+  flex:1;padding:15px;border:1px solid var(--linea-fuerte);border-radius:12px;text-align:center;
+  font-size:14px;letter-spacing:.005em;font-weight:500;transition:border-color .2s,color .2s,background .2s;
+}
+.accion:hover,.accion:focus-visible{border-color:var(--tinta-baja)}
+.accion:focus-visible{outline:none;border-color:var(--llama)}
+.accion.llena{background:var(--llama);border-color:var(--llama);color:#120C05;font-weight:600}
+.doctrina-li{padding:13px 0;border-bottom:1px solid var(--linea);font-family:var(--serif);font-size:1.02rem;line-height:1.45;color:var(--tinta-baja)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
+  .respiro-aro{transition-duration:4s !important}
+}
+@media (min-width:700px){ :root{--vela-x:34px} .lienzo,#practica{padding-left:78px} }
+</style>
+</head>
+<body>
+
+<div id="vela"><div class="vela-tubo">
+  <div class="vela-cera"></div>
+  <div class="vela-quemada" id="velaQuemada"></div>
+  <div class="vela-llama" id="velaLlama"></div>
+</div></div>
+
+<!-- ══════ INICIO ══════ -->
+<main class="lienzo" id="inicio">
+  <p class="rubrica" id="rubricaHora">Antes de empezar</p>
+  <h1 class="saludo" id="saludo">Buenos días</h1>
+  <p class="fecha" id="fecha"></p>
+
+  <div class="racha">
+    <span class="racha-n" id="rachaN">0</span>
+    <span class="racha-t" id="rachaT">días seguidos</span>
+    <div class="marcas">
+      <span class="marca" id="marcaAM">AM</span>
+      <span class="marca" id="marcaPM">PM</span>
+    </div>
+  </div>
+
+  <div class="ritos" id="ritos"></div>
+
+  <div class="menu">
+    <button class="menu-item" data-abrir="vision">Visión</button>
+    <button class="menu-item" data-abrir="arquitecto">Arquitecto</button>
+    <button class="menu-item" data-abrir="doctrina">Doctrina</button>
+    <button class="menu-item" data-abrir="ajustes">Ajustes</button>
+  </div>
+
+  <div class="aviso oculto" id="avisoVision"></div>
+</main>
+
+<!-- ══════ PRÁCTICA ══════ -->
+<section id="practica" class="oculto" aria-live="polite">
+  <div class="p-alto">
+    <span class="p-mov" id="pMov"></span>
+    <button class="p-salir" id="pSalir">Salir</button>
+  </div>
+
+  <div class="p-centro" id="pCentro">
+    <p class="p-bloque" id="pBloque"></p>
+    <p class="p-linea" id="pLinea"></p>
+    <p class="p-nota oculto" id="pNota"></p>
+    <div class="respiro oculto" id="pRespiro">
+      <div class="respiro-aro" id="respiroAro"><div class="respiro-nucleo"></div></div>
+      <div class="respiro-txt" id="respiroTxt">Inhala</div>
+    </div>
+  </div>
+
+  <div class="audio-lista oculto" id="pAudioLista"></div>
+
+  <div class="p-bajo" id="pBajo">
+    <div class="p-barra">
+      <button class="p-btn" id="pAtras" aria-label="Línea anterior">←</button>
+      <button class="p-btn principal" id="pPlay">Pausar</button>
+      <button class="p-btn" id="pAdelante" aria-label="Línea siguiente">→</button>
+    </div>
+    <div class="p-pie">
+      <span id="pTiempo">0:00</span>
+      <button class="p-btn acento oculto" id="pDormir" style="padding:8px 11px">Temporizador</button>
+      <span id="pProgreso">0 %</span>
+    </div>
+  </div>
+</section>
+
+<div id="hojas"></div>
+
+<audio id="reproductor" preload="none"></audio>
+
+<script>
+"use strict";
+
+/* ════════════════ ALMACENAMIENTO ════════════════ */
+const Guardado = (() => {
+  const memoria = {};
+  const nativo = (typeof window !== "undefined" && window.storage && typeof window.storage.get === "function");
+  async function leer(clave){
+    if(nativo){
+      try{ const r = await window.storage.get(clave); return r && r.value ? JSON.parse(r.value) : null; }
+      catch(e){ return null; }
+    }
+    try{ const v = localStorage.getItem(clave); return v ? JSON.parse(v) : null; }
+    catch(e){ return clave in memoria ? memoria[clave] : null; }
+  }
+  async function escribir(clave, valor){
+    if(nativo){
+      try{ await window.storage.set(clave, JSON.stringify(valor)); return true; }
+      catch(e){ memoria[clave]=valor; return false; }
+    }
+    try{ localStorage.setItem(clave, JSON.stringify(valor)); return true; }
+    catch(e){ memoria[clave]=valor; return true; }
+  }
+  return { leer, escribir };
+})();
+
+const CLAVE = "practica:estado:v1";
+let E = {
+  vision:{ ser:"", hacer:"", tener:"", fecha:null },
+  dias:{},
+  arquitecto:{ semana:null, marcas:[false,false,false,false] },
+  doctrina:{ semana:null },
+  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, pausa:3000, pad:true, padVol:.5, dormir:20, urlAudio:{} }
+};
+
+async function cargar(){
+  const g = await Guardado.leer(CLAVE);
+  if(g && typeof g === "object"){
+    E = Object.assign({}, E, g);
+    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,pausa:3000,pad:true,padVol:.5,dormir:20,urlAudio:{}}, g.ajustes||{});
+    E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
+    E.dias = g.dias || {};
+  }
+}
+
+/* ─── TEMA (claro / oscuro / sistema) ─── */
+const mqOscuro = window.matchMedia("(prefers-color-scheme: dark)");
+function modoResuelto(){
+  const t = (E.ajustes && E.ajustes.tema) || "sistema";
+  return t === "sistema" ? (mqOscuro.matches ? "oscuro" : "claro") : t;
+}
+function aplicarTema(){
+  const m = modoResuelto();
+  document.documentElement.dataset.modo = m;
+  document.documentElement.style.background = m === "oscuro" ? "#0E0D0C" : "#FAF8F3";
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute("content", m === "oscuro" ? "#0E0D0C" : "#FAF8F3");
+}
+try{ mqOscuro.addEventListener("change", ()=>{ if(((E.ajustes&&E.ajustes.tema)||"sistema")==="sistema") aplicarTema(); }); }
+catch(e){ try{ mqOscuro.addListener(()=>{ if(((E.ajustes&&E.ajustes.tema)||"sistema")==="sistema") aplicarTema(); }); }catch(_){} }
+let guardarPendiente = null;
+function guardar(){
+  clearTimeout(guardarPendiente);
+  guardarPendiente = setTimeout(()=>{ Guardado.escribir(CLAVE, E); }, 220);
+}
+
+/* ════════════════ TIEMPO ════════════════ */
+const hoyISO = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+function semanaISO(){
+  const d = new Date(); const j = new Date(d.getFullYear(),d.getMonth(),d.getDate());
+  j.setDate(j.getDate() + 4 - (j.getDay()||7));
+  const a = new Date(j.getFullYear(),0,1);
+  return j.getFullYear()+"-S"+String(Math.ceil((((j-a)/86400000)+1)/7)).padStart(2,"0");
+}
+const DIAS_L=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const MESES_L=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+
+/* ════════════════ LITURGIA ════════════════ */
+const L = {
+  entrega:[
+    "Querido Dios:",
+    "Elimina cualquier pereza o dilación de mi mente y cuerpo.",
+    "Empújame a mi máximo potencial.",
+    "Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.",
+    "Si no es para mí, quítalo.",
+    "Si no son para mí, revélalo.",
+    "Acaba con cualquier cosa que no sea para mi vida.",
+    "Señor, protege el camino en el que estoy y no me dejes renunciar nunca.",
+    "Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.",
+    "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
+    "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso.",
+    "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
+    "Mi corazón te lo entrego completamente a Ti."
+  ],
+  palabra:[
+    "El Señor es mi pastor, y nada me faltará.",
+    "Todo lo puedo en Cristo que me fortalece.",
+    "Si Dios está conmigo, ¿quién contra mí?",
+    "Aunque camine por valle de sombra de muerte, no temeré mal alguno, porque Tú, Señor, caminas conmigo.",
+    "Señor, una palabra tuya me ha bendecido y me ha sanado.",
+    "Cuando abres tu mano, sacias el hambre y la sed de todo ser viviente.",
+    "El Señor es justo en todo lo que hace y está lleno de bondad.",
+    "El Señor escucha a todos los que lo invocan de verdad.",
+    "Yo soy la luz del mundo; una ciudad asentada sobre un monte no se puede esconder."
+  ],
+  permiso:[
+    "Dios me dio abundancia ilimitada.",
+    "El poder y el dinero son parte esencial de mi propósito superior.",
+    "El dinero y el poder son herramientas con las que Dios me bendijo para guiar a sus hijos.",
+    "El dinero y el poder son parte del destino que Dios escribió para mí.",
+    "El dinero y el poder son parte de mi camino."
+  ],
+  identidad:[
+    "Yo soy amor.",
+    "Yo soy la fuerza creadora del universo.",
+    "Yo soy mensajero de Dios en el mundo.",
+    "Yo soy el elegido. Desde antes de ser concebido, Dios lo escribió en mi destino.",
+    "Ahora, y siempre lo he sido.",
+    "Yo soy abundante en dinero y poder.",
+    "Yo tengo toda la abundancia del universo en mis manos.",
+    "Yo soy el mejor inversionista.",
+    "Yo soy el mejor productor musical y DJ del mundo.",
+    "Yo soy el mejor y más famoso DJ y productor musical de la historia.",
+    "Yo soy la luz del mundo."
+  ],
+  recepcion:[
+    "Hoy me permito recibir cosas maravillosas en mi vida,",
+    "y también permito recibir más de lo que jamás soñé.",
+    "Yo recibo cosas maravillosas en mi vida, y recibo más de lo que jamás soñé.",
+    "Todo lo que pasa en mi vida es a mi favor.",
+    "Ahora es mi tiempo."
+  ],
+  sello:[
+    "Dios, confío en Ti.",
+    "Jesucristo, confío en Ti.",
+    "Espíritu Santo, confío en Ti.",
+    "Yo confío en mí.",
+    "Todo está bien.",
+    "Todo en el universo funciona para mi mayor y más alto bien.",
+    "De toda experiencia solo salen cosas a mi favor.",
+    "Estoy a salvo.",
+    "Gracias, Dios.",
+    "Te amo, Dios."
+  ]
+};
+
+function bloqueVision(){
+  const v = E.vision;
+  if(v.ser || v.hacer || v.tener){
+    const out = [];
+    if(v.ser)   out.push("Yo soy "   + v.ser);
+    if(v.hacer) out.push("Yo hago "  + v.hacer);
+    if(v.tener) out.push("Yo tengo " + v.tener);
+    return out;
+  }
+  return [{ t:"Este bloque está vacío.", nota:"Es la única parte de tu sistema que quedó en forma de pregunta. Tres líneas: quién eres, qué construyes, qué se manifiesta. Se re-graban cada trimestre.", accion:"vision", hold:9000 }];
+}
+
+const RITUALES = {
+  manana:{
+    id:"manana", nombre:"Mañana", sub:"Activación — vaciar, anclar, declarar", dur:"~9 min", tema:"dia",
+    bloques:[
+      { num:"·",   nom:"Anclaje",    rub:"Tres respiraciones lentas", lineas:[{respiro:3},{t:"Dios está conmigo.",hold:6000}] },
+      { num:"I",   nom:"Entrega",    rub:"Vaciar antes de llenar",    lineas:L.entrega },
+      { num:"II",  nom:"Palabra",    rub:"Anclaje externo",           lineas:L.palabra },
+      { num:"III", nom:"Permiso",    rub:"La teología del dinero",    lineas:L.permiso },
+      { num:"IV",  nom:"Identidad",  rub:"Yo soy",                    lineas:L.identidad },
+      { num:"V",   nom:"Visión",     rub:"Ser · Hacer · Tener",       dinamico:bloqueVision },
+      { num:"VI",  nom:"Recepción",  rub:"Dejas de emitir y te abres",lineas:L.recepcion },
+      { num:"VII", nom:"Sello",      rub:"Confianza y cierre",        lineas:L.sello }
+    ]
+  },
+  noche:{
+    id:"noche", nombre:"Noche", sub:"Rendición — sin declaraciones de logro", dur:"~6 min", tema:"noche",
+    bloques:[
+      { num:"·",   nom:"Anclaje",   rub:"El día terminó", lineas:[{respiro:3}] },
+      { num:"I",   nom:"Gratitud",  rub:"En voz alta", lineas:[
+        { t:"Tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }]},
+      { num:"II",  nom:"Entrega",   rub:"Soltar el peso", lineas:[
+        "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
+        "Mi corazón te lo entrego completamente a Ti."]},
+      { num:"III", nom:"Descarga",  rub:"Limpiar la mente", lineas:[
+        "Dios, por favor calma mi mente, sana mi corazón y quita mis preocupaciones.",
+        "Ayúdame a dejar atrás aquello que ya pasó."]},
+      { num:"IV",  nom:"Salmo",     rub:"Salmo 23", lineas:[
+        "El Señor es mi pastor, y nada me faltará.",
+        "Aunque camine por valle de sombra de muerte, no temeré mal alguno, porque Tú, Señor, caminas conmigo."]},
+      { num:"V",   nom:"Reencuadre",rub:"Perspectiva", lineas:[
+        "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
+        "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso."]},
+      { num:"VI",  nom:"Seguridad", rub:"Tres veces. Cada vez más lento.", lineas:[
+        {t:"Todo está bien.",hold:4000},
+        {t:"Todo funciona para mi mayor y más alto bien.",hold:4500},
+        {t:"Estoy a salvo.",hold:4500},
+        {t:"Todo está bien.",hold:6000},
+        {t:"Todo funciona para mi mayor y más alto bien.",hold:6500},
+        {t:"Estoy a salvo.",hold:6500},
+        {t:"Todo está bien.",hold:8500},
+        {t:"Todo funciona para mi mayor y más alto bien.",hold:9000},
+        {t:"Estoy a salvo.",hold:10000}]},
+      { num:"VII", nom:"Cierre",    rub:"Silencio después", lineas:[
+        "Dios, confío en Ti.",
+        "Jesucristo, confío en Ti.",
+        "Espíritu Santo, confío en Ti.",
+        "Yo confío en mí.",
+        {t:"Te amo, Dios.",hold:10000}]}
+    ]
+  },
+  nucleo:{
+    id:"nucleo", nombre:"Núcleo", sub:"El innegociable — una línea por movimiento", dur:"3 min", tema:"dia",
+    bloques:[
+      { num:"·",   nom:"Anclaje",   rub:"Empieza aquí", lineas:[{t:"Dios está conmigo.",hold:8000}] },
+      { num:"I",   nom:"Entrega",   rub:"", lineas:[{t:"Señor, entrego mi carga. Calma mi mente.",hold:9000}] },
+      { num:"II",  nom:"Palabra",   rub:"", lineas:[{t:"Todo lo puedo en Cristo que me fortalece.",hold:9000}] },
+      { num:"III", nom:"Permiso",   rub:"", lineas:[{t:"El dinero y el poder son parte de mi camino.",hold:9000}] },
+      { num:"IV",  nom:"Identidad", rub:"", lineas:[
+        {t:"Yo soy amor.",hold:7000},
+        {t:"Yo soy mensajero de Dios en el mundo.",hold:8000},
+        {t:"Yo soy el elegido.",hold:8000}]},
+      { num:"V",   nom:"Recepción", rub:"", lineas:[
+        {t:"Todo lo que pasa en mi vida es a mi favor.",hold:8000},
+        {t:"Ahora es mi tiempo.",hold:8000}]},
+      { num:"VI",  nom:"Sello",     rub:"", lineas:[
+        {t:"Gracias, Dios.",hold:6000},
+        {t:"Te amo, Dios.",hold:9000}]}
+    ]
+  }
+};
+
+const DOCTRINA = [
+  "El bloque sobre «Yo Soy» como mandato creador",
+  "Actuar rápido cuando surge una idea nueva, antes de que la mente la mate",
+  "«¿Cuándo va a despegar tu vida?» — Ser / Hacer / Tener, y los dos pasos: monitorear el pensamiento, volver a pensarlo",
+  "«Hoy recuerda que dentro de ti hay más fuerza…»",
+  "«Hoy puede ser un buen día para empezar de nuevo…»",
+  "«La única persona que me quiere triunfar más que yo es el yo de mañana»"
+];
+const ARQUITECTO = [
+  "Decido sin pedir permiso",
+  "Opero dentro de una estructura clara",
+  "Acepto el poder y el dinero como parte de mi camino",
+  "Protejo mi foco emocional con límites firmes"
+];
+
+/* ════════════════ PAD (Web Audio) ════════════════ */
+const Pad = (() => {
+  let ctx=null, master=null, filtro=null, lfo=null, osc=[], vivo=false;
+  const PRESETS = {
+    dia:  { raiz:110,  arm:[1,1.5,2,3],   corte:900, lfoHz:.05, lfoAmp:260, tipo:"triangle" },
+    noche:{ raiz:65.41,arm:[1,1.5,2],     corte:360, lfoHz:.028,lfoAmp:90,  tipo:"sine" }
+  };
+  function iniciar(preset, vol){
+    try{
+      detener(0);
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return false;
+      ctx = new AC();
+      if(ctx.state === "suspended") ctx.resume();
+      const p = PRESETS[preset] || PRESETS.dia;
+      master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      filtro = ctx.createBiquadFilter(); filtro.type="lowpass";
+      filtro.frequency.value = p.corte; filtro.Q.value = .6; filtro.connect(master);
+      lfo = ctx.createOscillator(); lfo.frequency.value = p.lfoHz;
+      const lfoG = ctx.createGain(); lfoG.gain.value = p.lfoAmp;
+      lfo.connect(lfoG); lfoG.connect(filtro.frequency); lfo.start();
+      osc = p.arm.map((m,i)=>{
+        const o = ctx.createOscillator(); o.type = p.tipo;
+        o.frequency.value = p.raiz*m; o.detune.value = (i%2?1:-1)*(4+i*3);
+        const g = ctx.createGain(); g.gain.value = .32/(i+1);
+        o.connect(g); g.connect(filtro); o.start(); return o;
+      });
+      master.gain.linearRampToValueAtTime(Math.max(.001, vol*.09), ctx.currentTime + 8);
+      vivo = true; return true;
+    }catch(e){ return false; }
+  }
+  function volumen(v){ if(vivo&&master&&ctx) try{ master.gain.linearRampToValueAtTime(Math.max(.0001,v*.09), ctx.currentTime+.4); }catch(e){} }
+  function detener(seg){
+    if(!vivo||!ctx) { vivo=false; return; }
+    const s = (seg===undefined?4:seg);
+    try{
+      master.gain.cancelScheduledValues(ctx.currentTime);
+      master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
+      master.gain.linearRampToValueAtTime(.0001, ctx.currentTime + Math.max(.05,s));
+    }catch(e){}
+    const c = ctx; vivo=false;
+    setTimeout(()=>{ try{ osc.forEach(o=>o.stop()); lfo.stop(); c.close(); }catch(e){} }, s*1000+400);
+    osc=[]; ctx=null; master=null;
+  }
+  return { iniciar, detener, volumen, activo:()=>vivo };
+})();
+
+/* ════════════════ VOZ ════════════════ */
+const Voz = (() => {
+  const soporte = ("speechSynthesis" in window);
+  let voces = [];
+  function refrescar(){ if(soporte) voces = speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang)); }
+  if(soporte){ refrescar(); speechSynthesis.onvoiceschanged = refrescar; }
+  function mejor(v){ return /(enhanced|premium|neural|natural|siri|realistic)/i.test(v.name||"") || /google/i.test(v.name||""); }
+  function puntua(v){
+    const n = v.name||"", l = v.lang||""; let s = 0;
+    if(/-?MX/i.test(l)) s += 40; else if(/-?(US|419)/i.test(l)) s += 14; else if(/-?ES/i.test(l)) s += 8;
+    if(/(enhanced|premium|neural|natural|siri|realistic)/i.test(n)) s += 34;
+    if(/google/i.test(n)) s += 22;
+    if(/(paulina|angélica|angelica|juan|jorge|mónica|monica|dalia)/i.test(n)) s += 10;
+    if(v.localService) s += 4;
+    return s;
+  }
+  function ordenadas(){ return voces.slice().sort((a,b)=>puntua(b)-puntua(a)); }
+  function elegir(){
+    if(!voces.length) refrescar();
+    if(E.ajustes.vozNombre){ const v = voces.find(x=>x.name===E.ajustes.vozNombre); if(v) return v; }
+    return ordenadas()[0] || null;
+  }
+  function hablar(texto, alTerminar){
+    if(!soporte || !E.ajustes.voz){ alTerminar(false); return; }
+    try{
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(texto);
+      const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = "es-MX"; }
+      u.rate = E.ajustes.ritmo; u.pitch = 1; u.volume = 1;
+      let listo = false;
+      const fin = ()=>{ if(listo) return; listo = true; alTerminar(true); };
+      u.onend = fin; u.onerror = ()=>{ if(listo) return; listo=true; alTerminar(false); };
+      speechSynthesis.speak(u);
+      setTimeout(()=>{ if(!listo && !speechSynthesis.speaking) fin(); }, 700);
+    }catch(e){ alTerminar(false); }
+  }
+  function callar(){ if(soporte) try{ speechSynthesis.cancel(); }catch(e){} }
+  return { soporte, hablar, callar, lista:()=>ordenadas(), mejor };
+})();
+
+/* ════════════════ REPRODUCTOR DE PRÁCTICA ════════════════ */
+const $ = s => document.querySelector(s);
+const P = {
+  rito:null, plan:[], i:0, corriendo:false, esperando:false,
+  t0:0, acumulado:0, objetivo:0, raf:null, inicioSesion:0,
+  dormirId:null, modoAudio:false, wake:null
+};
+
+function aplanar(rito){
+  const plan = [];
+  rito.bloques.forEach((b, bi)=>{
+    const lineas = b.dinamico ? b.dinamico() : b.lineas;
+    lineas.forEach((l, li)=>{
+      const o = (typeof l === "string") ? { t:l } : Object.assign({}, l);
+      o.bloque = b; o.bi = bi; o.primera = (li===0);
+      plan.push(o);
+    });
+  });
+  return plan;
+}
+function duracion(o){
+  if(o.hold) return o.hold;
+  const n = (o.t||"").split(/\s+/).filter(Boolean).length;
+  return Math.max(2600, n*430) + E.ajustes.pausa;
+}
+
+function abrirRitual(id){
+  const r = RITUALES[id]; if(!r) return;
+  P.rito = r; P.plan = aplanar(r); P.i = 0; P.modoAudio = false;
+  P.inicioSesion = Date.now();
+  document.body.classList.toggle("tema-noche", r.tema === "noche");
+  document.body.classList.add("encendida");
+  $("#inicio").classList.add("oculto");
+  $("#practica").classList.remove("oculto");
+  $("#pDormir").classList.toggle("oculto", r.tema !== "noche");
+  $("#pAudioLista").classList.add("oculto");
+  $("#pCentro").classList.remove("oculto");
+  const url = (E.ajustes.urlAudio||{})[id];
+  if(url){ modoGrabacion(url); return; }
+  if(E.ajustes.pad) Pad.iniciar(r.tema, E.ajustes.padVol);
+  pedirPantalla();
+  if(r.tema === "noche" && E.ajustes.dormir) programarDormir();
+  P.corriendo = true;
+  mostrar();
+}
+
+function mostrar(){
+  P.objetivo = 0; P.acumulado = 0;
+  const o = P.plan[P.i];
+  if(!o){ terminar(); return; }
+  $("#pMov").textContent = o.bloque.num + " · " + o.bloque.nom.toUpperCase();
+  $("#pBloque").textContent = o.primera && o.bloque.rub ? o.bloque.rub : "";
+  const nota = $("#pNota");
+  if(o.nota){ nota.textContent = o.nota; nota.classList.remove("oculto"); }
+  else nota.classList.add("oculto");
+
+  if(o.respiro){ respirar(o.respiro); return; }
+  $("#pRespiro").classList.add("oculto");
+  const el = $("#pLinea");
+  el.classList.remove("oculto");
+  el.textContent = o.t;
+  el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
+  pintar();
+  if(!P.corriendo) return;
+  Voz.hablar(o.t, ()=>{
+    if(!P.corriendo) return;
+    esperar(E.ajustes.voz && Voz.soporte ? E.ajustes.pausa : duracion(o));
+  });
+}
+
+function esperar(ms){
+  P.objetivo = ms; P.acumulado = 0; P.t0 = performance.now();
+  cancelAnimationFrame(P.raf);
+  const paso = (t)=>{
+    if(!P.corriendo) return;
+    const transcurrido = P.acumulado + (t - P.t0);
+    pintar(Math.min(1, transcurrido/P.objetivo));
+    if(transcurrido >= P.objetivo){ P.i++; mostrar(); return; }
+    P.raf = requestAnimationFrame(paso);
+  };
+  P.raf = requestAnimationFrame(paso);
+}
+
+function respirar(veces){
+  P.objetivo = 0; P.acumulado = 0;
+  cancelAnimationFrame(P.raf);
+  $("#pLinea").classList.add("oculto");
+  $("#pRespiro").classList.remove("oculto");
+  const aro = $("#respiroAro"), txt = $("#respiroTxt");
+  const miIndice = P.i;
+  let n = 0;
+  const vigente = () => P.corriendo && P.i === miIndice;
+  const ciclo = ()=>{
+    if(!vigente()) return;
+    if(n >= veces){
+      $("#pRespiro").classList.add("oculto");
+      $("#pLinea").classList.remove("oculto");
+      aro.classList.remove("dentro");
+      P.i++; mostrar(); return;
+    }
+    n++;
+    txt.textContent = "Inhala"; aro.classList.add("dentro");
+    pintar(n/veces);
+    setTimeout(()=>{ if(vigente()) txt.textContent = "Sostén"; }, 4000);
+    setTimeout(()=>{ if(vigente()){ txt.textContent = "Exhala"; aro.classList.remove("dentro"); } }, 5000);
+    setTimeout(ciclo, 11000);
+  };
+  ciclo();
+}
+
+const NODO = {};
+function nodos(){
+  NODO.quemada = $("#velaQuemada"); NODO.llama = $("#velaLlama");
+  NODO.prog = $("#pProgreso");      NODO.tiempo = $("#pTiempo");
+}
+let ultimoPct = -1, ultimoSeg = -1;
+function pintar(frac){
+  const total = P.plan.length || 1;
+  const p = Math.min(1, (P.i + (frac||0)) / total);
+  const pct = (p*100);
+  NODO.quemada.style.height = pct.toFixed(2) + "%";
+  NODO.llama.style.top = pct.toFixed(2) + "%";
+  const r = Math.round(pct);
+  if(r !== ultimoPct){ NODO.prog.textContent = r + " %"; ultimoPct = r; }
+  const s = Math.floor((Date.now()-P.inicioSesion)/1000);
+  if(s !== ultimoSeg){ NODO.tiempo.textContent = Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); ultimoSeg = s; }
+}
+
+function alternarPlay(){
+  if(P.modoAudio){
+    const a = $("#reproductor");
+    if(a.paused){ a.play(); $("#pPlay").textContent = "Pausar"; }
+    else { a.pause(); $("#pPlay").textContent = "Continuar"; }
+    return;
+  }
+  if(P.corriendo){
+    P.corriendo = false;
+    if(P.objetivo > 0) P.acumulado += performance.now() - P.t0;
+    cancelAnimationFrame(P.raf); Voz.callar();
+    $("#pPlay").textContent = "Continuar";
+  } else {
+    P.corriendo = true; $("#pPlay").textContent = "Pausar";
+    const resto = P.objetivo - P.acumulado;
+    if(P.objetivo > 0 && resto > 120) esperar(resto);
+    else { P.objetivo = 0; P.acumulado = 0; mostrar(); }
+  }
+}
+function saltar(d){
+  if(P.modoAudio){ $("#reproductor").currentTime += d*15; return; }
+  cancelAnimationFrame(P.raf); Voz.callar();
+  const siguiente = P.i + d;
+  if(siguiente >= P.plan.length){ P.i = P.plan.length; terminar(); return; }
+  P.i = Math.max(0, siguiente);
+  P.acumulado = 0; P.objetivo = 0;
+  if(!P.corriendo){ P.corriendo = true; $("#pPlay").textContent = "Pausar"; }
+  mostrar();
+}
+
+function terminar(){
+  const id = P.rito ? P.rito.id : null;
+  if(id){
+    const d = hoyISO();
+    E.dias[d] = E.dias[d] || {am:false,pm:false};
+    if(id === "noche") E.dias[d].pm = true; else E.dias[d].am = true;
+    guardar();
+  }
+  $("#velaQuemada").style.height = "100%";
+  $("#velaLlama").style.top = "100%";
+  $("#pMov").textContent = "";
+  $("#pBloque").textContent = "";
+  $("#pRespiro").classList.add("oculto");
+  const el = $("#pLinea"); el.classList.remove("oculto");
+  el.textContent = P.rito && P.rito.tema === "noche" ? "Buenas noches." : "Amén.";
+  $("#pNota").classList.add("oculto");
+  $("#pPlay").textContent = "Terminar";
+  P.corriendo = false;
+  if(P.rito && P.rito.tema === "noche" && Pad.activo()){
+    $("#pPlay").textContent = "Silencio";
+  } else {
+    setTimeout(()=>{ if(!P.corriendo) cerrarPractica(); }, 4500);
+  }
+}
+
+function cerrarPractica(){
+  P.corriendo = false; P.modoAudio = false;
+  cancelAnimationFrame(P.raf); Voz.callar(); Pad.detener(2.5);
+  clearTimeout(P.dormirId);
+  const a = $("#reproductor"); try{ a.pause(); a.removeAttribute("src"); a.load(); }catch(e){}
+  soltarPantalla();
+  document.body.classList.remove("encendida","tema-noche");
+  $("#velaQuemada").style.height = "0%"; $("#velaLlama").style.top = "0%";
+  $("#practica").classList.add("oculto");
+  $("#inicio").classList.remove("oculto");
+  $("#pPlay").textContent = "Pausar";
+  render();
+}
+
+function programarDormir(){
+  clearTimeout(P.dormirId);
+  const min = E.ajustes.dormir;
+  if(!min) return;
+  P.dormirId = setTimeout(()=>{
+    Voz.callar(); P.corriendo = false; cancelAnimationFrame(P.raf);
+    Pad.detener(40);
+    const a = $("#reproductor"); if(!a.paused){ let v=a.volume; const f=setInterval(()=>{ v-=.03; if(v<=0){ a.pause(); clearInterval(f);} else a.volume=Math.max(0,v); },1200); }
+    $("#pLinea").textContent = "";
+    $("#pBloque").textContent = "";
+    $("#pMov").textContent = "";
+    setTimeout(cerrarPractica, 45000);
+  }, min*60000);
+}
+
+function modoGrabacion(url){
+  P.modoAudio = true;
+  $("#pCentro").classList.add("oculto");
+  const cont = $("#pAudioLista"); cont.innerHTML = "";
+  P.rito.bloques.forEach(b=>{
+    const lineas = b.dinamico ? b.dinamico() : b.lineas;
+    const d = document.createElement("div"); d.className = "audio-bloque";
+    d.innerHTML = '<p class="rubrica">' + b.num + " · " + b.nom + "</p>";
+    lineas.forEach(l=>{
+      const t = (typeof l === "string") ? l : (l.t || (l.respiro ? "· respiración ·" : ""));
+      if(!t) return;
+      const p = document.createElement("p"); p.className = "audio-linea"; p.textContent = t; d.appendChild(p);
+    });
+    cont.appendChild(d);
+  });
+  cont.classList.remove("oculto");
+  const a = $("#reproductor");
+  a.src = url; a.volume = 1;
+  a.onloadedmetadata = ()=>{ a.play().catch(()=>{ $("#pPlay").textContent = "Reproducir"; }); };
+  a.ontimeupdate = ()=>{
+    const p = a.duration ? a.currentTime/a.duration : 0;
+    $("#velaQuemada").style.height = (p*100).toFixed(2)+"%";
+    $("#velaLlama").style.top = (p*100).toFixed(2)+"%";
+    $("#pProgreso").textContent = Math.round(p*100)+" %";
+    const s = Math.floor(a.currentTime);
+    $("#pTiempo").textContent = Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
+  };
+  a.onended = terminar;
+  a.onerror = ()=>{ $("#pLinea").textContent = "No se pudo cargar el audio."; $("#pCentro").classList.remove("oculto"); cont.classList.add("oculto"); P.modoAudio=false; };
+  pedirPantalla();
+  if(P.rito.tema === "noche" && E.ajustes.dormir) programarDormir();
+}
+
+async function pedirPantalla(){
+  try{ if("wakeLock" in navigator) P.wake = await navigator.wakeLock.request("screen"); }catch(e){}
+}
+function soltarPantalla(){ try{ if(P.wake){ P.wake.release(); P.wake = null; } }catch(e){} }
+
+/* controles que se duermen */
+let dormirCtrl = null;
+function despertarCtrl(){
+  $("#pBajo").classList.remove("dormido");
+  clearTimeout(dormirCtrl);
+  dormirCtrl = setTimeout(()=>{ if(P.corriendo || P.modoAudio) $("#pBajo").classList.add("dormido"); }, 4500);
+}
+
+/* ════════════════ INICIO ════════════════ */
+function racha(){
+  const clave = dd => dd.getFullYear()+"-"+String(dd.getMonth()+1).padStart(2,"0")+"-"+String(dd.getDate()).padStart(2,"0");
+  const hecho = dd => { const r = E.dias[clave(dd)]; return !!(r && (r.am || r.pm)); };
+  const d = new Date();
+  if(!hecho(d)) d.setDate(d.getDate()-1);   // el día aún no termina: no rompe la racha
+  let n = 0;
+  for(let k=0;k<400 && hecho(d);k++){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+
+function render(){
+  const ahora = new Date(), h = ahora.getHours();
+  $("#saludo").textContent = h < 12 ? "Buenos días, Guillermo" : h < 19 ? "Buenas tardes, Guillermo" : "Buenas noches, Guillermo";
+  $("#rubricaHora").textContent = h < 12 ? "Activación" : h < 19 ? "En medio del día" : "Rendición";
+  $("#fecha").textContent = DIAS_L[ahora.getDay()] + " " + ahora.getDate() + " de " + MESES_L[ahora.getMonth()] + " · " + String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
+
+  const n = racha();
+  $("#rachaN").textContent = n;
+  $("#rachaT").textContent = n === 1 ? "día seguido" : "días seguidos";
+  const hoy = E.dias[hoyISO()] || {};
+  $("#marcaAM").classList.toggle("hecho", !!hoy.am);
+  $("#marcaPM").classList.toggle("hecho", !!hoy.pm);
+
+  const sug = h < 12 ? "manana" : h < 19 ? "nucleo" : "noche";
+  const cont = $("#ritos"); cont.innerHTML = "";
+  ["manana","noche","nucleo"].forEach(id=>{
+    const r = RITUALES[id];
+    const b = document.createElement("button");
+    b.className = "rito" + (id === sug ? " sugerido" : "");
+    b.innerHTML =
+      '<span class="rito-num">' + r.bloques.map(x=>x.num).join(" · ") + '</span>' +
+      '<span class="rito-alto"><span class="rito-nom">' + r.nombre + '</span>' +
+      '<span class="rito-dur">' + r.dur + '</span></span>' +
+      '<span class="rito-sub">' + r.sub + '</span>';
+    b.addEventListener("click", ()=>abrirRitual(id));
+    cont.appendChild(b);
+  });
+
+  const av = $("#avisoVision");
+  const v = E.vision;
+  if(!v.ser && !v.hacer && !v.tener){
+    av.innerHTML = '<b>El bloque Visión sigue vacío.</b> Tienes el método escrito pero no la respuesta. Ser · Hacer · Tener, tres líneas.';
+    av.classList.remove("oculto");
+  } else if(v.fecha && (Date.now() - v.fecha) > 90*86400000){
+    const d = Math.floor((Date.now()-v.fecha)/86400000);
+    av.innerHTML = '<b>Toca revisar la Visión.</b> Última actualización hace ' + d + ' días. El acuerdo era cada trimestre.';
+    av.classList.remove("oculto");
+  } else av.classList.add("oculto");
+}
+
+/* ════════════════ HOJAS ════════════════ */
+function cerrarHoja(){ $("#hojas").innerHTML = ""; }
+function hoja(titulo, sub, cuerpoHTML, alMontar){
+  $("#hojas").innerHTML =
+    '<div class="hoja" id="hojaFondo"><div class="hoja-caja" role="dialog" aria-modal="true">' +
+    '<h2 class="hoja-tit">' + titulo + '</h2>' +
+    (sub ? '<p class="hoja-sub">' + sub + '</p>' : '') +
+    cuerpoHTML + '</div></div>';
+  $("#hojaFondo").addEventListener("click", e=>{ if(e.target.id === "hojaFondo") cerrarHoja(); });
+  if(alMontar) alMontar();
+}
+
+function hojaVision(){
+  const v = E.vision;
+  hoja("Visión", "Tres líneas. Concretas. Se re-graban cada trimestre — este bloque es el único de tu sistema que cambia.",
+    '<div class="campo"><label class="campo-et" for="vSer">Yo soy</label><input class="campo-in" id="vSer" placeholder="quién" value="'+esc(v.ser)+'"></div>' +
+    '<div class="campo"><label class="campo-et" for="vHacer">Yo hago</label><input class="campo-in" id="vHacer" placeholder="qué construyo" value="'+esc(v.hacer)+'"></div>' +
+    '<div class="campo"><label class="campo-et" for="vTener">Yo tengo</label><input class="campo-in" id="vTener" placeholder="qué se manifiesta" value="'+esc(v.tener)+'"></div>' +
+    '<p class="campo-ayuda">Si una línea se siente falsa al decirla, no la suavices — acompáñala con un compromiso de proceso. «Yo soy el mejor inversionista» aterriza mejor seguido de «y por eso mi stop-loss es sagrado».</p>' +
+    '<div class="acciones"><button class="accion" id="vCancel">Cancelar</button><button class="accion llena" id="vGuardar">Guardar</button></div>',
+    ()=>{
+      $("#vCancel").addEventListener("click", cerrarHoja);
+      $("#vGuardar").addEventListener("click", ()=>{
+        E.vision = { ser:$("#vSer").value.trim(), hacer:$("#vHacer").value.trim(), tener:$("#vTener").value.trim(), fecha:Date.now() };
+        guardar(); cerrarHoja(); render();
+      });
+    });
+}
+
+function hojaArquitecto(){
+  const s = semanaISO();
+  if(E.arquitecto.semana !== s){ E.arquitecto = { semana:s, marcas:[false,false,false,false] }; guardar(); }
+  const marcas = E.arquitecto.marcas;
+  const filas = ARQUITECTO.map((t,i)=>
+    '<button class="check' + (marcas[i]?' on':'') + '" data-i="'+i+'"><span class="check-caja">✓</span>' +
+    '<span class="check-txt"><span class="check-n">' + (i+1) + '</span>' + t + '</span></button>').join("");
+  hoja("Arquitecto", "Revisión semanal. No es oración — es diagnóstico. Se reinicia cada lunes.",
+    filas + '<div class="veredicto" id="aVeredicto"></div>' +
+    '<div class="acciones"><button class="accion llena" id="aCerrar">Listo</button></div>',
+    ()=>{
+      const pintarV = ()=>{
+        const n = E.arquitecto.marcas.filter(Boolean).length;
+        const txt = n === 4 ? "Los cuatro activos. Expansión inevitable."
+          : n === 3 ? "Uno falla. Ahí es donde entran las dudas."
+          : n === 2 ? "Dos fallan. Eso es estancamiento."
+          : n === 1 ? "Tres fallan. Nada se sostiene desde aquí."
+          : "Ninguno activo. Empieza por el 1.";
+        $("#aVeredicto").textContent = txt;
+      };
+      pintarV();
+      document.querySelectorAll(".check").forEach(b=>{
+        b.addEventListener("click", ()=>{
+          const i = +b.dataset.i;
+          E.arquitecto.marcas[i] = !E.arquitecto.marcas[i];
+          b.classList.toggle("on", E.arquitecto.marcas[i]);
+          guardar(); pintarV();
+        });
+      });
+      $("#aCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function hojaDoctrina(){
+  const s = semanaISO(), leido = E.doctrina.semana === s;
+  hoja("Doctrina", "Material de estudio, no de repetición. Se lee — no se graba. Una vez por semana.",
+    DOCTRINA.map(t=>'<p class="doctrina-li">'+t+'</p>').join("") +
+    '<p class="campo-ayuda" style="margin-top:18px">Estos textos estaban mezclados con tus oraciones. Por eso cada mañana releías teoría antes de poder orar.</p>' +
+    '<div class="acciones"><button class="accion" id="dCerrar">Cerrar</button>' +
+    '<button class="accion' + (leido?'':' llena') + '" id="dLeido">' + (leido ? "Leído esta semana" : "Marcar como leído") + '</button></div>',
+    ()=>{
+      $("#dCerrar").addEventListener("click", cerrarHoja);
+      $("#dLeido").addEventListener("click", ()=>{ E.doctrina.semana = s; guardar(); cerrarHoja(); });
+    });
+}
+
+function hojaAjustes(){
+  const a = E.ajustes;
+  const voces = Voz.lista();
+  const opcVoz = '<option value="">Automática (mejor disponible)</option>' + voces.map(v=>'<option value="'+esc(v.name)+'"'+(a.vozNombre===v.name?' selected':'')+'>'+esc(v.name)+' · '+v.lang+(Voz.mejor(v)?' · mejorada':'')+'</option>').join("");
+  hoja("Ajustes", "",
+    '<div class="campo"><label class="campo-et">Tema</label>' +
+      '<div class="segmento" id="segTema">' +
+      ['sistema','claro','oscuro'].map(v=>'<button type="button" class="seg'+(((a.tema||"sistema")===v)?' activo':'')+'" data-tema="'+v+'">'+({sistema:"Sistema",claro:"Claro",oscuro:"Oscuro"}[v])+'</button>').join("") +
+      '</div>' +
+      '<p class="campo-ayuda">«Sistema» sigue el modo de tu teléfono. La práctica de Noche mantiene un tono cálido y bajo en cualquier tema, para no cortar el sueño.</p></div>' +
+    '<div class="fila"><div><div class="fila-txt">Leer en voz alta</div><div class="fila-ayuda">' +
+      (Voz.soporte ? 'Voz del sistema, como puente hasta que grabes la tuya. Elige una marcada «mejorada» si aparece.' : 'No disponible en este navegador.') +
+      '</div></div><button class="switch'+(a.voz&&Voz.soporte?' on':'')+'" id="sVoz" role="switch"></button></div>' +
+    (Voz.soporte ? '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sVozN">Voz</label><select class="campo-sel" id="sVozN">'+opcVoz+'</select></div>' : '') +
+    '<div class="campo"><label class="campo-et" for="sRitmo">Velocidad de lectura · <span id="sRitmoV">'+a.ritmo.toFixed(2)+'</span></label><input class="campo-in" type="range" id="sRitmo" min=".6" max="1.1" step=".02" value="'+a.ritmo+'"></div>' +
+    '<div class="campo"><label class="campo-et" for="sPausa">Silencio entre líneas · <span id="sPausaV">'+(a.pausa/1000).toFixed(1)+' s</span></label><input class="campo-in" type="range" id="sPausa" min="1000" max="8000" step="500" value="'+a.pausa+'">' +
+      '<p class="campo-ayuda">Es lo que te deja repetir mentalmente. Sin esa pausa el audio se vuelve podcast en vez de práctica.</p></div>' +
+    '<div class="fila"><div><div class="fila-txt">Cama sonora</div><div class="fila-ayuda">Pad generado en vivo. Mañana con brillo; noche grave, sin transientes.</div></div><button class="switch'+(a.pad?' on':'')+'" id="sPad" role="switch"></button></div>' +
+    '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sPadVol">Volumen del pad</label><input class="campo-in" type="range" id="sPadVol" min="0" max="1" step=".05" value="'+a.padVol+'"></div>' +
+    '<div class="campo"><label class="campo-et" for="sDormir">Temporizador de sueño</label><select class="campo-sel" id="sDormir">' +
+      [0,10,20,30].map(m=>'<option value="'+m+'"'+(a.dormir===m?' selected':'')+'>'+(m?m+' minutos':'Sin temporizador')+'</option>').join("") + '</select>' +
+      '<p class="campo-ayuda">La ventana hipnagógica son los primeros 10–20 min mientras te duermes. Audio toda la noche fragmenta el sueño; el track termina en silencio, no en loop.</p></div>' +
+    '<div class="campo"><label class="campo-et">Tus grabaciones</label>' +
+      ["manana","noche","nucleo"].map(id=>
+        '<div style="display:flex;gap:10px;align-items:center;margin-bottom:9px">' +
+        '<span style="font-size:12px;width:66px;color:var(--tinta-baja)">'+RITUALES[id].nombre+'</span>' +
+        '<input class="campo-in" style="flex:1;font-size:.85rem;font-family:var(--mono)" data-audio="'+id+'" placeholder="pega una URL de audio" value="'+esc((a.urlAudio||{})[id]||"")+'"></div>').join("") +
+      '<p class="campo-ayuda">Cuando grabes tus tracks, súbelos a Drive o Dropbox con enlace directo y pégalos aquí. La app reproduce tu audio y muestra el texto mientras corre.</p></div>' +
+    '<div class="acciones"><button class="accion llena" id="sCerrar">Listo</button></div>',
+    ()=>{
+      const sw = (sel, cb)=>{ const b=$(sel); if(!b) return; b.addEventListener("click", ()=>{ const on = !b.classList.contains("on"); b.classList.toggle("on", on); cb(on); guardar(); }); };
+      document.querySelectorAll('#segTema .seg').forEach(b=>{
+        b.addEventListener("click", ()=>{
+          document.querySelectorAll('#segTema .seg').forEach(x=>x.classList.remove("activo"));
+          b.classList.add("activo");
+          E.ajustes.tema = b.dataset.tema; aplicarTema(); guardar();
+        });
+      });
+      sw("#sVoz", on=>{ E.ajustes.voz = on && Voz.soporte; });
+      sw("#sPad", on=>{ E.ajustes.pad = on; if(!on) Pad.detener(1.5); });
+      const vn = $("#sVozN"); if(vn) vn.addEventListener("change", ()=>{ E.ajustes.vozNombre = vn.value; guardar(); });
+      $("#sRitmo").addEventListener("input", e=>{ E.ajustes.ritmo = +e.target.value; $("#sRitmoV").textContent = (+e.target.value).toFixed(2); guardar(); });
+      $("#sPausa").addEventListener("input", e=>{ E.ajustes.pausa = +e.target.value; $("#sPausaV").textContent = (+e.target.value/1000).toFixed(1)+" s"; guardar(); });
+      $("#sPadVol").addEventListener("input", e=>{ E.ajustes.padVol = +e.target.value; Pad.volumen(+e.target.value); guardar(); });
+      $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
+      document.querySelectorAll("[data-audio]").forEach(inp=>{
+        inp.addEventListener("change", ()=>{
+          E.ajustes.urlAudio = E.ajustes.urlAudio || {};
+          const v = inp.value.trim();
+          if(v) E.ajustes.urlAudio[inp.dataset.audio] = v; else delete E.ajustes.urlAudio[inp.dataset.audio];
+          guardar();
+        });
+      });
+      $("#sCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function esc(s){ return String(s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ════════════════ EVENTOS ════════════════ */
+document.querySelectorAll("[data-abrir]").forEach(b=>{
+  b.addEventListener("click", ()=>{
+    const k = b.dataset.abrir;
+    if(k === "vision") hojaVision();
+    else if(k === "arquitecto") hojaArquitecto();
+    else if(k === "doctrina") hojaDoctrina();
+    else hojaAjustes();
+  });
+});
+$("#pPlay").addEventListener("click", ()=>{
+  if($("#pPlay").textContent === "Terminar" || $("#pPlay").textContent === "Silencio"){ cerrarPractica(); return; }
+  alternarPlay(); despertarCtrl();
+});
+$("#pAtras").addEventListener("click", ()=>{ saltar(-1); despertarCtrl(); });
+$("#pAdelante").addEventListener("click", ()=>{ saltar(1); despertarCtrl(); });
+$("#pSalir").addEventListener("click", cerrarPractica);
+$("#pDormir").addEventListener("click", ()=>{ hojaAjustes(); });
+["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev, ()=>{ if(!$("#practica").classList.contains("oculto")) despertarCtrl(); }));
+document.addEventListener("keydown", e=>{
+  if($("#practica").classList.contains("oculto")) return;
+  if(e.key === " "){ e.preventDefault(); alternarPlay(); }
+  if(e.key === "ArrowRight") saltar(1);
+  if(e.key === "ArrowLeft") saltar(-1);
+  if(e.key === "Escape") cerrarPractica();
+});
+document.addEventListener("visibilitychange", ()=>{ if(document.hidden && P.corriendo && !P.modoAudio) Voz.callar(); });
+
+/* ════════════════ PWA ════════════════ */
+function icono(px){
+  try{
+    const c = document.createElement("canvas"); c.width = c.height = px;
+    const x = c.getContext("2d");
+    x.fillStyle = "#0B0A09"; x.fillRect(0,0,px,px);
+    const cx = px/2, base = px*.78, ancho = px*.085;
+    x.fillStyle = "#DCCFAF"; x.fillRect(cx-ancho/2, px*.42, ancho, base-px*.42);
+    const g = x.createRadialGradient(cx, px*.34, 0, cx, px*.34, px*.2);
+    g.addColorStop(0,"#FFF3D4"); g.addColorStop(.35,"#F0A63C"); g.addColorStop(1,"rgba(240,166,60,0)");
+    x.fillStyle = g; x.beginPath(); x.arc(cx, px*.34, px*.2, 0, Math.PI*2); x.fill();
+    return c.toDataURL("image/png");
+  }catch(e){ return null; }
+}
+try{
+  const i192 = icono(192), i512 = icono(512);
+  if(i192){
+    const m = { name:"Práctica", short_name:"Práctica", start_url:".", display:"standalone",
+      background_color:"#0B0A09", theme_color:"#0B0A09", orientation:"portrait", lang:"es",
+      icons:[{src:i192,sizes:"192x192",type:"image/png"},{src:i512,sizes:"512x512",type:"image/png",purpose:"any maskable"}] };
+    const l = document.createElement("link"); l.rel = "manifest";
+    l.href = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:"application/manifest+json"}));
+    document.head.appendChild(l);
+    const t = document.createElement("link"); t.rel = "apple-touch-icon"; t.href = i192; document.head.appendChild(t);
+  }
+}catch(e){}
+if("serviceWorker" in navigator && location.protocol.startsWith("http")){
+  navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+
+/* ════════════════ ARRANQUE ════════════════ */
+(async function(){
+  nodos();
+  await cargar();
+  aplicarTema();
+  render();
+  setInterval(()=>{ if(!$("#inicio").classList.contains("oculto")) render(); }, 60000);
+})();
+</script>
+</body>
+</html>
