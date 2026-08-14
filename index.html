@@ -380,6 +380,37 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .ancla-txt{font-family:var(--serif);font-size:1.5rem;line-height:1.45;color:var(--tinta);margin:0;max-width:30ch}
 .ancla-ref{display:block;margin-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-baja)}
 
+/* ── Registro (journal + check-ins) ── */
+.campo-area{
+  width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:12px;
+  padding:13px 14px;font-family:var(--serif);font-size:1.02rem;line-height:1.6;color:var(--tinta);
+  outline:none;resize:vertical;min-height:70px;
+}
+.campo-area:focus{border-color:var(--llama)}
+.campo-area::placeholder{color:var(--tinta-tenue)}
+.campo-area.grande{min-height:220px}
+.cad-tabs{margin-bottom:22px}
+.cad-fecha{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 18px}
+.reg-guardado{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--tinta-tenue);margin-top:8px;min-height:14px;transition:opacity .3s}
+.hito{display:flex;align-items:center;gap:11px;padding:9px 0}
+.hito-caja{
+  width:20px;height:20px;border:1px solid var(--linea-fuerte);border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--noche);
+  transition:background .2s,border-color .2s;
+}
+.hito.on .hito-caja{background:var(--llama);border-color:var(--llama)}
+.hito-in{flex:1;background:transparent;border:none;border-bottom:1px solid transparent;padding:5px 0;font-family:var(--serif);font-size:1rem;color:var(--tinta);outline:none}
+.hito-in:focus{border-bottom-color:var(--linea-fuerte)}
+.hito.on .hito-in{color:var(--tinta-baja)}
+.reg-hist{margin-top:8px;border-top:1px solid var(--linea);padding-top:6px}
+.reg-hist-t{font-size:12px;letter-spacing:.02em;color:var(--tinta-baja);margin:14px 0 4px}
+.reg-item{
+  display:block;width:100%;text-align:left;padding:13px 0;border-bottom:1px solid var(--linea);
+}
+.reg-item-f{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;color:var(--brasa);margin-bottom:5px}
+.reg-item-p{font-family:var(--serif);font-size:.98rem;line-height:1.45;color:var(--tinta-baja);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.reg-vacio{font-size:13px;color:var(--tinta-tenue);line-height:1.6;padding:8px 0 4px}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -415,6 +446,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
   <div class="menu">
     <button class="menu-item" data-abrir="vision">Visión</button>
     <button class="menu-item" data-abrir="arquitecto">Arquitecto</button>
+    <button class="menu-item" data-abrir="journal">Journal</button>
     <button class="menu-item" data-abrir="doctrina">Doctrina</button>
     <button class="menu-item" data-abrir="ancla">Ancla</button>
     <button class="menu-item" data-abrir="ajustes">Ajustes</button>
@@ -497,16 +529,22 @@ let E = {
   dias:{},
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
-  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, dormir:20, urlAudio:{}, ritual:{} }
+  registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
+  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", dormir:20, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
+    E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
+    ["journal","diario","semanal","mensual"].forEach(k=>{ if(!E.registro[k] || typeof E.registro[k] !== "object") E.registro[k] = {}; });
+    if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
+      E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
+    }
   }
 }
 
@@ -533,6 +571,7 @@ function guardar(){
 
 /* ════════════════ TIEMPO ════════════════ */
 const hoyISO = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+const mesISO = () => { const d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"); };
 function semanaISO(){
   const d = new Date(); const j = new Date(d.getFullYear(),d.getMonth(),d.getDate());
   j.setDate(j.getDate() + 4 - (j.getDay()||7));
@@ -726,6 +765,12 @@ const ARQUITECTO = [
   "Acepto el poder y el dinero como parte de mi camino",
   "Protejo mi foco emocional con límites firmes"
 ];
+const MENSUAL_HITOS = [
+  "Consistencia — sostuve la práctica la mayoría de los días",
+  "Foco — avancé mi prioridad principal sin dispersarme",
+  "Cuerpo — cuidé sueño, comida y movimiento",
+  "Límites — protegí mi energía de lo que no suma"
+];
 const ANCLAS = [
   'Estás aquí. Es suficiente para empezar.',
   'Respira. Nada de lo que importa se decide con prisa.',
@@ -753,47 +798,79 @@ const ANCLAS = [
 
 /* ════════════════ PAD (Web Audio) ════════════════ */
 const Pad = (() => {
-  let ctx=null, master=null, filtro=null, lfo=null, osc=[], vivo=false;
+  let ctx=null, master=null, fuentes=[], moduladores=[], vivo=false;
   const PRESETS = {
-    dia:  { raiz:110,  arm:[1,1.5,2,3],   corte:900, lfoHz:.05, lfoAmp:260, tipo:"triangle" },
-    noche:{ raiz:65.41,arm:[1,1.5,2],     corte:360, lfoHz:.028,lfoAmp:90,  tipo:"sine" }
+    vela:   { tipo:"tono", raiz:110,    arm:[1,1.5,2,3],   corte:900,  Q:.6, lfoHz:.05,  lfoAmp:260,  forma:"triangle" },
+    dia:    { tipo:"tono", raiz:110,    arm:[1,1.5,2,3],   corte:900,  Q:.6, lfoHz:.05,  lfoAmp:260,  forma:"triangle" },
+    noche:  { tipo:"tono", raiz:65.41,  arm:[1,1.5,2],     corte:360,  Q:.6, lfoHz:.028, lfoAmp:90,   forma:"sine" },
+    eter:   { tipo:"tono", raiz:146.83, arm:[1,2,3,4.5],   corte:1500, Q:.5, lfoHz:.035, lfoAmp:420,  forma:"sine" },
+    lluvia: { tipo:"ruido", corte:5200, Q:.4, hp:900, lfoHz:.12, lfoAmp:1500, swell:false },
+    oceano: { tipo:"ruido", corte:680,  Q:.5, hp:110, lfoHz:.06, lfoAmp:220,  swell:true }
   };
-  function iniciar(preset, vol){
+  function iniciar(escena, vol){
     try{
       detener(0);
       const AC = window.AudioContext || window.webkitAudioContext;
       if(!AC) return false;
       ctx = new AC();
       if(ctx.state === "suspended") ctx.resume();
-      const p = PRESETS[preset] || PRESETS.dia;
+      const p = PRESETS[escena] || PRESETS.vela;
       master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
-      filtro = ctx.createBiquadFilter(); filtro.type="lowpass";
-      filtro.frequency.value = p.corte; filtro.Q.value = .6; filtro.connect(master);
-      lfo = ctx.createOscillator(); lfo.frequency.value = p.lfoHz;
-      const lfoG = ctx.createGain(); lfoG.gain.value = p.lfoAmp;
-      lfo.connect(lfoG); lfoG.connect(filtro.frequency); lfo.start();
-      osc = p.arm.map((m,i)=>{
-        const o = ctx.createOscillator(); o.type = p.tipo;
-        o.frequency.value = p.raiz*m; o.detune.value = (i%2?1:-1)*(4+i*3);
-        const g = ctx.createGain(); g.gain.value = .32/(i+1);
-        o.connect(g); g.connect(filtro); o.start(); return o;
-      });
+
+      if(p.tipo === "ruido"){
+        const sr = ctx.sampleRate, buf = ctx.createBuffer(1, sr*3, sr), d = buf.getChannelData(0);
+        for(let i=0;i<d.length;i++) d[i] = Math.random()*2 - 1;
+        const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
+        const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = p.hp;
+        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = p.corte; lp.Q.value = p.Q;
+        src.connect(hp); hp.connect(lp);
+        let salida = lp;
+        if(p.swell){
+          const swellG = ctx.createGain(); swellG.gain.value = .7;
+          lp.connect(swellG); salida = swellG;
+          const s = ctx.createOscillator(); s.frequency.value = .07;
+          const sg = ctx.createGain(); sg.gain.value = .3;
+          s.connect(sg); sg.connect(swellG.gain); s.start(); moduladores.push(s);
+        }
+        salida.connect(master);
+        const lfo = ctx.createOscillator(); lfo.frequency.value = p.lfoHz;
+        const lg = ctx.createGain(); lg.gain.value = p.lfoAmp;
+        lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); moduladores.push(lfo);
+        src.start(); fuentes.push(src);
+      } else {
+        const filtro = ctx.createBiquadFilter(); filtro.type = "lowpass";
+        filtro.frequency.value = p.corte; filtro.Q.value = p.Q; filtro.connect(master);
+        const lfo = ctx.createOscillator(); lfo.frequency.value = p.lfoHz;
+        const lg = ctx.createGain(); lg.gain.value = p.lfoAmp;
+        lfo.connect(lg); lg.connect(filtro.frequency); lfo.start(); moduladores.push(lfo);
+        // segunda modulación lenta para que respire (evolución tipo Endel)
+        const drift = ctx.createOscillator(); drift.frequency.value = p.lfoHz*0.37 + .011;
+        const dg = ctx.createGain(); dg.gain.value = p.lfoAmp*0.45;
+        drift.connect(dg); dg.connect(filtro.frequency); drift.start(); moduladores.push(drift);
+        p.arm.forEach((m,i)=>{
+          const o = ctx.createOscillator(); o.type = p.forma;
+          o.frequency.value = p.raiz*m; o.detune.value = (i%2?1:-1)*(4+i*3);
+          const g = ctx.createGain(); g.gain.value = .32/(i+1);
+          o.connect(g); g.connect(filtro); o.start(); fuentes.push(o);
+        });
+      }
+
       master.gain.linearRampToValueAtTime(Math.max(.001, vol*.09), ctx.currentTime + 8);
       vivo = true; return true;
     }catch(e){ return false; }
   }
   function volumen(v){ if(vivo&&master&&ctx) try{ master.gain.linearRampToValueAtTime(Math.max(.0001,v*.09), ctx.currentTime+.4); }catch(e){} }
   function detener(seg){
-    if(!vivo||!ctx) { vivo=false; return; }
+    if(!vivo||!ctx){ vivo=false; return; }
     const s = (seg===undefined?4:seg);
     try{
       master.gain.cancelScheduledValues(ctx.currentTime);
       master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
       master.gain.linearRampToValueAtTime(.0001, ctx.currentTime + Math.max(.05,s));
     }catch(e){}
-    const c = ctx; vivo=false;
-    setTimeout(()=>{ try{ osc.forEach(o=>o.stop()); lfo.stop(); c.close(); }catch(e){} }, s*1000+400);
-    osc=[]; ctx=null; master=null;
+    const c = ctx, f = fuentes, m = moduladores; vivo=false;
+    setTimeout(()=>{ try{ f.forEach(x=>x.stop()); m.forEach(x=>x.stop()); c.close(); }catch(e){} }, s*1000+400);
+    fuentes=[]; moduladores=[]; ctx=null; master=null;
   }
   return { iniciar, detener, volumen, activo:()=>vivo };
 })();
@@ -878,7 +955,7 @@ function abrirRitual(id){
   $("#pCentro").classList.remove("oculto");
   const url = (E.ajustes.urlAudio||{})[id];
   if(url){ pintarControles(); modoGrabacion(url); return; }
-  if(P.ambOn) Pad.iniciar(r.tema, E.ajustes.padVol);
+  if(P.ambOn) Pad.iniciar(escenaActiva(r.tema), E.ajustes.padVol);
   pedirPantalla();
   if(r.tema === "noche" && E.ajustes.dormir) programarDormir();
   P.corriendo = true;
@@ -1192,33 +1269,130 @@ function hojaVision(){
     });
 }
 
+/* ════════════════ REGISTRO (journal + check-ins) ════════════════ */
+function capit(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+function fechaLegible(d){ return capit(DIAS_L[d.getDay()]) + " " + d.getDate() + " de " + MESES_L[d.getMonth()]; }
+function fechaCorta(iso){ const p = iso.split("-"); return (+p[2]) + " " + (MESES_L[(+p[1])-1] || ""); }
+function campoArea(id, label, val, ph){
+  return '<div class="campo"><label class="campo-et" for="'+id+'">'+label+'</label>' +
+    '<textarea class="campo-area" id="'+id+'" placeholder="'+esc(ph||"")+'">'+esc(val||"")+'</textarea></div>';
+}
+let guardadoT = null;
+function marcarGuardado(){
+  const el = $("#regGuardado"); if(!el) return;
+  el.textContent = "Guardado"; el.style.opacity = "1";
+  clearTimeout(guardadoT); guardadoT = setTimeout(()=>{ if($("#regGuardado")) $("#regGuardado").style.opacity = "0"; }, 1400);
+}
+function historialDiario(){
+  const R = E.registro, hoy = hoyISO();
+  const fechas = Object.keys(R.diario).filter(f=>f!==hoy && (R.diario[f].logre||R.diario[f].gratitud||R.diario[f].prioridad)).sort().reverse().slice(0,14);
+  if(!fechas.length) return '';
+  return '<div class="reg-hist"><p class="reg-hist-t">Días anteriores</p>' +
+    fechas.map(f=>{ const e = R.diario[f]; const prev = (e.logre || e.gratitud || e.prioridad || "").slice(0,120); return '<div class="reg-item"><div class="reg-item-f">'+fechaCorta(f)+'</div><div class="reg-item-p">'+esc(prev)+'</div></div>'; }).join("") +
+    '</div>';
+}
+function historialJournal(){
+  const J = E.registro.journal, hoy = hoyISO();
+  const fechas = Object.keys(J).filter(f=>f!==hoy && (J[f]||"").trim()).sort().reverse().slice(0,20);
+  if(!fechas.length) return '<p class="reg-vacio">Aún no hay entradas anteriores. Esta es la primera.</p>';
+  return '<div class="reg-hist"><p class="reg-hist-t">Entradas anteriores</p>' +
+    fechas.map(f=>'<div class="reg-item"><div class="reg-item-f">'+fechaCorta(f)+'</div><div class="reg-item-p">'+esc(J[f].slice(0,140))+'</div></div>').join("") +
+    '</div>';
+}
+function renderCadencia(cad, cont){
+  const R = E.registro;
+  if(cad === "diario"){
+    const hoy = hoyISO();
+    const dd = R.diario[hoy] || { logre:"", gratitud:"", prioridad:"" };
+    cont.innerHTML =
+      '<p class="cad-fecha">'+fechaLegible(new Date())+'</p>' +
+      campoArea("dLogre","¿Qué logré hoy?", dd.logre, "Lo que moviste, aunque sea pequeño.") +
+      campoArea("dGrat","¿Por qué estoy agradecido?", dd.gratitud, "Concreto de este día, no genérico.") +
+      campoArea("dPrio","¿Cuál es la primera prioridad de mañana?", dd.prioridad, "Una sola. La que abre el día.") +
+      '<div class="reg-guardado" id="regGuardado"></div>' +
+      historialDiario();
+    const bind = (sel, campo)=>{ const el = $(sel); if(!el) return; el.addEventListener("input", e=>{ R.diario[hoy] = R.diario[hoy] || {}; R.diario[hoy][campo] = e.target.value; marcarGuardado(); guardar(); }); };
+    bind("#dLogre","logre"); bind("#dGrat","gratitud"); bind("#dPrio","prioridad");
+  } else if(cad === "semanal"){
+    const sem = semanaISO();
+    const sd = R.semanal[sem] || { marcas:[false,false,false,false], nota:"" };
+    if(!Array.isArray(sd.marcas)) sd.marcas = [false,false,false,false];
+    R.semanal[sem] = sd;
+    cont.innerHTML =
+      '<p class="cad-fecha">Semana '+sem.replace("-S"," · ")+' — se reinicia cada lunes</p>' +
+      ARQUITECTO.map((t,i)=>'<button class="check'+(sd.marcas[i]?' on':'')+'" data-i="'+i+'"><span class="check-caja">✓</span><span class="check-txt"><span class="check-n">'+(i+1)+'</span>'+t+'</span></button>').join("") +
+      '<div class="veredicto" id="aVeredicto"></div>' +
+      campoArea("sNota","Nota de la semana", sd.nota, "¿Dónde falló el foco? ¿Qué patrón viste?");
+    const pintarV = ()=>{
+      const n = sd.marcas.filter(Boolean).length;
+      $("#aVeredicto").textContent = n===4 ? "Los cuatro activos. Expansión inevitable."
+        : n===3 ? "Uno falla. Ahí es donde entran las dudas."
+        : n===2 ? "Dos fallan. Eso es estancamiento."
+        : n===1 ? "Tres fallan. Nada se sostiene desde aquí."
+        : "Ninguno activo. Empieza por el 1.";
+    };
+    pintarV();
+    document.querySelectorAll("#cadCont .check").forEach(b=>{
+      b.addEventListener("click", ()=>{ const i=+b.dataset.i; sd.marcas[i]=!sd.marcas[i]; b.classList.toggle("on",sd.marcas[i]); guardar(); pintarV(); });
+    });
+    $("#sNota").addEventListener("input", e=>{ sd.nota = e.target.value; guardar(); });
+  } else {
+    const mes = mesISO(), ahora = new Date();
+    let md = R.mensual[mes];
+    if(!md){ md = { hitos: MENSUAL_HITOS.map(t=>({t:t, ok:false})), reflexion:"" }; R.mensual[mes] = md; }
+    if(!Array.isArray(md.hitos)) md.hitos = MENSUAL_HITOS.map(t=>({t:t, ok:false}));
+    cont.innerHTML =
+      '<p class="cad-fecha">'+capit(MESES_L[ahora.getMonth()])+" "+ahora.getFullYear()+' — hitos del mes</p>' +
+      '<div class="campo"><label class="campo-et">Hitos</label>' +
+        md.hitos.map((h,i)=>'<div class="hito'+(h.ok?' on':'')+'" data-i="'+i+'"><span class="hito-caja">✓</span><input class="hito-in" data-i="'+i+'" value="'+esc(h.t)+'"></div>').join("") +
+        '<p class="campo-ayuda">Edita cada hito para el mes. Tócalo para marcarlo cumplido.</p></div>' +
+      campoArea("mRef","Reflexión del mes", md.reflexion, "¿Qué construí? ¿Qué patrón quiero cambiar?");
+    document.querySelectorAll("#cadCont .hito-caja").forEach(cja=>{
+      const fila = cja.closest(".hito"), i = +fila.dataset.i;
+      cja.addEventListener("click", ()=>{ md.hitos[i].ok = !md.hitos[i].ok; fila.classList.toggle("on", md.hitos[i].ok); guardar(); });
+    });
+    document.querySelectorAll("#cadCont .hito-in").forEach(inp=>{
+      inp.addEventListener("input", ()=>{ md.hitos[+inp.dataset.i].t = inp.value; guardar(); });
+    });
+    $("#mRef").addEventListener("input", e=>{ md.reflexion = e.target.value; guardar(); });
+  }
+}
+
+function hojaJournal(){
+  const hoy = hoyISO();
+  const txt = E.registro.journal[hoy] || "";
+  hoja("Journal", "Escritura libre. Solo para ti.",
+    '<p class="cad-fecha">'+fechaLegible(new Date())+'</p>' +
+    '<div class="campo"><textarea class="campo-area grande" id="jHoy" placeholder="Escribe lo que traes hoy…">'+esc(txt)+'</textarea></div>' +
+    '<div class="reg-guardado" id="regGuardado"></div>' +
+    historialJournal() +
+    '<div class="acciones"><button class="accion llena" id="jCerrar">Listo</button></div>',
+    ()=>{
+      $("#jHoy").addEventListener("input", e=>{
+        const v = e.target.value;
+        if(v.trim()) E.registro.journal[hoy] = v; else delete E.registro.journal[hoy];
+        marcarGuardado(); guardar();
+      });
+      $("#jCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
 function hojaArquitecto(){
-  const s = semanaISO();
-  if(E.arquitecto.semana !== s){ E.arquitecto = { semana:s, marcas:[false,false,false,false] }; guardar(); }
-  const marcas = E.arquitecto.marcas;
-  const filas = ARQUITECTO.map((t,i)=>
-    '<button class="check' + (marcas[i]?' on':'') + '" data-i="'+i+'"><span class="check-caja">✓</span>' +
-    '<span class="check-txt"><span class="check-n">' + (i+1) + '</span>' + t + '</span></button>').join("");
-  hoja("Arquitecto", "Revisión semanal. No es oración — es diagnóstico. Se reinicia cada lunes.",
-    filas + '<div class="veredicto" id="aVeredicto"></div>' +
+  const cadInicial = "diario";
+  hoja("Arquitecto", "Diagnóstico, no oración. Diario, semanal y mensual.",
+    '<div class="segmento cad-tabs" id="cadTabs">' +
+      [["diario","Diario"],["semanal","Semanal"],["mensual","Mensual"]].map(c=>'<button type="button" class="seg'+(c[0]===cadInicial?' activo':'')+'" data-cad="'+c[0]+'">'+c[1]+'</button>').join("") +
+    '</div>' +
+    '<div id="cadCont"></div>' +
     '<div class="acciones"><button class="accion llena" id="aCerrar">Listo</button></div>',
     ()=>{
-      const pintarV = ()=>{
-        const n = E.arquitecto.marcas.filter(Boolean).length;
-        const txt = n === 4 ? "Los cuatro activos. Expansión inevitable."
-          : n === 3 ? "Uno falla. Ahí es donde entran las dudas."
-          : n === 2 ? "Dos fallan. Eso es estancamiento."
-          : n === 1 ? "Tres fallan. Nada se sostiene desde aquí."
-          : "Ninguno activo. Empieza por el 1.";
-        $("#aVeredicto").textContent = txt;
-      };
-      pintarV();
-      document.querySelectorAll(".check").forEach(b=>{
+      const cont = $("#cadCont");
+      renderCadencia(cadInicial, cont);
+      document.querySelectorAll("#cadTabs .seg").forEach(b=>{
         b.addEventListener("click", ()=>{
-          const i = +b.dataset.i;
-          E.arquitecto.marcas[i] = !E.arquitecto.marcas[i];
-          b.classList.toggle("on", E.arquitecto.marcas[i]);
-          guardar(); pintarV();
+          document.querySelectorAll("#cadTabs .seg").forEach(x=>x.classList.remove("activo"));
+          b.classList.add("activo");
+          renderCadencia(b.dataset.cad, cont);
         });
       });
       $("#aCerrar").addEventListener("click", cerrarHoja);
@@ -1259,6 +1433,11 @@ function vozDe(id){
 function ambDe(id){
   const r = (E.ajustes.ritual||{})[id];
   return (r && typeof r.amb === "boolean") ? r.amb : E.ajustes.pad;
+}
+function escenaActiva(tema){
+  const e = E.ajustes.escena || "auto";
+  if(e === "auto") return tema === "noche" ? "noche" : "vela";
+  return e;
 }
 function setRitual(id, campo, val){
   E.ajustes.ritual = E.ajustes.ritual || {};
@@ -1339,6 +1518,9 @@ function hojaAjustes(){
       '<p class="campo-ayuda">Es lo que te deja repetir mentalmente. Sin esa pausa el audio se vuelve podcast en vez de práctica.</p></div>' +
     '<div class="fila"><div><div class="fila-txt">Cama sonora</div><div class="fila-ayuda">Pad generado en vivo. Mañana con brillo; noche grave, sin transientes.</div></div><button class="switch'+(a.pad?' on':'')+'" id="sPad" role="switch"></button></div>' +
     '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sPadVol">Volumen del pad</label><input class="campo-in" type="range" id="sPadVol" min="0" max="1" step=".05" value="'+a.padVol+'"></div>' +
+    '<div class="campo"><label class="campo-et" for="sEscena">Escena de sonido</label><select class="campo-sel" id="sEscena">' +
+      [["auto","Automática (por ritual)"],["vela","Vela — cálida, tonal"],["noche","Noche — grave, profunda"],["eter","Éter — aérea, luminosa"],["lluvia","Lluvia — textura suave"],["oceano","Océano — olas lentas"]].map(o=>'<option value="'+o[0]+'"'+((a.escena||"auto")===o[0]?' selected':'')+'>'+o[1]+'</option>').join("") + '</select>' +
+      '<p class="campo-ayuda">El paisaje sonoro se genera en vivo y evoluciona solo. «Automática» usa Vela en el día y Noche al dormir. Se escucha en la práctica.</p></div>' +
     '<div class="campo"><label class="campo-et" for="sDormir">Temporizador de sueño</label><select class="campo-sel" id="sDormir">' +
       [0,10,20,30].map(m=>'<option value="'+m+'"'+(a.dormir===m?' selected':'')+'>'+(m?m+' minutos':'Sin temporizador')+'</option>').join("") + '</select>' +
       '<p class="campo-ayuda">La ventana hipnagógica son los primeros 10–20 min mientras te duermes. Audio toda la noche fragmenta el sueño; el track termina en silencio, no en loop.</p></div>' +
@@ -1368,6 +1550,7 @@ function hojaAjustes(){
       $("#sRitmo").addEventListener("input", e=>{ E.ajustes.ritmo = +e.target.value; $("#sRitmoV").textContent = (+e.target.value).toFixed(2); guardar(); });
       $("#sPausa").addEventListener("input", e=>{ E.ajustes.pausa = +e.target.value; $("#sPausaV").textContent = (+e.target.value/1000).toFixed(1)+" s"; guardar(); });
       $("#sPadVol").addEventListener("input", e=>{ E.ajustes.padVol = +e.target.value; Pad.volumen(+e.target.value); guardar(); });
+      const se = $("#sEscena"); if(se) se.addEventListener("change", ()=>{ E.ajustes.escena = se.value; guardar(); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
       $("#sExportar").addEventListener("click", exportarDatos);
       const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
@@ -1391,6 +1574,7 @@ document.querySelectorAll("[data-abrir]").forEach(b=>{
     const k = b.dataset.abrir;
     if(k === "vision") hojaVision();
     else if(k === "arquitecto") hojaArquitecto();
+    else if(k === "journal") hojaJournal();
     else if(k === "doctrina") hojaDoctrina();
     else if(k === "ancla") hojaAncla();
     else hojaAjustes();
@@ -1411,7 +1595,7 @@ $("#togVoz").addEventListener("click", ()=>{
 $("#togAmb").addEventListener("click", ()=>{
   P.ambOn = !P.ambOn;
   if(P.rito && !P.modoAudio){
-    if(P.ambOn) Pad.iniciar(P.rito.tema, E.ajustes.padVol);
+    if(P.ambOn) Pad.iniciar(escenaActiva(P.rito.tema), E.ajustes.padVol);
     else Pad.detener(1.2);
   }
   if(P.rito) setRitual(P.rito.id, "amb", P.ambOn);
