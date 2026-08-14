@@ -341,6 +341,45 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .accion.llena{background:var(--llama);border-color:var(--llama);color:#120C05;font-weight:600}
 .doctrina-li{padding:13px 0;border-bottom:1px solid var(--linea);font-family:var(--serif);font-size:1.02rem;line-height:1.45;color:var(--tinta-baja)}
 
+/* ── Controles del lector (voz / ambiente / velocidad) ── */
+.p-controles{display:flex;gap:8px;align-items:center;margin-bottom:14px;flex-wrap:wrap}
+.p-tog{
+  padding:9px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;
+  font-size:12.5px;letter-spacing:.01em;color:var(--tinta-baja);
+  transition:border-color .2s,color .2s,background .2s;
+}
+.p-tog.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 16%,transparent)}
+.p-tog:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.p-vel{
+  padding:9px 13px;border:1px solid var(--linea-fuerte);border-radius:999px;
+  font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--tinta-baja);min-width:46px;text-align:center;
+  transition:border-color .2s,color .2s;
+}
+.p-vel:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+
+/* ── Doctrina: acordeón ── */
+.doctrina-item{border-bottom:1px solid var(--linea)}
+.doctrina-cab{
+  display:flex;width:100%;justify-content:space-between;align-items:center;gap:14px;
+  padding:16px 0;text-align:left;font-family:var(--serif);font-size:1.06rem;line-height:1.4;color:var(--tinta);
+}
+.doctrina-cab:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.doctrina-mas{font-family:var(--sans);font-size:1.35rem;line-height:1;color:var(--brasa);flex-shrink:0;transition:transform .28s cubic-bezier(.3,.8,.4,1)}
+.doctrina-cab.abierto .doctrina-mas{transform:rotate(45deg)}
+.doctrina-cuerpo{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.3,.8,.4,1);color:var(--tinta-baja);font-size:.99rem;line-height:1.64}
+.doctrina-cuerpo.abierto{max-height:1400px;padding-bottom:20px}
+.doctrina-cuerpo p{margin:0 0 13px}
+.doctrina-cuerpo p:last-child{margin-bottom:0}
+.doctrina-cuerpo .escr{font-style:italic;color:var(--oro)}
+
+/* ── Ancla (salmos / grounding) ── */
+.ancla-caja{
+  min-height:180px;display:flex;align-items:center;justify-content:center;text-align:center;
+  padding:20px 8px 26px;
+}
+.ancla-txt{font-family:var(--serif);font-size:1.5rem;line-height:1.45;color:var(--tinta);margin:0;max-width:30ch}
+.ancla-ref{display:block;margin-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-baja)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -377,6 +416,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
     <button class="menu-item" data-abrir="vision">Visión</button>
     <button class="menu-item" data-abrir="arquitecto">Arquitecto</button>
     <button class="menu-item" data-abrir="doctrina">Doctrina</button>
+    <button class="menu-item" data-abrir="ancla">Ancla</button>
     <button class="menu-item" data-abrir="ajustes">Ajustes</button>
   </div>
 
@@ -403,6 +443,11 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
   <div class="audio-lista oculto" id="pAudioLista"></div>
 
   <div class="p-bajo" id="pBajo">
+    <div class="p-controles" id="pControles">
+      <button class="p-tog" id="togVoz" role="switch" aria-checked="true" aria-label="Lectura por voz">Voz</button>
+      <button class="p-tog" id="togAmb" role="switch" aria-checked="true" aria-label="Sonido de ambiente">Ambiente</button>
+      <button class="p-vel" id="togVel" aria-label="Velocidad de reproducción">1×</button>
+    </div>
     <div class="p-barra">
       <button class="p-btn" id="pAtras" aria-label="Línea anterior">←</button>
       <button class="p-btn principal" id="pPlay">Pausar</button>
@@ -452,14 +497,14 @@ let E = {
   dias:{},
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
-  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, pausa:3000, pad:true, padVol:.5, dormir:20, urlAudio:{} }
+  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, dormir:20, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,pausa:3000,pad:true,padVol:.5,dormir:20,urlAudio:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
   }
@@ -650,18 +695,60 @@ const RITUALES = {
 };
 
 const DOCTRINA = [
-  "El bloque sobre «Yo Soy» como mandato creador",
-  "Actuar rápido cuando surge una idea nueva, antes de que la mente la mate",
-  "«¿Cuándo va a despegar tu vida?» — Ser / Hacer / Tener, y los dos pasos: monitorear el pensamiento, volver a pensarlo",
-  "«Hoy recuerda que dentro de ti hay más fuerza…»",
-  "«Hoy puede ser un buen día para empezar de nuevo…»",
-  "«La única persona que me quiere triunfar más que yo es el yo de mañana»"
+  { t:"El bloque sobre «Yo Soy» como mandato creador",
+    e:`<p>Cuando Moisés pregunta el nombre de Dios, la respuesta no es un sustantivo sino un verbo: <span class="escr">«Yo Soy el que Soy»</span> (Éxodo 3). El nombre de lo divino es existencia en acto. Y en Génesis, la creación no se hace con las manos: se hace con la voz. «Y dijo Dios… y fue.» La palabra precede a la forma.</p>
+    <p>Filosóficamente, hay actos de habla que no describen la realidad sino que la instauran: cuando alguien promete, o nombra, o declara, no reporta un hecho — lo crea. «Yo soy» pertenece a esa clase. Lo que sigue a esas dos palabras no es una observación sobre ti; es una orden que le das a lo que aún no existe.</p>
+    <p>Por eso la vigilancia sobre esa frase no es superstición, es higiene. «Yo soy» ansioso, «yo soy» incapaz, «yo soy» invisible — cada declaración siembra. La disciplina no es fingir lo que no sientes; es negarte a firmar con tu nombre aquello que no quieres construir. Cuida lo que va después de «yo soy». Ahí empieza tu mundo.</p>` },
+  { t:"Actuar rápido cuando surge una idea nueva, antes de que la mente la mate",
+    e:`<p>Hay una ventana breve entre la inspiración y la duda. La idea llega limpia; segundos después, la mente convoca sus abogados —el «qué dirán», el «y si fallo», el «mejor mañana»— y la idea muere de mil cortes razonables.</p>
+    <p>La Escritura tiene una palabra para ese instante: <span class="escr">«Hoy, si oyereis su voz, no endurezcáis vuestro corazón»</span> (Salmo 95). No mañana. Hoy. La parábola de los talentos no condena al que perdió dinero, sino al que, por miedo, enterró lo que le fue dado. El pecado ahí es la parálisis, no el error.</p>
+    <p>Lo que la psicología llama resistencia y los antiguos llamaban acedia es lo mismo: la fuerza que aparece justo cuando ibas a crear algo, disfrazada de prudencia. El antídoto no es pensar mejor — es moverte antes de que el pensamiento se organice en tu contra. Da el primer paso pequeño e irreversible mientras la idea aún respira. La convicción se construye actuando, no deliberando.</p>` },
+  { t:"«¿Cuándo va a despegar tu vida?» — Ser / Hacer / Tener",
+    e:`<p>La mayoría vive en el orden inverso: <em>tener</em> para poder <em>hacer</em> y así llegar a <em>ser</em>. «Cuando tenga dinero, haré lo que amo, y entonces seré libre.» Ese orden nunca despega, porque pospone el ser al final de una fila infinita.</p>
+    <p>Invierte la secuencia: <em>sé</em> primero, y desde ahí <em>haz</em>, y el <em>tener</em> llega como consecuencia. <span class="escr">«Cual es su pensamiento en su corazón, tal es él»</span> (Proverbios 23). La identidad precede a la acción; no actúas para volverte alguien, actúas porque ya decidiste quién eres.</p>
+    <p>Y por eso los dos pasos: <strong>monitorear el pensamiento</strong> y <strong>volver a pensarlo</strong>. Pablo lo llama <span class="escr">«transformaos por la renovación de vuestro entendimiento»</span> (Romanos 12). Los estoicos lo llamaban la disciplina del asentimiento: entre el estímulo y tu respuesta hay un espacio, y en ese espacio eres libre de rechazar un pensamiento y elegir otro. No eres tus pensamientos automáticos. Eres el que los observa y decide cuál conservar. Tu vida despega el día que tomas ese puesto.</p>` },
+  { t:"«Hoy recuerda que dentro de ti hay más fuerza…»",
+    e:`<p>La fuerza que crees tener es la que has medido en días fáciles. La que realmente tienes no aparece hasta que la carga la exige. Nadie conoce el fondo de su reserva hasta que toca fondo — y descubre que había piso más abajo.</p>
+    <p><span class="escr">«Todo lo puedo en aquel que me fortalece»</span> (Filipenses 4). Nota que no dice «todo lo puedo yo». La fuerza no es solo voluntad apretada; es algo que se recibe, que se abre cuando dejas de fingir que puedes solo. Y hay una paradoja escrita: <span class="escr">«mi poder se perfecciona en la debilidad»</span> (2 Corintios 12). El punto donde te sientes más frágil es, con frecuencia, el punto donde entra la fuerza que no es tuya.</p>
+    <p>Recordar esto no es un slogan para animarte. Es información operativa: cuando sientas que no puedes más, estás casi siempre lejos de tu límite real. Da un paso más. Ahí vive la fuerza que no sabías que tenías.</p>` },
+  { t:"«Hoy puede ser un buen día para empezar de nuevo…»",
+    e:`<p>La culpa te ancla al pasado convenciéndote de que ya está escrito quién eres. Pero el tiempo no funciona así. Solo existe un punto desde el cual puedes mover algo, y es ahora — nunca ayer, nunca mañana. Todo tu poder está concentrado en el presente.</p>
+    <p><span class="escr">«Sus misericordias son nuevas cada mañana»</span> (Lamentaciones 3). No renovadas cada año, ni cada gran decisión: cada mañana. La gracia reinicia el marcador con una frecuencia diaria, casi terca. Y la promesa se repite: <span class="escr">«He aquí, yo hago cosa nueva»</span> (Isaías 43), <span class="escr">«las cosas viejas pasaron»</span> (2 Corintios 5).</p>
+    <p>Empezar de nuevo no significa borrar lo que pasó, sino negarte a que lo que pasó defina lo que sigue. No necesitas esperar al lunes, ni a enero, ni a sentirte listo. El permiso para volver a empezar no depende de una fecha. Depende de que decidas usar el único día en el que puedes hacer algo: este.</p>` },
+  { t:"«La única persona que me quiere triunfar más que yo es el yo de mañana»",
+    e:`<p>Piensa en tu yo de mañana como una persona real que depende de ti. Todo lo que haces hoy —lo que comes, lo que dejas sin hacer, la hora a la que te acuestas, la promesa que cumples o rompes— es un mensaje que le envías. Él vive con las consecuencias de tu disciplina o de tu pereza, sin voto.</p>
+    <p>La sabiduría antigua ya lo intuía: <span class="escr">«Ve a la hormiga… prepara en el verano su comida»</span> (Proverbios 6). Y la ley del sembrar es inflexible y justa: <span class="escr">«todo lo que el hombre sembrare, eso también segará»</span> (Gálatas 6). Lo que plantas hoy no lo cosechas hoy — lo cosecha él.</p>
+    <p>Por eso <span class="escr">«el que es fiel en lo muy poco, también en lo más es fiel»</span> (Lucas 16): las decisiones pequeñas de hoy no son pequeñas para quien las hereda. Servir a tu yo de mañana no es sacrificio; es la forma más concreta de amarte. Y el texto lo dice claro: <span class="escr">«no nos cansemos… porque a su tiempo segaremos»</span>. Siembra bien. Alguien que eres tú te lo va a agradecer.</p>` }
 ];
 const ARQUITECTO = [
   "Decido sin pedir permiso",
   "Opero dentro de una estructura clara",
   "Acepto el poder y el dinero como parte de mi camino",
   "Protejo mi foco emocional con límites firmes"
+];
+const ANCLAS = [
+  'Estás aquí. Es suficiente para empezar.',
+  'Respira. Nada de lo que importa se decide con prisa.',
+  'No tienes que cargar mañana el día de hoy.',
+  'El suelo sostiene todo tu peso, y no se queja.',
+  'Suelta lo que no depende de ti. Lo que depende de ti, hazlo.',
+  'Este momento no te pide que resuelvas tu vida. Solo que estés en él.',
+  'Baja los hombros. Afloja la mandíbula. Ya puedes seguir.',
+  'Lo urgente grita; lo importante espera en silencio. Escucha el silencio.',
+  'No eres tus pensamientos. Eres el que los observa.',
+  'Vuelve al centro. El centro no se fue a ningún lado.',
+  'Haz una cosa. Luego la siguiente. Así se construye todo.',
+  'La calma no es ausencia de tormenta. Es saber dónde está tu ancla.',
+  '«El Señor es mi pastor; nada me faltará.»<span class="ancla-ref">Salmo 23</span>',
+  '«Estad quietos, y conoced que yo soy Dios.»<span class="ancla-ref">Salmo 46</span>',
+  '«Sus misericordias son nuevas cada mañana.»<span class="ancla-ref">Lamentaciones 3</span>',
+  '«Aunque ande en valle de sombra, no temeré.»<span class="ancla-ref">Salmo 23</span>',
+  '«Esperé al Señor, y se inclinó a mí.»<span class="ancla-ref">Salmo 40</span>',
+  '«El que habita al abrigo del Altísimo…»<span class="ancla-ref">Salmo 91</span>',
+  '«Todo lo puedo en aquel que me fortalece.»<span class="ancla-ref">Filipenses 4</span>',
+  '«Echa sobre el Señor tu carga, y él te sustentará.»<span class="ancla-ref">Salmo 55</span>',
+  '«Lámpara es a mis pies tu palabra.»<span class="ancla-ref">Salmo 119</span>',
+  '«En paz me acostaré, y asimismo dormiré.»<span class="ancla-ref">Salmo 4</span>'
 ];
 
 /* ════════════════ PAD (Web Audio) ════════════════ */
@@ -734,12 +821,12 @@ const Voz = (() => {
     return ordenadas()[0] || null;
   }
   function hablar(texto, alTerminar){
-    if(!soporte || !E.ajustes.voz){ alTerminar(false); return; }
+    if(!soporte || !P.vozOn){ alTerminar(false); return; }
     try{
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(texto);
       const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = "es-MX"; }
-      u.rate = E.ajustes.ritmo; u.pitch = 1; u.volume = 1;
+      u.rate = Math.min(1.3, Math.max(.5, E.ajustes.ritmo * (E.ajustes.velocidad||1))); u.pitch = 1; u.volume = 1;
       let listo = false;
       const fin = ()=>{ if(listo) return; listo = true; alTerminar(true); };
       u.onend = fin; u.onerror = ()=>{ if(listo) return; listo=true; alTerminar(false); };
@@ -756,7 +843,7 @@ const $ = s => document.querySelector(s);
 const P = {
   rito:null, plan:[], i:0, corriendo:false, esperando:false,
   t0:0, acumulado:0, objetivo:0, raf:null, inicioSesion:0,
-  dormirId:null, modoAudio:false, wake:null
+  dormirId:null, modoAudio:false, wake:null, vozOn:true, ambOn:true
 };
 
 function aplanar(rito){
@@ -781,6 +868,7 @@ function abrirRitual(id){
   const r = RITUALES[id]; if(!r) return;
   P.rito = r; P.plan = aplanar(r); P.i = 0; P.modoAudio = false;
   P.inicioSesion = Date.now();
+  P.vozOn = vozDe(r.id); P.ambOn = ambDe(r.id);
   document.body.classList.toggle("tema-noche", r.tema === "noche");
   document.body.classList.add("encendida");
   $("#inicio").classList.add("oculto");
@@ -789,11 +877,12 @@ function abrirRitual(id){
   $("#pAudioLista").classList.add("oculto");
   $("#pCentro").classList.remove("oculto");
   const url = (E.ajustes.urlAudio||{})[id];
-  if(url){ modoGrabacion(url); return; }
-  if(E.ajustes.pad) Pad.iniciar(r.tema, E.ajustes.padVol);
+  if(url){ pintarControles(); modoGrabacion(url); return; }
+  if(P.ambOn) Pad.iniciar(r.tema, E.ajustes.padVol);
   pedirPantalla();
   if(r.tema === "noche" && E.ajustes.dormir) programarDormir();
   P.corriendo = true;
+  pintarControles();
   mostrar();
 }
 
@@ -817,7 +906,8 @@ function mostrar(){
   if(!P.corriendo) return;
   Voz.hablar(o.t, ()=>{
     if(!P.corriendo) return;
-    esperar(E.ajustes.voz && Voz.soporte ? E.ajustes.pausa : duracion(o));
+    const base = (P.vozOn && Voz.soporte) ? E.ajustes.pausa : duracion(o);
+    esperar(o.hold ? Math.max(o.hold, base) : base);
   });
 }
 
@@ -981,7 +1071,19 @@ function modoGrabacion(url){
   cont.classList.remove("oculto");
   const a = $("#reproductor");
   a.src = url; a.volume = 1;
-  a.onloadedmetadata = ()=>{ a.play().catch(()=>{ $("#pPlay").textContent = "Reproducir"; }); };
+  try{ a.preservesPitch = true; a.mozPreservesPitch = true; a.webkitPreservesPitch = true; }catch(e){}
+  let cargado = false;
+  const falla = ()=>{
+    if(cargado) return; cargado = true; clearTimeout(tiempoMax);
+    $("#pLinea").textContent = "No se pudo cargar el audio. Usa un enlace directo al archivo, no una vista previa de Drive.";
+    $("#pCentro").classList.remove("oculto"); cont.classList.add("oculto"); P.modoAudio = false;
+  };
+  const tiempoMax = setTimeout(falla, 8000);
+  a.onloadedmetadata = ()=>{
+    cargado = true; clearTimeout(tiempoMax);
+    try{ a.playbackRate = E.ajustes.velocidad || 1; }catch(e){}
+    a.play().catch(()=>{ $("#pPlay").textContent = "Reproducir"; });
+  };
   a.ontimeupdate = ()=>{
     const p = a.duration ? a.currentTime/a.duration : 0;
     $("#velaQuemada").style.height = (p*100).toFixed(2)+"%";
@@ -991,8 +1093,9 @@ function modoGrabacion(url){
     $("#pTiempo").textContent = Math.floor(s/60)+":"+String(s%60).padStart(2,"0");
   };
   a.onended = terminar;
-  a.onerror = ()=>{ $("#pLinea").textContent = "No se pudo cargar el audio."; $("#pCentro").classList.remove("oculto"); cont.classList.add("oculto"); P.modoAudio=false; };
+  a.onerror = falla;
   pedirPantalla();
+  pintarControles();
   if(P.rito.tema === "noche" && E.ajustes.dormir) programarDormir();
 }
 
@@ -1125,13 +1228,95 @@ function hojaArquitecto(){
 function hojaDoctrina(){
   const s = semanaISO(), leido = E.doctrina.semana === s;
   hoja("Doctrina", "Material de estudio, no de repetición. Se lee — no se graba. Una vez por semana.",
-    DOCTRINA.map(t=>'<p class="doctrina-li">'+t+'</p>').join("") +
-    '<p class="campo-ayuda" style="margin-top:18px">Estos textos estaban mezclados con tus oraciones. Por eso cada mañana releías teoría antes de poder orar.</p>' +
-    '<div class="acciones"><button class="accion" id="dCerrar">Cerrar</button>' +
-    '<button class="accion' + (leido?'':' llena') + '" id="dLeido">' + (leido ? "Leído esta semana" : "Marcar como leído") + '</button></div>',
+    '<div class="doctrina-lista">' +
+    DOCTRINA.map((t,i)=>
+      '<div class="doctrina-item">' +
+      '<button class="doctrina-cab" data-doc="'+i+'" aria-expanded="false" aria-controls="doc'+i+'"><span>'+esc(t.t)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
+      '<div class="doctrina-cuerpo" id="doc'+i+'">'+t.e+'</div>' +
+      '</div>').join("") +
+    '</div>' +
+    '<div class="acciones" style="margin-top:24px"><button class="accion' + (leido?'':' llena') + '" id="dLeido">' + (leido ? "Leído esta semana" : "Marcar como leído") + '</button></div>',
     ()=>{
-      $("#dCerrar").addEventListener("click", cerrarHoja);
+      document.querySelectorAll(".doctrina-cab").forEach(b=>{
+        b.addEventListener("click", ()=>{
+          const cuerpo = $("#doc"+b.dataset.doc);
+          const abierto = b.getAttribute("aria-expanded") === "true";
+          b.setAttribute("aria-expanded", String(!abierto));
+          b.classList.toggle("abierto", !abierto);
+          cuerpo.classList.toggle("abierto", !abierto);
+        });
+      });
       $("#dLeido").addEventListener("click", ()=>{ E.doctrina.semana = s; guardar(); cerrarHoja(); });
+    });
+}
+
+/* ── Voz / ambiente por ritual + controles del lector ── */
+function vozDe(id){
+  const r = (E.ajustes.ritual||{})[id];
+  const v = (r && typeof r.voz === "boolean") ? r.voz : E.ajustes.voz;
+  return v && Voz.soporte;
+}
+function ambDe(id){
+  const r = (E.ajustes.ritual||{})[id];
+  return (r && typeof r.amb === "boolean") ? r.amb : E.ajustes.pad;
+}
+function setRitual(id, campo, val){
+  E.ajustes.ritual = E.ajustes.ritual || {};
+  E.ajustes.ritual[id] = Object.assign({}, E.ajustes.ritual[id], { [campo]: val });
+  guardar();
+}
+function pintarControles(){
+  const tv = $("#togVoz"), ta = $("#togAmb"), tvel = $("#togVel");
+  if(!tv) return;
+  tv.style.display = Voz.soporte ? "" : "none";
+  tv.classList.toggle("on", !!P.vozOn);
+  tv.setAttribute("aria-checked", String(!!P.vozOn));
+  ta.classList.toggle("on", !!P.ambOn);
+  ta.setAttribute("aria-checked", String(!!P.ambOn));
+  ta.style.opacity = P.modoAudio ? ".4" : "";
+  tvel.textContent = String(E.ajustes.velocidad || 1) + "×";
+}
+
+/* ── Respaldo de datos ── */
+function exportarDatos(){
+  try{
+    const blob = new Blob([JSON.stringify(E, null, 2)], { type:"application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "practica-respaldo-" + new Date().toISOString().slice(0,10) + ".json";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+  }catch(e){ alert("No se pudo exportar el respaldo."); }
+}
+function importarDatos(file){
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const datos = JSON.parse(r.result);
+      if(!datos || typeof datos !== "object") throw new Error("formato");
+      E = Object.assign({}, E, datos);
+      E.ajustes = Object.assign({}, E.ajustes, datos.ajustes || {});
+      guardar(); aplicarTema(); cerrarHoja(); render();
+      alert("Respaldo restaurado.");
+    }catch(e){ alert("Ese archivo no es un respaldo válido de Práctica."); }
+  };
+  r.onerror = ()=>alert("No se pudo leer el archivo.");
+  r.readAsText(file);
+}
+
+/* ── Ancla (salmos / grounding) ── */
+let anclaI = null;
+function hojaAncla(){
+  if(anclaI === null) anclaI = Math.floor(Date.now()/86400000) % ANCLAS.length;
+  hoja("Ancla", "Una línea para volver al centro.",
+    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + ANCLAS[anclaI] + '</p></div>' +
+    '<div class="acciones"><button class="accion" id="anclaOtra">Otra</button><button class="accion" id="anclaCerrar">Cerrar</button></div>',
+    ()=>{
+      $("#anclaOtra").addEventListener("click", ()=>{
+        anclaI = (anclaI + 1) % ANCLAS.length;
+        $("#anclaTxt").innerHTML = ANCLAS[anclaI];
+      });
+      $("#anclaCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
@@ -1146,7 +1331,7 @@ function hojaAjustes(){
       '</div>' +
       '<p class="campo-ayuda">«Sistema» sigue el modo de tu teléfono. La práctica de Noche mantiene un tono cálido y bajo en cualquier tema, para no cortar el sueño.</p></div>' +
     '<div class="fila"><div><div class="fila-txt">Leer en voz alta</div><div class="fila-ayuda">' +
-      (Voz.soporte ? 'Voz del sistema, como puente hasta que grabes la tuya. Elige una marcada «mejorada» si aparece.' : 'No disponible en este navegador.') +
+      (Voz.soporte ? 'Predeterminado. Dentro de cada práctica puedes activar o silenciar la voz y el ambiente por separado. Elige una voz «mejorada» si aparece.' : 'No disponible en este navegador.') +
       '</div></div><button class="switch'+(a.voz&&Voz.soporte?' on':'')+'" id="sVoz" role="switch"></button></div>' +
     (Voz.soporte ? '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sVozN">Voz</label><select class="campo-sel" id="sVozN">'+opcVoz+'</select></div>' : '') +
     '<div class="campo"><label class="campo-et" for="sRitmo">Velocidad de lectura · <span id="sRitmoV">'+a.ritmo.toFixed(2)+'</span></label><input class="campo-in" type="range" id="sRitmo" min=".6" max="1.1" step=".02" value="'+a.ritmo+'"></div>' +
@@ -1163,6 +1348,10 @@ function hojaAjustes(){
         '<span style="font-size:12px;width:66px;color:var(--tinta-baja)">'+RITUALES[id].nombre+'</span>' +
         '<input class="campo-in" style="flex:1;font-size:.85rem;font-family:var(--mono)" data-audio="'+id+'" placeholder="pega una URL de audio" value="'+esc((a.urlAudio||{})[id]||"")+'"></div>').join("") +
       '<p class="campo-ayuda">Cuando grabes tus tracks, súbelos a Drive o Dropbox con enlace directo y pégalos aquí. La app reproduce tu audio y muestra el texto mientras corre.</p></div>' +
+    '<div class="campo"><label class="campo-et">Respaldo</label>' +
+      '<div class="acciones" style="margin-top:0"><button class="accion" id="sExportar">Exportar datos</button>' +
+      '<label class="accion" for="sImportar" style="cursor:pointer">Importar datos<input type="file" id="sImportar" accept="application/json,.json" style="display:none"></label></div>' +
+      '<p class="campo-ayuda">Descarga una copia de tu progreso, oraciones y ajustes. Guárdala en Drive o Dropbox. Impórtala para restaurar en otro dispositivo o si reinstalas.</p></div>' +
     '<div class="acciones"><button class="accion llena" id="sCerrar">Listo</button></div>',
     ()=>{
       const sw = (sel, cb)=>{ const b=$(sel); if(!b) return; b.addEventListener("click", ()=>{ const on = !b.classList.contains("on"); b.classList.toggle("on", on); cb(on); guardar(); }); };
@@ -1180,6 +1369,8 @@ function hojaAjustes(){
       $("#sPausa").addEventListener("input", e=>{ E.ajustes.pausa = +e.target.value; $("#sPausaV").textContent = (+e.target.value/1000).toFixed(1)+" s"; guardar(); });
       $("#sPadVol").addEventListener("input", e=>{ E.ajustes.padVol = +e.target.value; Pad.volumen(+e.target.value); guardar(); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
+      $("#sExportar").addEventListener("click", exportarDatos);
+      const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
       document.querySelectorAll("[data-audio]").forEach(inp=>{
         inp.addEventListener("change", ()=>{
           E.ajustes.urlAudio = E.ajustes.urlAudio || {};
@@ -1201,6 +1392,7 @@ document.querySelectorAll("[data-abrir]").forEach(b=>{
     if(k === "vision") hojaVision();
     else if(k === "arquitecto") hojaArquitecto();
     else if(k === "doctrina") hojaDoctrina();
+    else if(k === "ancla") hojaAncla();
     else hojaAjustes();
   });
 });
@@ -1210,6 +1402,29 @@ $("#pPlay").addEventListener("click", ()=>{
 });
 $("#pAtras").addEventListener("click", ()=>{ saltar(-1); despertarCtrl(); });
 $("#pAdelante").addEventListener("click", ()=>{ saltar(1); despertarCtrl(); });
+$("#togVoz").addEventListener("click", ()=>{
+  P.vozOn = !P.vozOn;
+  if(!P.vozOn) Voz.callar();
+  if(P.rito) setRitual(P.rito.id, "voz", P.vozOn);
+  pintarControles(); despertarCtrl();
+});
+$("#togAmb").addEventListener("click", ()=>{
+  P.ambOn = !P.ambOn;
+  if(P.rito && !P.modoAudio){
+    if(P.ambOn) Pad.iniciar(P.rito.tema, E.ajustes.padVol);
+    else Pad.detener(1.2);
+  }
+  if(P.rito) setRitual(P.rito.id, "amb", P.ambOn);
+  pintarControles(); despertarCtrl();
+});
+$("#togVel").addEventListener("click", ()=>{
+  const pasos = [.5, .75, 1, 1.25, 1.5, 2];
+  let i = pasos.indexOf(E.ajustes.velocidad); if(i < 0) i = 2;
+  i = (i + 1) % pasos.length;
+  E.ajustes.velocidad = pasos[i];
+  if(P.modoAudio) try{ $("#reproductor").playbackRate = pasos[i]; }catch(e){}
+  guardar(); pintarControles(); despertarCtrl();
+});
 $("#pSalir").addEventListener("click", cerrarPractica);
 $("#pDormir").addEventListener("click", ()=>{ hojaAjustes(); });
 ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev, ()=>{ if(!$("#practica").classList.contains("oculto")) despertarCtrl(); }));
