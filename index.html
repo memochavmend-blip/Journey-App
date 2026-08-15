@@ -798,7 +798,7 @@ const ANCLAS = [
 
 /* ════════════════ PAD (Web Audio) ════════════════ */
 const Pad = (() => {
-  let ctx=null, master=null, fuentes=[], moduladores=[], vivo=false;
+  let ctx=null, master=null, fuentes=[], moduladores=[], vivo=false, desbloqueado=false;
   const PRESETS = {
     vela:   { tipo:"tono", raiz:110,    arm:[1,1.5,2,3],   corte:900,  Q:.6, lfoHz:.05,  lfoAmp:260,  forma:"triangle" },
     dia:    { tipo:"tono", raiz:110,    arm:[1,1.5,2,3],   corte:900,  Q:.6, lfoHz:.05,  lfoAmp:260,  forma:"triangle" },
@@ -807,59 +807,79 @@ const Pad = (() => {
     lluvia: { tipo:"ruido", corte:5200, Q:.4, hp:900, lfoHz:.12, lfoAmp:1500, swell:false },
     oceano: { tipo:"ruido", corte:680,  Q:.5, hp:110, lfoHz:.06, lfoAmp:220,  swell:true }
   };
+  // Un solo AudioContext, reutilizado y nunca cerrado: iOS limita a ~4 contextos.
+  function contexto(){
+    if(!ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(!AC) return null;
+      try{ ctx = new AC(); }catch(e){ return null; }
+    }
+    return ctx;
+  }
+  // Desbloqueo iOS: resume + un buffer silencioso, dentro de un gesto del usuario.
+  function desbloquear(){
+    const c = contexto(); if(!c) return;
+    try{ c.resume(); }catch(e){}
+    if(!desbloqueado){
+      try{
+        const b = c.createBuffer(1, 1, c.sampleRate);
+        const s = c.createBufferSource(); s.buffer = b; s.connect(c.destination); s.start(0);
+        desbloqueado = true;
+      }catch(e){}
+    }
+  }
   function iniciar(escena, vol){
     try{
       detener(0);
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if(!AC) return false;
-      ctx = new AC();
-      if(ctx.state === "suspended") ctx.resume();
+      const c = contexto(); if(!c) return false;
+      try{ c.resume(); }catch(e){}
       const p = PRESETS[escena] || PRESETS.vela;
-      master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+      master = c.createGain(); master.gain.value = 0; master.connect(c.destination);
 
       if(p.tipo === "ruido"){
-        const sr = ctx.sampleRate, buf = ctx.createBuffer(1, sr*3, sr), d = buf.getChannelData(0);
+        const sr = c.sampleRate, buf = c.createBuffer(1, sr*3, sr), d = buf.getChannelData(0);
         for(let i=0;i<d.length;i++) d[i] = Math.random()*2 - 1;
-        const src = ctx.createBufferSource(); src.buffer = buf; src.loop = true;
-        const hp = ctx.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = p.hp;
-        const lp = ctx.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = p.corte; lp.Q.value = p.Q;
+        const src = c.createBufferSource(); src.buffer = buf; src.loop = true;
+        const hp = c.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = p.hp;
+        const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = p.corte; lp.Q.value = p.Q;
         src.connect(hp); hp.connect(lp);
         let salida = lp;
         if(p.swell){
-          const swellG = ctx.createGain(); swellG.gain.value = .7;
+          const swellG = c.createGain(); swellG.gain.value = .7;
           lp.connect(swellG); salida = swellG;
-          const s = ctx.createOscillator(); s.frequency.value = .07;
-          const sg = ctx.createGain(); sg.gain.value = .3;
+          const s = c.createOscillator(); s.frequency.value = .07;
+          const sg = c.createGain(); sg.gain.value = .3;
           s.connect(sg); sg.connect(swellG.gain); s.start(); moduladores.push(s);
         }
         salida.connect(master);
-        const lfo = ctx.createOscillator(); lfo.frequency.value = p.lfoHz;
-        const lg = ctx.createGain(); lg.gain.value = p.lfoAmp;
+        const lfo = c.createOscillator(); lfo.frequency.value = p.lfoHz;
+        const lg = c.createGain(); lg.gain.value = p.lfoAmp;
         lfo.connect(lg); lg.connect(lp.frequency); lfo.start(); moduladores.push(lfo);
         src.start(); fuentes.push(src);
       } else {
-        const filtro = ctx.createBiquadFilter(); filtro.type = "lowpass";
+        const filtro = c.createBiquadFilter(); filtro.type = "lowpass";
         filtro.frequency.value = p.corte; filtro.Q.value = p.Q; filtro.connect(master);
-        const lfo = ctx.createOscillator(); lfo.frequency.value = p.lfoHz;
-        const lg = ctx.createGain(); lg.gain.value = p.lfoAmp;
+        const lfo = c.createOscillator(); lfo.frequency.value = p.lfoHz;
+        const lg = c.createGain(); lg.gain.value = p.lfoAmp;
         lfo.connect(lg); lg.connect(filtro.frequency); lfo.start(); moduladores.push(lfo);
         // segunda modulación lenta para que respire (evolución tipo Endel)
-        const drift = ctx.createOscillator(); drift.frequency.value = p.lfoHz*0.37 + .011;
-        const dg = ctx.createGain(); dg.gain.value = p.lfoAmp*0.45;
+        const drift = c.createOscillator(); drift.frequency.value = p.lfoHz*0.37 + .011;
+        const dg = c.createGain(); dg.gain.value = p.lfoAmp*0.45;
         drift.connect(dg); dg.connect(filtro.frequency); drift.start(); moduladores.push(drift);
         p.arm.forEach((m,i)=>{
-          const o = ctx.createOscillator(); o.type = p.forma;
+          const o = c.createOscillator(); o.type = p.forma;
           o.frequency.value = p.raiz*m; o.detune.value = (i%2?1:-1)*(4+i*3);
-          const g = ctx.createGain(); g.gain.value = .32/(i+1);
+          const g = c.createGain(); g.gain.value = .32/(i+1);
           o.connect(g); g.connect(filtro); o.start(); fuentes.push(o);
         });
       }
 
-      master.gain.linearRampToValueAtTime(Math.max(.001, vol*.09), ctx.currentTime + 8);
+      // Entrada audible y rápida (antes: tope .09 subiendo en 8 s → casi inaudible).
+      master.gain.linearRampToValueAtTime(Math.max(.002, vol*.20), c.currentTime + 3);
       vivo = true; return true;
     }catch(e){ return false; }
   }
-  function volumen(v){ if(vivo&&master&&ctx) try{ master.gain.linearRampToValueAtTime(Math.max(.0001,v*.09), ctx.currentTime+.4); }catch(e){} }
+  function volumen(v){ if(vivo&&master&&ctx) try{ master.gain.linearRampToValueAtTime(Math.max(.0001,v*.20), ctx.currentTime+.4); }catch(e){} }
   function detener(seg){
     if(!vivo||!ctx){ vivo=false; return; }
     const s = (seg===undefined?4:seg);
@@ -868,12 +888,20 @@ const Pad = (() => {
       master.gain.setValueAtTime(master.gain.value, ctx.currentTime);
       master.gain.linearRampToValueAtTime(.0001, ctx.currentTime + Math.max(.05,s));
     }catch(e){}
-    const c = ctx, f = fuentes, m = moduladores; vivo=false;
-    setTimeout(()=>{ try{ f.forEach(x=>x.stop()); m.forEach(x=>x.stop()); c.close(); }catch(e){} }, s*1000+400);
-    fuentes=[]; moduladores=[]; ctx=null; master=null;
+    const f = fuentes, m = moduladores, mst = master; vivo=false;
+    // Detenemos y desconectamos nodos, pero NO cerramos el contexto (se reutiliza).
+    setTimeout(()=>{
+      try{ f.forEach(x=>{ try{ x.stop(); x.disconnect(); }catch(_){} }); }catch(e){}
+      try{ m.forEach(x=>{ try{ x.stop(); x.disconnect(); }catch(_){} }); }catch(e){}
+      try{ if(mst) mst.disconnect(); }catch(e){}
+    }, s*1000+400);
+    fuentes=[]; moduladores=[]; master=null;
   }
-  return { iniciar, detener, volumen, activo:()=>vivo };
+  return { iniciar, detener, volumen, activo:()=>vivo, desbloquear };
 })();
+// Desbloqueo de audio iOS: en el primer gesto del usuario y al volver a la app.
+["pointerdown","touchend","click","keydown"].forEach(ev=>window.addEventListener(ev, ()=>Pad.desbloquear(), { passive:true }));
+document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) Pad.desbloquear(); });
 
 /* ════════════════ VOZ ════════════════ */
 const Voz = (() => {
