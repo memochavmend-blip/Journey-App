@@ -411,6 +411,18 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .reg-item-p{font-family:var(--serif);font-size:.98rem;line-height:1.45;color:var(--tinta-baja);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .reg-vacio{font-size:13px;color:var(--tinta-tenue);line-height:1.6;padding:8px 0 4px}
 
+/* ── Meditación (lista) ── */
+.med-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.med-item{
+  display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;
+  background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:20px;
+  text-align:left;transition:transform .2s ease,border-color .2s ease;
+}
+.med-item:hover,.med-item:focus-visible{transform:translateY(-1px);border-color:var(--linea-fuerte)}
+.med-item:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.med-nom{font-family:var(--serif);font-size:1.2rem;color:var(--tinta)}
+.med-dur{font-family:var(--mono);font-size:10.5px;color:var(--tinta-baja);white-space:nowrap}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -447,6 +459,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
     <button class="menu-item" data-abrir="vision">Visión</button>
     <button class="menu-item" data-abrir="arquitecto">Arquitecto</button>
     <button class="menu-item" data-abrir="journal">Journal</button>
+    <button class="menu-item" data-abrir="meditacion">Meditación</button>
     <button class="menu-item" data-abrir="doctrina">Doctrina</button>
     <button class="menu-item" data-abrir="ancla">Ancla</button>
     <button class="menu-item" data-abrir="ajustes">Ajustes</button>
@@ -771,6 +784,59 @@ const MENSUAL_HITOS = [
   "Cuerpo — cuidé sueño, comida y movimiento",
   "Límites — protegí mi energía de lo que no suma"
 ];
+// Audio alojado en el repo (rutas relativas). Un archivo por ritual; se puede dividir por sección después.
+const AUDIO_RITUAL = { manana:"audio/manana-01.mp3", noche:"audio/noche-01.mp3", nucleo:"audio/nucleo-01.mp3" };
+const AUDIO_MED = [
+  { id:"m1", titulo:"Anclaje matutino", dur:"~4 min", src:"audio/med-01.mp3",
+    texto:`Antes de que el día te reclame… quédate un momento aquí. Solo aquí.
+Cierra los ojos si puedes… y deja que tus hombros bajen.
+Respira hondo por la nariz… y suelta despacio por la boca.
+Otra vez… inhala… y exhala, dejando salir todo lo de anoche.
+Una más… llena el pecho… y suéltalo todo.
+Nota el peso de tu cuerpo, sostenido. No tienes que sostenerte a ti mismo ahora mismo. Algo más grande te sostiene.
+Hoy no empieza con lo que te falta. Empieza con lo que ya eres.
+Repite en silencio, conmigo… Dios está conmigo.
+Estoy a salvo.
+Este día es a mi favor.
+Piensa en una sola cosa que quieres llevar hoy. No una lista. Una. Una intención.
+Sostenla un momento, como quien sostiene una llama pequeña sin apagarla.
+Cuando estés listo… respira hondo una última vez… y abre los ojos.
+El día ya no te espera con miedo. Te espera contigo listo.` },
+  { id:"m2", titulo:"Soltar la noche", dur:"~6 min", src:"audio/med-02.mp3",
+    texto:`El día terminó… y ya no te pertenece. Puedes soltarlo.
+Acomódate. Deja que la cama te reciba por completo. Nada que cargar hasta mañana.
+Respira lento… y con cada exhalación, imagina que algo pesado se desprende de tus hombros.
+Otra vez… inhala calma… exhala el día.
+Una más… y con esta, entrega lo que quedó sin resolver. No lo vas a resolver esta noche. Y está bien.
+Piensa en tres cosas de hoy por las que puedes dar gracias. Concretas, pequeñas, reales. Tómate tu tiempo.
+Ahora repite en silencio… Gracias, Señor, por cargar mi carga.
+Mi corazón te lo entrego.
+Y si tu mente sigue corriendo… no pelees con ella. Solo dile, con suavidad… ya pasó. Ya puedo descansar.
+El Señor es mi pastor… nada me faltará.
+Aunque camine por el valle… no temeré… porque Tú caminas conmigo.
+Ahora, muy despacio… tres veces… cada vez más lento.
+Todo está bien.
+Todo funciona para mi mayor bien.
+Estoy a salvo.
+No hay nada más que hacer hoy. Nada.
+Descansa. Estás cuidado.
+Te amo, Dios.` },
+  { id:"m3", titulo:"Volver al centro", dur:"~4 min", src:"audio/med-03.mp3",
+    texto:`Para. Solo un momento. Donde estés.
+No tienes que ir a ningún lado en los próximos minutos. Este tiempo es tuyo.
+Respira… y siente el aire entrar. Frío al entrar… tibio al salir.
+Otra vez… sin apurar nada.
+Nota dónde está tu mente ahora mismo. ¿Adelante, en lo que falta? ¿Atrás, en lo que pasó?
+Sin juzgarla… tráela de vuelta. Aquí. A este cuerpo, a este momento.
+Lo urgente grita. Lo importante espera en silencio.
+Por unos segundos, suelta lo urgente.
+Repite conmigo, en silencio… Dios está conmigo.
+Todo lo puedo en Cristo que me fortalece.
+Ahora es mi tiempo.
+Elige la próxima cosa. Una sola. La que de verdad importa.
+Cuando abras los ojos… empieza por esa. Con calma. Con foco.
+Respira una vez más… y vuelve.` }
+];
 const ANCLAS = [
   'Estás aquí. Es suficiente para empezar.',
   'Respira. Nada de lo que importa se decide con prisa.',
@@ -948,7 +1014,7 @@ const $ = s => document.querySelector(s);
 const P = {
   rito:null, plan:[], i:0, corriendo:false, esperando:false,
   t0:0, acumulado:0, objetivo:0, raf:null, inicioSesion:0,
-  dormirId:null, modoAudio:false, wake:null, vozOn:true, ambOn:true
+  dormirId:null, modoAudio:false, wake:null, vozOn:true, ambOn:true, med:null
 };
 
 function aplanar(rito){
@@ -981,7 +1047,7 @@ function abrirRitual(id){
   $("#pDormir").classList.toggle("oculto", r.tema !== "noche");
   $("#pAudioLista").classList.add("oculto");
   $("#pCentro").classList.remove("oculto");
-  const url = (E.ajustes.urlAudio||{})[id];
+  const url = (E.ajustes.urlAudio||{})[id] || AUDIO_RITUAL[id] || "";
   if(url){ pintarControles(); modoGrabacion(url); return; }
   if(P.ambOn) Pad.iniciar(escenaActiva(r.tema), E.ajustes.padVol);
   pedirPantalla();
@@ -1118,7 +1184,7 @@ function terminar(){
   $("#pBloque").textContent = "";
   $("#pRespiro").classList.add("oculto");
   const el = $("#pLinea"); el.classList.remove("oculto");
-  el.textContent = P.rito && P.rito.tema === "noche" ? "Buenas noches." : "Amén.";
+  el.textContent = P.med ? "…" : (P.rito && P.rito.tema === "noche" ? "Buenas noches." : "Amén.");
   $("#pNota").classList.add("oculto");
   $("#pPlay").textContent = "Terminar";
   P.corriendo = false;
@@ -1130,7 +1196,7 @@ function terminar(){
 }
 
 function cerrarPractica(){
-  P.corriendo = false; P.modoAudio = false;
+  P.corriendo = false; P.modoAudio = false; P.med = null;
   cancelAnimationFrame(P.raf); Voz.callar(); Pad.detener(2.5);
   clearTimeout(P.dormirId);
   const a = $("#reproductor"); try{ a.pause(); a.removeAttribute("src"); a.load(); }catch(e){}
@@ -1158,30 +1224,17 @@ function programarDormir(){
   }, min*60000);
 }
 
-function modoGrabacion(url){
-  P.modoAudio = true;
-  $("#pCentro").classList.add("oculto");
-  const cont = $("#pAudioLista"); cont.innerHTML = "";
-  P.rito.bloques.forEach(b=>{
-    const lineas = b.dinamico ? b.dinamico() : b.lineas;
-    const d = document.createElement("div"); d.className = "audio-bloque";
-    d.innerHTML = '<p class="rubrica">' + b.num + " · " + b.nom + "</p>";
-    lineas.forEach(l=>{
-      const t = (typeof l === "string") ? l : (l.t || (l.respiro ? "· respiración ·" : ""));
-      if(!t) return;
-      const p = document.createElement("p"); p.className = "audio-linea"; p.textContent = t; d.appendChild(p);
-    });
-    cont.appendChild(d);
-  });
-  cont.classList.remove("oculto");
+function montarAudio(url){
   const a = $("#reproductor");
   a.src = url; a.volume = 1;
   try{ a.preservesPitch = true; a.mozPreservesPitch = true; a.webkitPreservesPitch = true; }catch(e){}
   let cargado = false;
   const falla = ()=>{
     if(cargado) return; cargado = true; clearTimeout(tiempoMax);
-    $("#pLinea").textContent = "No se pudo cargar el audio. Usa un enlace directo al archivo, no una vista previa de Drive.";
-    $("#pCentro").classList.remove("oculto"); cont.classList.add("oculto"); P.modoAudio = false;
+    $("#pAudioLista").classList.add("oculto");
+    $("#pCentro").classList.remove("oculto");
+    $("#pLinea").textContent = "No se pudo cargar el audio.";
+    P.modoAudio = false;
   };
   const tiempoMax = setTimeout(falla, 8000);
   a.onloadedmetadata = ()=>{
@@ -1199,9 +1252,54 @@ function modoGrabacion(url){
   };
   a.onended = terminar;
   a.onerror = falla;
+}
+
+function modoGrabacion(url){
+  P.modoAudio = true;
+  $("#pCentro").classList.add("oculto");
+  const cont = $("#pAudioLista"); cont.innerHTML = "";
+  P.rito.bloques.forEach(b=>{
+    const lineas = b.dinamico ? b.dinamico() : b.lineas;
+    const d = document.createElement("div"); d.className = "audio-bloque";
+    d.innerHTML = '<p class="rubrica">' + b.num + " · " + b.nom + "</p>";
+    lineas.forEach(l=>{
+      const t = (typeof l === "string") ? l : (l.t || (l.respiro ? "· respiración ·" : ""));
+      if(!t) return;
+      const p = document.createElement("p"); p.className = "audio-linea"; p.textContent = t; d.appendChild(p);
+    });
+    cont.appendChild(d);
+  });
+  cont.classList.remove("oculto");
+  montarAudio(url);
   pedirPantalla();
   pintarControles();
   if(P.rito.tema === "noche" && E.ajustes.dormir) programarDormir();
+}
+
+function reproducirMeditacion(med){
+  cerrarHoja();
+  P.rito = null; P.med = med; P.plan = []; P.modoAudio = true;
+  P.inicioSesion = Date.now();
+  document.body.classList.add("encendida");
+  document.body.classList.remove("tema-noche");
+  $("#inicio").classList.add("oculto");
+  $("#practica").classList.remove("oculto");
+  $("#pDormir").classList.add("oculto");
+  $("#pMov").textContent = med.titulo;
+  $("#pCentro").classList.add("oculto");
+  const cont = $("#pAudioLista"); cont.innerHTML = "";
+  const d = document.createElement("div"); d.className = "audio-bloque";
+  d.innerHTML = '<p class="rubrica">' + esc(med.titulo) + '</p>';
+  med.texto.split("\n").forEach(linea=>{
+    const t = linea.trim(); if(!t) return;
+    const p = document.createElement("p"); p.className = "audio-linea"; p.textContent = t; d.appendChild(p);
+  });
+  cont.appendChild(d);
+  cont.classList.remove("oculto");
+  P.vozOn = false; P.ambOn = false;
+  montarAudio(med.src);
+  pedirPantalla();
+  pintarControles();
 }
 
 async function pedirPantalla(){
@@ -1513,6 +1611,20 @@ function importarDatos(file){
 
 /* ── Ancla (salmos / grounding) ── */
 let anclaI = null;
+function hojaMeditacion(){
+  hoja("Meditación", "Guiadas, con voz. Ponte cómodo y toca una.",
+    '<div class="med-lista">' +
+    AUDIO_MED.map(m=>'<button class="med-item" data-med="'+m.id+'"><span class="med-nom">'+esc(m.titulo)+'</span><span class="med-dur">'+esc(m.dur)+'</span></button>').join("") +
+    '</div>' +
+    '<div class="acciones"><button class="accion" id="medCerrar">Cerrar</button></div>',
+    ()=>{
+      document.querySelectorAll(".med-item").forEach(b=>{
+        b.addEventListener("click", ()=>{ const m = AUDIO_MED.find(x=>x.id===b.dataset.med); if(m) reproducirMeditacion(m); });
+      });
+      $("#medCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
 function hojaAncla(){
   if(anclaI === null) anclaI = Math.floor(Date.now()/86400000) % ANCLAS.length;
   hoja("Ancla", "Una línea para volver al centro.",
@@ -1557,7 +1669,7 @@ function hojaAjustes(){
         '<div style="display:flex;gap:10px;align-items:center;margin-bottom:9px">' +
         '<span style="font-size:12px;width:66px;color:var(--tinta-baja)">'+RITUALES[id].nombre+'</span>' +
         '<input class="campo-in" style="flex:1;font-size:.85rem;font-family:var(--mono)" data-audio="'+id+'" placeholder="pega una URL de audio" value="'+esc((a.urlAudio||{})[id]||"")+'"></div>').join("") +
-      '<p class="campo-ayuda">Cuando grabes tus tracks, súbelos a Drive o Dropbox con enlace directo y pégalos aquí. La app reproduce tu audio y muestra el texto mientras corre.</p></div>' +
+      '<p class="campo-ayuda">Los rituales ya usan el audio incluido en la app (funciona sin señal). Estos campos son opcionales: pega un enlace directo solo si quieres reemplazar el audio de un ritual.</p></div>' +
     '<div class="campo"><label class="campo-et">Respaldo</label>' +
       '<div class="acciones" style="margin-top:0"><button class="accion" id="sExportar">Exportar datos</button>' +
       '<label class="accion" for="sImportar" style="cursor:pointer">Importar datos<input type="file" id="sImportar" accept="application/json,.json" style="display:none"></label></div>' +
@@ -1603,6 +1715,7 @@ document.querySelectorAll("[data-abrir]").forEach(b=>{
     if(k === "vision") hojaVision();
     else if(k === "arquitecto") hojaArquitecto();
     else if(k === "journal") hojaJournal();
+    else if(k === "meditacion") hojaMeditacion();
     else if(k === "doctrina") hojaDoctrina();
     else if(k === "ancla") hojaAncla();
     else hojaAjustes();
