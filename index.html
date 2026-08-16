@@ -1047,7 +1047,7 @@ function abrirRitual(id){
   $("#pDormir").classList.toggle("oculto", r.tema !== "noche");
   $("#pAudioLista").classList.add("oculto");
   $("#pCentro").classList.remove("oculto");
-  const url = (E.ajustes.urlAudio||{})[id] || AUDIO_RITUAL[id] || "";
+  const url = (E.ajustes.urlAudio||{})[id] || "";
   if(url){ pintarControles(); modoGrabacion(url); return; }
   if(P.ambOn) Pad.iniciar(escenaActiva(r.tema), E.ajustes.padVol);
   pedirPantalla();
@@ -1236,7 +1236,7 @@ function montarAudio(url){
     $("#pLinea").textContent = "No se pudo cargar el audio.";
     P.modoAudio = false;
   };
-  const tiempoMax = setTimeout(falla, 8000);
+  const tiempoMax = setTimeout(falla, 15000);
   a.onloadedmetadata = ()=>{
     cargado = true; clearTimeout(tiempoMax);
     try{ a.playbackRate = E.ajustes.velocidad || 1; }catch(e){}
@@ -1296,8 +1296,9 @@ function reproducirMeditacion(med){
   });
   cont.appendChild(d);
   cont.classList.remove("oculto");
-  P.vozOn = false; P.ambOn = false;
+  P.vozOn = false; P.ambOn = E.ajustes.pad;
   montarAudio(med.src);
+  if(P.ambOn) Pad.iniciar(escenaActiva("dia"), E.ajustes.padVol * 0.7);
   pedirPantalla();
   pintarControles();
 }
@@ -1578,7 +1579,7 @@ function pintarControles(){
   tv.setAttribute("aria-checked", String(!!P.vozOn));
   ta.classList.toggle("on", !!P.ambOn);
   ta.setAttribute("aria-checked", String(!!P.ambOn));
-  ta.style.opacity = P.modoAudio ? ".4" : "";
+  ta.style.opacity = (P.modoAudio && !P.med) ? ".4" : "";
   tvel.textContent = String(E.ajustes.velocidad || 1) + "×";
 }
 
@@ -1735,8 +1736,8 @@ $("#togVoz").addEventListener("click", ()=>{
 });
 $("#togAmb").addEventListener("click", ()=>{
   P.ambOn = !P.ambOn;
-  if(P.rito && !P.modoAudio){
-    if(P.ambOn) Pad.iniciar(escenaActiva(P.rito.tema), E.ajustes.padVol);
+  if(P.med || (P.rito && !P.modoAudio)){
+    if(P.ambOn) Pad.iniciar(escenaActiva(P.rito ? P.rito.tema : "dia"), E.ajustes.padVol * (P.med ? 0.7 : 1));
     else Pad.detener(1.2);
   }
   if(P.rito) setRitual(P.rito.id, "amb", P.ambOn);
