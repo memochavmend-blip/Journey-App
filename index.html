@@ -435,6 +435,32 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .son-pomo{margin-top:28px;padding-top:22px;border-top:1px solid var(--linea)}
 .pomo-reloj{font-family:var(--mono);font-size:1.5rem;letter-spacing:.02em;color:var(--tinta);text-align:center;padding:14px 0 20px}
 
+/* ── Navegación inferior (tabs) ── */
+#inicio{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
+.panel-titulo{font-family:var(--serif);font-size:1.75rem;color:var(--tinta);margin:8px 0 24px}
+.nav-cards{display:flex;flex-direction:column;gap:10px}
+.nav-card{display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;text-align:left;transition:transform .2s ease,border-color .2s ease}
+.nav-card:hover,.nav-card:focus-visible{transform:translateY(-1px);border-color:var(--linea-fuerte)}
+.nav-card:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.nav-card-tx{display:flex;flex-direction:column;gap:3px}
+.nav-card-t{font-family:var(--serif);font-size:1.18rem;color:var(--tinta)}
+.nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
+.nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
+.gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.75;transition:opacity .2s}
+.gear:hover,.gear:focus-visible{opacity:1}
+.gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:flex;justify-content:space-around;align-items:flex-end;
+  padding:9px 4px calc(env(safe-area-inset-bottom) + 9px);
+  background:color-mix(in srgb,var(--noche) 86%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--linea)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;color:var(--tinta-tenue);transition:color .2s ease}
+.tab.activo{color:var(--tinta)}
+.tab-ic{width:23px;height:23px}
+.tab-ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tab-lb{font-size:10.5px;letter-spacing:.02em}
+.tab:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:10px}
+body.encendida .tabbar,body.encendida .gear{display:none}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -452,35 +478,60 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 
 <!-- ══════ INICIO ══════ -->
 <main class="lienzo" id="inicio">
-  <p class="rubrica" id="rubricaHora">Antes de empezar</p>
-  <h1 class="saludo" id="saludo">Buenos días</h1>
-  <p class="fecha" id="fecha"></p>
+  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes">⚙</button>
 
-  <div class="racha">
-    <span class="racha-n" id="rachaN">0</span>
-    <span class="racha-t" id="rachaT">días seguidos</span>
-    <div class="marcas">
-      <span class="marca" id="marcaAM">AM</span>
-      <span class="marca" id="marcaPM">PM</span>
+  <div class="panel" id="panelInicio">
+    <p class="rubrica" id="rubricaHora">Antes de empezar</p>
+    <h1 class="saludo" id="saludo">Buenos días</h1>
+    <p class="fecha" id="fecha"></p>
+
+    <div class="racha">
+      <span class="racha-n" id="rachaN">0</span>
+      <span class="racha-t" id="rachaT">días seguidos</span>
+      <div class="marcas">
+        <span class="marca" id="marcaAM">AM</span>
+        <span class="marca" id="marcaPM">PM</span>
+      </div>
+    </div>
+
+    <div class="ritos" id="ritos"></div>
+    <div class="aviso oculto" id="avisoVision"></div>
+  </div>
+
+  <div class="panel oculto" id="panelExplorar">
+    <h1 class="panel-titulo">Explorar</h1>
+    <div class="nav-cards">
+      <button class="nav-card" data-abrir="meditacion"><span class="nav-card-tx"><span class="nav-card-t">Meditación</span><span class="nav-card-s">Guiadas, con voz y ambiente</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span><span class="nav-card-s">Estudio, una vez por semana</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span><span class="nav-card-s">Relatos para reflexionar</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="ancla"><span class="nav-card-tx"><span class="nav-card-t">Ancla</span><span class="nav-card-s">Una frase para volver al centro</span></span><span class="nav-card-ch">›</span></button>
     </div>
   </div>
 
-  <div class="ritos" id="ritos"></div>
-
-  <div class="menu">
-    <button class="menu-item" data-abrir="vision">Visión</button>
-    <button class="menu-item" data-abrir="arquitecto">Arquitecto</button>
-    <button class="menu-item" data-abrir="journal">Journal</button>
-    <button class="menu-item" data-abrir="meditacion">Meditación</button>
-    <button class="menu-item" data-abrir="sonido">Sonido</button>
-    <button class="menu-item" data-abrir="doctrina">Doctrina</button>
-    <button class="menu-item" data-abrir="historias">Historias</button>
-    <button class="menu-item" data-abrir="ancla">Ancla</button>
-    <button class="menu-item" data-abrir="ajustes">Ajustes</button>
+  <div class="panel oculto" id="panelSonido">
+    <h1 class="panel-titulo">Sonido</h1>
+    <div class="nav-cards">
+      <button class="nav-card" data-abrir="sonido"><span class="nav-card-tx"><span class="nav-card-t">Paisajes de sonido</span><span class="nav-card-s">Relajación · concentración · enfoque</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="sonido"><span class="nav-card-tx"><span class="nav-card-t">Pomodoro</span><span class="nav-card-s">Concentración por tiempo</span></span><span class="nav-card-ch">›</span></button>
+    </div>
   </div>
 
-  <div class="aviso oculto" id="avisoVision"></div>
+  <div class="panel oculto" id="panelDiario">
+    <h1 class="panel-titulo">Diario</h1>
+    <div class="nav-cards">
+      <button class="nav-card" data-abrir="journal"><span class="nav-card-tx"><span class="nav-card-t">Journal</span><span class="nav-card-s">Escritura libre diaria</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="arquitecto"><span class="nav-card-tx"><span class="nav-card-t">Arquitecto</span><span class="nav-card-s">Check-in diario, semanal, mensual</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="vision"><span class="nav-card-tx"><span class="nav-card-t">Visión</span><span class="nav-card-s">Ser · Hacer · Tener</span></span><span class="nav-card-ch">›</span></button>
+    </div>
+  </div>
 </main>
+
+<nav class="tabbar" id="tabbar" aria-label="Navegación">
+  <button class="tab activo" data-tab="inicio" aria-label="Inicio"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6 10v9h12v-9"/></svg></span><span class="tab-lb">Inicio</span></button>
+  <button class="tab" data-tab="explorar" aria-label="Explorar"><span class="tab-ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span><span class="tab-lb">Explorar</span></button>
+  <button class="tab" data-tab="sonido" aria-label="Sonido"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-15 3 18 2-9h3"/></svg></span><span class="tab-lb">Sonido</span></button>
+  <button class="tab" data-tab="diario" aria-label="Diario"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></svg></span><span class="tab-lb">Diario</span></button>
+</nav>
 
 <!-- ══════ PRÁCTICA ══════ -->
 <section id="practica" class="oculto">
@@ -557,14 +608,14 @@ let E = {
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
-  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
+  ajustes:{ nombre:"Guillermo", tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"Guillermo",tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
     E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
@@ -1460,7 +1511,9 @@ function racha(){
 
 function render(){
   const ahora = new Date(), h = ahora.getHours();
-  $("#saludo").textContent = h < 12 ? "Buenos días, Guillermo" : h < 19 ? "Buenas tardes, Guillermo" : "Buenas noches, Guillermo";
+  const nom = (E.ajustes.nombre || "").trim();
+  const coma = nom ? ", " + nom : "";
+  $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
   $("#rubricaHora").textContent = h < 12 ? "Activación" : h < 19 ? "En medio del día" : "Rendición";
   $("#fecha").textContent = DIAS_L[ahora.getDay()] + " " + ahora.getDate() + " de " + MESES_L[ahora.getMonth()] + " · " + String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
 
@@ -1927,6 +1980,7 @@ function hojaAjustes(){
   const voces = Voz.lista();
   const opcVoz = '<option value="">Automática (mejor disponible)</option>' + voces.map(v=>'<option value="'+esc(v.name)+'"'+(a.vozNombre===v.name?' selected':'')+'>'+esc(v.name)+' · '+v.lang+(Voz.mejor(v)?' · mejorada':'')+'</option>').join("");
   hoja("Ajustes", "",
+    '<div class="campo"><label class="campo-et" for="sNombre">Tu nombre</label><input class="campo-in" type="text" id="sNombre" placeholder="¿Cómo te llamas?" value="'+esc(a.nombre||"")+'" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px"><p class="campo-ayuda">Con lo que la app te saluda cada día.</p></div>' +
     '<div class="campo"><label class="campo-et">Tema</label>' +
       '<div class="segmento" id="segTema">' +
       ['sistema','claro','oscuro'].map(v=>'<button type="button" class="seg'+(((a.tema||"sistema")===v)?' activo':'')+'" data-tema="'+v+'">'+({sistema:"Sistema",claro:"Claro",oscuro:"Oscuro"}[v])+'</button>').join("") +
@@ -1968,6 +2022,7 @@ function hojaAjustes(){
           E.ajustes.tema = b.dataset.tema; aplicarTema(); guardar();
         });
       });
+      const nm = $("#sNombre"); if(nm) nm.addEventListener("input", ()=>{ E.ajustes.nombre = nm.value; guardar(); });
       sw("#sVoz", on=>{ E.ajustes.voz = on && Voz.soporte; });
       sw("#sPad", on=>{ E.ajustes.pad = on; if(!on) Pad.detener(1.5); });
       sw("#sAmbApp", on=>{ E.ajustes.ambienteApp = on; ambienteBed(); });
@@ -1994,19 +2049,30 @@ function hojaAjustes(){
 function esc(s){ return String(s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
 
 /* ════════════════ EVENTOS ════════════════ */
-document.querySelectorAll("[data-abrir]").forEach(b=>{
-  b.addEventListener("click", ()=>{
-    const k = b.dataset.abrir;
-    if(k === "vision") hojaVision();
-    else if(k === "arquitecto") hojaArquitecto();
-    else if(k === "journal") hojaJournal();
-    else if(k === "meditacion") hojaMeditacion();
-    else if(k === "sonido") hojaSonido();
-    else if(k === "doctrina") hojaDoctrina();
-    else if(k === "historias") hojaHistorias();
-    else if(k === "ancla") hojaAncla();
-    else hojaAjustes();
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-abrir]");
+  if(!b) return;
+  const k = b.dataset.abrir;
+  if(k === "vision") hojaVision();
+  else if(k === "arquitecto") hojaArquitecto();
+  else if(k === "journal") hojaJournal();
+  else if(k === "meditacion") hojaMeditacion();
+  else if(k === "sonido") hojaSonido();
+  else if(k === "doctrina") hojaDoctrina();
+  else if(k === "historias") hojaHistorias();
+  else if(k === "ancla") hojaAncla();
+  else if(k === "ajustes") hojaAjustes();
+});
+function mostrarTab(tab){
+  ["inicio","explorar","sonido","diario"].forEach(t=>{
+    const p = $("#panel" + t.charAt(0).toUpperCase() + t.slice(1));
+    if(p) p.classList.toggle("oculto", t !== tab);
   });
+  document.querySelectorAll("#tabbar .tab").forEach(b=>b.classList.toggle("activo", b.dataset.tab === tab));
+  try{ $("#inicio").scrollTop = 0; window.scrollTo(0,0); }catch(e){}
+}
+document.querySelectorAll("#tabbar .tab").forEach(b=>{
+  b.addEventListener("click", ()=>mostrarTab(b.dataset.tab));
 });
 $("#pPlay").addEventListener("click", ()=>{
   if($("#pPlay").textContent === "Terminar" || $("#pPlay").textContent === "Silencio"){ cerrarPractica(); return; }
@@ -2016,7 +2082,13 @@ $("#pAtras").addEventListener("click", ()=>{ saltar(-1); despertarCtrl(); });
 $("#pAdelante").addEventListener("click", ()=>{ saltar(1); despertarCtrl(); });
 $("#togVoz").addEventListener("click", ()=>{
   P.vozOn = !P.vozOn;
-  if(!P.vozOn) Voz.callar();
+  if(!P.vozOn){ Voz.callar(); }
+  else if(P.rito && !P.modoAudio && P.corriendo){
+    // Reinicia la línea actual para que la voz arranque dentro del gesto (iOS lo exige).
+    cancelAnimationFrame(P.raf);
+    P.acumulado = 0; P.objetivo = 0;
+    mostrar();
+  }
   if(P.rito) setRitual(P.rito.id, "voz", P.vozOn);
   pintarControles(); despertarCtrl();
 });
