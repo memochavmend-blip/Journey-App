@@ -367,7 +367,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .doctrina-mas{font-family:var(--sans);font-size:1.35rem;line-height:1;color:var(--brasa);flex-shrink:0;transition:transform .28s cubic-bezier(.3,.8,.4,1)}
 .doctrina-cab.abierto .doctrina-mas{transform:rotate(45deg)}
 .doctrina-cuerpo{max-height:0;overflow:hidden;transition:max-height .45s cubic-bezier(.3,.8,.4,1);color:var(--tinta-baja);font-size:.99rem;line-height:1.64}
-.doctrina-cuerpo.abierto{max-height:1400px;padding-bottom:20px}
+.doctrina-cuerpo.abierto{max-height:2600px;padding-bottom:20px}
 .doctrina-cuerpo p{margin:0 0 13px}
 .doctrina-cuerpo p:last-child{margin-bottom:0}
 .doctrina-cuerpo .escr{font-style:italic;color:var(--oro)}
@@ -461,6 +461,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
     <button class="menu-item" data-abrir="journal">Journal</button>
     <button class="menu-item" data-abrir="meditacion">Meditación</button>
     <button class="menu-item" data-abrir="doctrina">Doctrina</button>
+    <button class="menu-item" data-abrir="historias">Historias</button>
     <button class="menu-item" data-abrir="ancla">Ancla</button>
     <button class="menu-item" data-abrir="ajustes">Ajustes</button>
   </div>
@@ -469,7 +470,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 </main>
 
 <!-- ══════ PRÁCTICA ══════ -->
-<section id="practica" class="oculto" aria-live="polite">
+<section id="practica" class="oculto">
   <div class="p-alto">
     <span class="p-mov" id="pMov"></span>
     <button class="p-salir" id="pSalir">Salir</button>
@@ -477,7 +478,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 
   <div class="p-centro" id="pCentro">
     <p class="p-bloque" id="pBloque"></p>
-    <p class="p-linea" id="pLinea"></p>
+    <p class="p-linea" id="pLinea" aria-live="polite" aria-atomic="true"></p>
     <p class="p-nota oculto" id="pNota"></p>
     <div class="respiro oculto" id="pRespiro">
       <div class="respiro-aro" id="respiroAro"><div class="respiro-nucleo"></div></div>
@@ -499,9 +500,9 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
       <button class="p-btn" id="pAdelante" aria-label="Línea siguiente">→</button>
     </div>
     <div class="p-pie">
-      <span id="pTiempo">0:00</span>
+      <span id="pTiempo" aria-hidden="true">0:00</span>
       <button class="p-btn acento oculto" id="pDormir" style="padding:8px 11px">Temporizador</button>
-      <span id="pProgreso">0 %</span>
+      <span id="pProgreso" aria-hidden="true">0 %</span>
     </div>
   </div>
 </section>
@@ -543,14 +544,14 @@ let E = {
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
-  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", dormir:20, urlAudio:{}, ritual:{} }
+  ajustes:{ tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
     E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
@@ -786,6 +787,48 @@ const MENSUAL_HITOS = [
 ];
 // Audio alojado en el repo (rutas relativas). Un archivo por ritual; se puede dividir por sección después.
 const AUDIO_RITUAL = { manana:"audio/manana-01.mp3", noche:"audio/noche-01.mp3", nucleo:"audio/nucleo-01.mp3" };
+const HIST_TEMAS = [["amor","Amor"],["abundancia","Abundancia"],["biblia","Bíblicas"],["budismo","Budismo"]];
+const HISTORIAS = [
+  { tema:"amor", titulo:"La casa de dos puertas", texto:`Había una casa con dos puertas. La de adelante estaba siempre cerrada con llave; la de atrás, siempre abierta. Por la de adelante entraban los que traían algo: un regalo, una buena noticia, una razón. Por la de atrás entraban los otros — el cansado, el que no tenía nada que ofrecer, el que solo necesitaba un lugar donde sentarse.
+Con los años, el dueño notó algo. Los que entraban por adelante venían y se iban. Los que entraban por atrás se quedaban, y con el tiempo se volvían familia.
+El amor que exige una razón para abrirse no es amor todavía — es intercambio. El amor de verdad es una puerta que se dejó abierta a propósito, sin preguntar quién viene ni qué trae.
+Piensa hoy en tu puerta de atrás. ¿Quién puede entrar por ella sin tocar? Esa lista, corta o larga, es la medida real de tu capacidad de amar. Y si está vacía, no es tarde: una puerta se abre en un instante, y el que estaba afuera lleva tiempo esperando.` },
+  { tema:"amor", titulo:"El amor no lleva cuentas", texto:`Un hombre guardaba en un cuaderno cada cosa que hacía por los demás. Aquí presté dinero. Aquí perdoné. Aquí ayudé sin que me lo pidieran. Llevaba la cuenta con cuidado, esperando el día en que le devolvieran lo justo.
+El día no llegaba. Y mientras más llenaba el cuaderno, más pesado se sentía, más solo, más agraviado por un mundo que no le pagaba.
+Un anciano lo vio y le dijo: — Tu cuaderno no es de amor. Es de deudas. Y una deuda, aunque sea a tu favor, es una cadena que te ata al otro. El día que quemes esas cuentas, vas a ser libre.
+El amor que lleva registro no descansa: siempre está esperando el saldo. El amor que suelta la cuenta da sin herida, porque ya no espera nada de vuelta — y por eso mismo lo recibe todo.
+Hoy, revisa tu cuaderno invisible. ¿A quién le llevas la cuenta? Tacha una línea. No para que el otro gane, sino para que tú puedas soltar el peso de tener la razón.` },
+  { tema:"abundancia", titulo:"El manantial y la cisterna", texto:`Dos hombres tenían agua. Uno cavó una cisterna, la llenó hasta el borde y la selló para que nada se escapara. El otro no tenía dónde guardar, porque vivía junto a un manantial que brotaba sin parar.
+El de la cisterna vigilaba su agua día y noche. Racionaba cada trago, temía las grietas, medía el nivel con angustia. Su agua, encerrada, empezó a estancarse y a oler.
+El del manantial daba de beber a quien pasara. No cuidaba el nivel, porque el nivel no dependía de él: mientras más daba, más brotaba. Su agua siempre estaba fresca, porque siempre estaba en movimiento.
+La escasez no es cuánto tienes; es de dónde crees que viene. El que cree que su bien es una cisterna cerrada vive con miedo a la grieta. El que sabe que está conectado a la fuente da sin temor, porque lo que fluye por él no se agota — se renueva.
+¿Vives de tu cisterna o de tu manantial? La diferencia no está en el agua. Está en si crees que se acaba.` },
+  { tema:"abundancia", titulo:"Los panes que alcanzaron", texto:`Una multitud tenía hambre y no había comida — solo unos pocos panes y algunos peces, casi nada frente a tantos. Lo lógico era guardarlos: si son pocos, que coman los primeros y los demás que esperen.
+Pero se hizo lo contrario. Se partió lo poco y se empezó a repartir. Y mientras las manos daban, el pan alcanzaba. Y alcanzó para todos, y hasta sobró.
+Nadie supo explicar cómo. Pero los que estuvieron ahí entendieron algo que no se olvida: la abundancia no empezó cuando hubo suficiente. Empezó cuando alguien se atrevió a partir lo poco y darlo, en vez de cerrarlo con miedo.
+Lo que retienes por miedo se queda pequeño. Lo que sueltas con fe se multiplica en el acto de soltarlo. No porque aparezca de la nada, sino porque el dar abre un espacio que el aferrarse cierra.
+Hoy tienes algo que se siente poco — tiempo, dinero, energía, palabras. La tentación es guardarlo hasta tener de sobra. Pruébalo al revés: parte un poco y dalo. Fíjate si no alcanza más de lo que la cuenta permitía.` },
+  { tema:"biblia", titulo:"El grano de mostaza", texto:`Se preguntaba cómo era el reino de Dios, y la respuesta fue una semilla — la más pequeña de todas, tan chica que casi se pierde entre los dedos. Nadie apostaría por ella. No parece nada.
+Pero esa semilla diminuta, puesta en la tierra, crece hasta volverse un árbol donde las aves hacen su nido. Lo más grande empieza siendo lo más pequeño, casi invisible, fácil de descartar.
+Es fácil despreciar los comienzos pequeños. Un hábito de cinco minutos. Una oración corta. Una decisión que nadie notó. Se sienten insignificantes frente a lo que quieres construir, y la tentación es esperar a tener una semilla más grande.
+No hay semilla más grande. Todo lo que hoy es árbol fue una vez un grano que alguien se atrevió a enterrar sin ver todavía el resultado. La fe no es certeza de la cosecha; es la disposición a sembrar lo pequeño hoy.
+¿Cuál es tu grano de mostaza esta semana? No busques el gesto grande. Busca el pequeño, y entiérralo. El árbol no es asunto tuyo — el tuyo es sembrar.` },
+  { tema:"biblia", titulo:"Las dos monedas de la viuda", texto:`Junto al templo, la gente rica dejaba grandes ofrendas, y sonaba el metal al caer. Todos veían cuánto daban. Entonces se acercó una viuda pobre y echó dos monedas — lo más pequeño que existía, casi nada.
+Y se dijo algo extraño: que ella había dado más que todos los ricos juntos. Porque ellos dieron de lo que les sobraba, y ella dio de lo que le faltaba. Ellos dieron una parte; ella dio todo lo que tenía para vivir.
+El valor de lo que das no se mide en el monto. Se mide en lo que te cuesta. Mil de quien tiene un millón no es sacrificio — es descarte. Dos monedas de quien no tiene nada es entregarse entero.
+Esto no es solo de dinero. Es de tu tiempo, tu atención, tu perdón. Puedes dar mucho de lo que te sobra y no dar nada de ti. O puedes dar poco de lo que te falta, y darte completo.
+Hoy, cuando des algo, no preguntes cuánto. Pregunta cuánto te cuesta. Ahí está el peso real de tu ofrenda.` },
+  { tema:"budismo", titulo:"La segunda flecha", texto:`El maestro preguntó a sus discípulos: — Si a un hombre lo hiere una flecha, ¿le duele? — Claro, respondieron. — Y si una segunda flecha lo hiere en el mismo lugar, ¿duele más? — Mucho más.
+Entonces dijo: — En la vida no siempre podemos evitar la primera flecha. El dolor llega: una pérdida, una enfermedad, un fracaso. Eso es la primera flecha, y es parte de vivir. Pero la segunda flecha nos la disparamos nosotros: es lo que le agregamos al dolor. El reproche. El «¿por qué a mí?». La historia que nos contamos una y otra vez sobre lo mal que está todo.
+La primera flecha es dolor. La segunda es sufrimiento — y esa sí es opcional.
+Casi nunca sufrimos solo por lo que pasó. Sufrimos por la segunda flecha: la resistencia, la rumiación, la pelea con lo que ya es. El golpe duró un momento; la segunda flecha la seguimos disparando durante días.
+Hoy, cuando llegue una primera flecha — y llegará —, fíjate en el instante justo después. Ahí, en ese espacio, está tu libertad: puedes soltar el arco, o puedes disparar otra vez. Duele igual la herida; no hace falta agrandarla.` },
+  { tema:"budismo", titulo:"La taza vacía", texto:`Un profesor muy culto fue a visitar a un viejo maestro para aprender de él. Desde que llegó, no paró de hablar: de todo lo que había leído, de sus títulos, de sus teorías, de lo que ya sabía sobre el camino.
+El maestro lo escuchó en silencio y le ofreció té. Empezó a servir en la taza del profesor… y siguió sirviendo. El té llegó al borde, se derramó, se escurrió por la mesa. — ¡Pare! — dijo el profesor —. La taza ya está llena, no cabe más.
+— Así estás tú — dijo el maestro —. Llegaste tan lleno de tus propias ideas que no cabe nada nuevo. ¿Cómo voy a mostrarte algo si tu taza ya está hasta el borde? Primero, vacía tu taza.
+Lo que crees saber es, muchas veces, lo que te impide aprender. El experto se cierra; el principiante se abre. Y frente a lo importante — el amor, Dios, uno mismo —, la mente que dice «ya sé» deja de crecer.
+Hoy, entra a algo conocido como si fuera la primera vez. Vacía la taza. No para olvidar lo que sabes, sino para dejar espacio a lo que todavía no.` }
+];
 const AUDIO_MED = [
   { id:"m1", titulo:"Anclaje matutino", dur:"~4 min", src:"audio/med-01.mp3",
     texto:`Antes de que el día te reclame… quédate un momento aquí. Solo aquí.
@@ -966,7 +1009,7 @@ const Pad = (() => {
   return { iniciar, detener, volumen, activo:()=>vivo, desbloquear };
 })();
 // Desbloqueo de audio iOS: en el primer gesto del usuario y al volver a la app.
-["pointerdown","touchend","click","keydown"].forEach(ev=>window.addEventListener(ev, ()=>Pad.desbloquear(), { passive:true }));
+["pointerdown","touchend","click","keydown"].forEach(ev=>window.addEventListener(ev, ()=>{ Pad.desbloquear(); ambienteBed(); }, { passive:true }));
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden) Pad.desbloquear(); });
 
 /* ════════════════ VOZ ════════════════ */
@@ -1050,6 +1093,8 @@ function abrirRitual(id){
   const url = (E.ajustes.urlAudio||{})[id] || "";
   if(url){ pintarControles(); modoGrabacion(url); return; }
   if(P.ambOn) Pad.iniciar(escenaActiva(r.tema), E.ajustes.padVol);
+  else Pad.detener(1.5);
+  padBed = false;
   pedirPantalla();
   if(r.tema === "noche" && E.ajustes.dormir) programarDormir();
   P.corriendo = true;
@@ -1207,6 +1252,7 @@ function cerrarPractica(){
   $("#inicio").classList.remove("oculto");
   $("#pPlay").textContent = "Pausar";
   render();
+  ambienteBed();
 }
 
 function programarDormir(){
@@ -1299,6 +1345,8 @@ function reproducirMeditacion(med){
   P.vozOn = false; P.ambOn = E.ajustes.pad;
   montarAudio(med.src);
   if(P.ambOn) Pad.iniciar(escenaActiva("dia"), E.ajustes.padVol * 0.7);
+  else Pad.detener(1.5);
+  padBed = false;
   pedirPantalla();
   pintarControles();
 }
@@ -1566,6 +1614,17 @@ function escenaActiva(tema){
   if(e === "auto") return tema === "noche" ? "noche" : "vela";
   return e;
 }
+// Lecho de ambiente continuo en las pantallas de menú (no en la práctica).
+// Idempotente: no reinicia el pad al navegar entre pantallas.
+let padBed = false;
+function ambienteBed(){
+  const enPractica = !$("#practica").classList.contains("oculto");
+  if(E.ajustes.ambienteApp && !enPractica){
+    if(!Pad.activo()){ Pad.iniciar(escenaActiva("dia"), E.ajustes.padVol * 0.55); padBed = true; }
+  } else if(padBed){
+    Pad.detener(2); padBed = false;
+  }
+}
 function setRitual(id, campo, val){
   E.ajustes.ritual = E.ajustes.ritual || {};
   E.ajustes.ritual[id] = Object.assign({}, E.ajustes.ritual[id], { [campo]: val });
@@ -1612,6 +1671,47 @@ function importarDatos(file){
 
 /* ── Ancla (salmos / grounding) ── */
 let anclaI = null;
+function hojaHistorias(){
+  const temaInicial = "amor";
+  hoja("Historias", "Relatos para reflexionar. Amor, abundancia y tradiciones.",
+    '<div class="segmento cad-tabs" id="histTabs">' +
+      HIST_TEMAS.map(t=>'<button type="button" class="seg'+(t[0]===temaInicial?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") +
+    '</div>' +
+    '<div id="histCont"></div>' +
+    '<div class="acciones"><button class="accion" id="histCerrar">Cerrar</button></div>',
+    ()=>{
+      const cont = $("#histCont");
+      renderHistorias(temaInicial, cont);
+      document.querySelectorAll("#histTabs .seg").forEach(b=>{
+        b.addEventListener("click", ()=>{
+          document.querySelectorAll("#histTabs .seg").forEach(x=>x.classList.remove("activo"));
+          b.classList.add("activo");
+          renderHistorias(b.dataset.tema, cont);
+        });
+      });
+      $("#histCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+function renderHistorias(tema, cont){
+  const lista = HISTORIAS.filter(h=>h.tema===tema);
+  cont.innerHTML = '<div class="doctrina-lista">' +
+    lista.map((h,i)=>
+      '<div class="doctrina-item">' +
+      '<button class="doctrina-cab" data-h="'+i+'" aria-expanded="false"><span>'+esc(h.titulo)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
+      '<div class="doctrina-cuerpo" id="histC'+i+'"><p>'+h.texto.split("\n").map(esc).join('</p><p>')+'</p></div>' +
+      '</div>').join("") +
+    '</div>';
+  document.querySelectorAll("#histCont .doctrina-cab").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const cuerpo = $("#histC"+b.dataset.h);
+      const abierto = b.getAttribute("aria-expanded") === "true";
+      b.setAttribute("aria-expanded", String(!abierto));
+      b.classList.toggle("abierto", !abierto);
+      cuerpo.classList.toggle("abierto", !abierto);
+    });
+  });
+}
+
 function hojaMeditacion(){
   hoja("Meditación", "Guiadas, con voz. Ponte cómodo y toca una.",
     '<div class="med-lista">' +
@@ -1658,6 +1758,7 @@ function hojaAjustes(){
     '<div class="campo"><label class="campo-et" for="sPausa">Silencio entre líneas · <span id="sPausaV">'+(a.pausa/1000).toFixed(1)+' s</span></label><input class="campo-in" type="range" id="sPausa" min="1000" max="8000" step="500" value="'+a.pausa+'">' +
       '<p class="campo-ayuda">Es lo que te deja repetir mentalmente. Sin esa pausa el audio se vuelve podcast en vez de práctica.</p></div>' +
     '<div class="fila"><div><div class="fila-txt">Cama sonora</div><div class="fila-ayuda">Pad generado en vivo. Mañana con brillo; noche grave, sin transientes.</div></div><button class="switch'+(a.pad?' on':'')+'" id="sPad" role="switch"></button></div>' +
+    '<div class="fila"><div><div class="fila-txt">Ambiente en toda la app</div><div class="fila-ayuda">Un lecho de sonido continuo también fuera de la práctica (inicio, Journal, Doctrina…). Suave, no se corta al cambiar de pantalla.</div></div><button class="switch'+(a.ambienteApp?' on':'')+'" id="sAmbApp" role="switch"></button></div>' +
     '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sPadVol">Volumen del pad</label><input class="campo-in" type="range" id="sPadVol" min="0" max="1" step=".05" value="'+a.padVol+'"></div>' +
     '<div class="campo"><label class="campo-et" for="sEscena">Escena de sonido</label><select class="campo-sel" id="sEscena">' +
       [["auto","Automática (por ritual)"],["vela","Vela — cálida, tonal"],["noche","Noche — grave, profunda"],["eter","Éter — aérea, luminosa"],["lluvia","Lluvia — textura suave"],["oceano","Océano — olas lentas"]].map(o=>'<option value="'+o[0]+'"'+((a.escena||"auto")===o[0]?' selected':'')+'>'+o[1]+'</option>').join("") + '</select>' +
@@ -1687,6 +1788,7 @@ function hojaAjustes(){
       });
       sw("#sVoz", on=>{ E.ajustes.voz = on && Voz.soporte; });
       sw("#sPad", on=>{ E.ajustes.pad = on; if(!on) Pad.detener(1.5); });
+      sw("#sAmbApp", on=>{ E.ajustes.ambienteApp = on; ambienteBed(); });
       const vn = $("#sVozN"); if(vn) vn.addEventListener("change", ()=>{ E.ajustes.vozNombre = vn.value; guardar(); });
       $("#sRitmo").addEventListener("input", e=>{ E.ajustes.ritmo = +e.target.value; $("#sRitmoV").textContent = (+e.target.value).toFixed(2); guardar(); });
       $("#sPausa").addEventListener("input", e=>{ E.ajustes.pausa = +e.target.value; $("#sPausaV").textContent = (+e.target.value/1000).toFixed(1)+" s"; guardar(); });
@@ -1718,6 +1820,7 @@ document.querySelectorAll("[data-abrir]").forEach(b=>{
     else if(k === "journal") hojaJournal();
     else if(k === "meditacion") hojaMeditacion();
     else if(k === "doctrina") hojaDoctrina();
+    else if(k === "historias") hojaHistorias();
     else if(k === "ancla") hojaAncla();
     else hojaAjustes();
   });
