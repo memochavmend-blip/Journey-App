@@ -382,6 +382,17 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .salmo-caja{min-height:auto;padding:22px 4px 26px}
 .ancla-txt.salmo{font-size:1.18rem;line-height:1.62;max-width:38ch}
 
+/* ── Editor · Mi contenido ── */
+.ed-lista{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.ed-item{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--linea);border-radius:12px;overflow:hidden}
+.ed-item-t{flex:1;text-align:left;padding:14px 16px;font-size:14px;color:var(--tinta);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ed-item-x{padding:14px 15px;color:var(--tinta-tenue);font-size:13px;flex-shrink:0;transition:color .2s}
+.ed-item-x:hover,.ed-item-x:focus-visible{color:var(--brasa)}
+.ed-vacio{font-size:13.5px;line-height:1.6;color:var(--tinta-tenue);padding:4px 0 22px}
+.ed-form{border-top:1px solid var(--linea);padding-top:22px}
+.ed-form-t{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 14px}
+.ed-in{margin-top:10px}
+
 /* ── Registro (journal + check-ins) ── */
 .campo-area{
   width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:12px;
@@ -686,6 +697,7 @@ let E = {
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
+  contenido:{ ancla:{usuario:[]}, historias:{usuario:[]}, doctrina:{usuario:[]}, salmos:{usuario:[]} },
   ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
@@ -698,6 +710,8 @@ async function cargar(){
     E.dias = g.dias || {};
     E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
     ["journal","diario","semanal","mensual"].forEach(k=>{ if(!E.registro[k] || typeof E.registro[k] !== "object") E.registro[k] = {}; });
+    E.contenido = Object.assign({ancla:{usuario:[]},historias:{usuario:[]},doctrina:{usuario:[]},salmos:{usuario:[]}}, g.contenido||{});
+    ["ancla","historias","doctrina","salmos"].forEach(k=>{ if(!E.contenido[k] || typeof E.contenido[k] !== "object") E.contenido[k] = {usuario:[]}; if(!Array.isArray(E.contenido[k].usuario)) E.contenido[k].usuario = []; });
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
@@ -1795,7 +1809,7 @@ function hojaDoctrina(){
   const s = semanaISO(), leido = E.doctrina.semana === s;
   hoja("Doctrina", "Material de estudio, no de repetición. Se lee — no se graba. Una vez por semana.",
     '<div class="doctrina-lista">' +
-    DOCTRINA.map((t,i)=>
+    doctrinaTodas().map((t,i)=>
       '<div class="doctrina-item">' +
       '<button class="doctrina-cab" data-doc="'+i+'" aria-expanded="false" aria-controls="doc'+i+'"><span>'+esc(t.t)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
       '<div class="doctrina-cuerpo" id="doc'+i+'">'+t.e+'</div>' +
@@ -1995,6 +2009,20 @@ function hojaSonido(){
     });
 }
 
+// Contenido = incluido + tuyo (capa de usuario).
+function anclasTodas(){
+  return ANCLAS.concat((E.contenido.ancla.usuario||[]).map(u=>esc(u.texto||"")));
+}
+function salmosTodos(){
+  return SALMOS.concat((E.contenido.salmos.usuario||[]).map(u=>esc(u.texto||"").replace(/\n/g,"<br>") + (u.ref?'<span class="ancla-ref">'+esc(u.ref)+'</span>':'')));
+}
+function historiasTodas(){
+  return HISTORIAS.concat(E.contenido.historias.usuario||[]);
+}
+function doctrinaTodas(){
+  return DOCTRINA.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
+}
+
 function hojaHistorias(){
   const temaInicial = "amor";
   hoja("Historias", "Relatos para reflexionar. Amor, abundancia y tradiciones.",
@@ -2017,7 +2045,7 @@ function hojaHistorias(){
     });
 }
 function renderHistorias(tema, cont){
-  const lista = HISTORIAS.filter(h=>h.tema===tema);
+  const lista = historiasTodas().filter(h=>h.tema===tema);
   cont.innerHTML = '<div class="doctrina-lista">' +
     lista.map((h,i)=>
       '<div class="doctrina-item">' +
@@ -2051,14 +2079,16 @@ function hojaMeditacion(){
 }
 
 function hojaAncla(){
-  if(anclaI === null) anclaI = Math.floor(Date.now()/86400000) % ANCLAS.length;
+  const lista = anclasTodas();
+  if(anclaI === null || anclaI >= lista.length) anclaI = Math.floor(Date.now()/86400000) % lista.length;
   hoja("Ancla", "Una línea para volver al centro.",
-    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + ANCLAS[anclaI] + '</p></div>' +
+    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + lista[anclaI] + '</p></div>' +
     '<div class="acciones"><button class="accion" id="anclaOtra">Otra</button><button class="accion" id="anclaCerrar">Cerrar</button></div>',
     ()=>{
       $("#anclaOtra").addEventListener("click", ()=>{
-        anclaI = (anclaI + 1) % ANCLAS.length;
-        $("#anclaTxt").innerHTML = ANCLAS[anclaI];
+        const l = anclasTodas();
+        anclaI = (anclaI + 1) % l.length;
+        $("#anclaTxt").innerHTML = l[anclaI];
       });
       $("#anclaCerrar").addEventListener("click", cerrarHoja);
     });
@@ -2066,16 +2096,100 @@ function hojaAncla(){
 
 let salmoI = null;
 function hojaSalmos(){
-  if(salmoI === null) salmoI = Math.floor(Date.now()/86400000) % SALMOS.length;
+  const lista = salmosTodos();
+  if(salmoI === null || salmoI >= lista.length) salmoI = Math.floor(Date.now()/86400000) % lista.length;
   hoja("Salmos", "Los salmos que más han sostenido a la gente.",
-    '<div class="ancla-caja salmo-caja"><p class="ancla-txt salmo" id="salmoTxt">' + SALMOS[salmoI] + '</p></div>' +
+    '<div class="ancla-caja salmo-caja"><p class="ancla-txt salmo" id="salmoTxt">' + lista[salmoI] + '</p></div>' +
     '<div class="acciones"><button class="accion" id="salmoOtro">Otro salmo</button><button class="accion" id="salmoCerrar">Cerrar</button></div>',
     ()=>{
       $("#salmoOtro").addEventListener("click", ()=>{
-        salmoI = (salmoI + 1) % SALMOS.length;
-        $("#salmoTxt").innerHTML = SALMOS[salmoI];
+        const l = salmosTodos();
+        salmoI = (salmoI + 1) % l.length;
+        $("#salmoTxt").innerHTML = l[salmoI];
       });
       $("#salmoCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+/* ════════════════ EDITOR · Mi contenido ════════════════ */
+const ED_TIPOS = [["ancla","Ancla"],["historias","Historias"],["doctrina","Doctrina"],["salmos","Salmos"]];
+let edTipo = "ancla";
+let edEditando = null;
+function edCampos(tipo, it){
+  it = it || {};
+  if(tipo === "ancla")
+    return '<textarea class="campo-area" id="edTexto" rows="3" placeholder="Tu frase para volver al centro…">'+esc(it.texto||"")+'</textarea>';
+  if(tipo === "salmos")
+    return '<textarea class="campo-area" id="edTexto" rows="5" placeholder="El salmo o versículo…">'+esc(it.texto||"")+'</textarea>' +
+      '<input class="campo-in ed-in" id="edRef" placeholder="Referencia (ej. Salmo 23)" value="'+esc(it.ref||"")+'">';
+  if(tipo === "doctrina")
+    return '<input class="campo-in ed-in" id="edTitulo" placeholder="Título" value="'+esc(it.t||"")+'">' +
+      '<textarea class="campo-area" id="edTexto" rows="7" placeholder="El texto. Deja una línea en blanco para separar párrafos.">'+esc(it.texto||"")+'</textarea>';
+  if(tipo === "historias")
+    return '<select class="campo-sel ed-in" id="edTema">'+HIST_TEMAS.map(t=>'<option value="'+t[0]+'"'+((it.tema||"amor")===t[0]?' selected':'')+'>'+t[1]+'</option>').join("")+'</select>' +
+      '<input class="campo-in ed-in" id="edTitulo" placeholder="Título" value="'+esc(it.titulo||"")+'">' +
+      '<textarea class="campo-area" id="edTexto" rows="7" placeholder="La historia…">'+esc(it.texto||"")+'</textarea>';
+  return '';
+}
+function edLeerForm(tipo){
+  const t = (($("#edTexto")||{}).value||"").trim();
+  if(!t) return null;
+  if(tipo === "ancla") return { texto:t };
+  if(tipo === "salmos") return { texto:t, ref:(($("#edRef")||{}).value||"").trim() };
+  if(tipo === "doctrina") return { t:(($("#edTitulo")||{}).value||"").trim()||"Sin título", texto:t };
+  if(tipo === "historias") return { tema:(($("#edTema")||{}).value)||"amor", titulo:(($("#edTitulo")||{}).value||"").trim()||"Sin título", texto:t };
+  return null;
+}
+function edTituloItem(tipo, it){
+  if(tipo === "ancla" || tipo === "salmos"){ const x = (it.texto||"").replace(/\n/g," "); return x.slice(0,64) + (x.length>64?"…":""); }
+  return it.titulo || it.t || "Sin título";
+}
+function renderEditor(){
+  const cont = $("#edCont"); if(!cont) return;
+  const lista = E.contenido[edTipo].usuario || [];
+  let h = "";
+  if(lista.length){
+    h += '<div class="ed-lista">' + lista.map(it=>
+      '<div class="ed-item"><button class="ed-item-t" data-ed-edit="'+it.id+'">'+esc(edTituloItem(edTipo, it))+'</button><button class="ed-item-x" data-ed-del="'+it.id+'" aria-label="Borrar">✕</button></div>'
+    ).join("") + '</div>';
+  } else {
+    h += '<p class="ed-vacio">Todavía no has creado nada aquí. Lo que agregues aparece junto al contenido incluido, en su sección.</p>';
+  }
+  const editItem = edEditando !== null ? lista.find(x=>String(x.id)===String(edEditando)) : null;
+  h += '<div class="ed-form"><p class="ed-form-t">'+(editItem?"Editar":"Añadir nuevo")+'</p>' + edCampos(edTipo, editItem) +
+    '<div class="acciones" style="margin-top:2px"><button class="accion llena" id="edGuardar">'+(editItem?"Guardar cambios":"Añadir")+'</button>' +
+    (editItem?'<button class="accion" id="edCancelar">Cancelar</button>':'') + '</div></div>';
+  cont.innerHTML = h;
+  document.querySelectorAll("#edCont [data-ed-edit]").forEach(b=>b.addEventListener("click", ()=>{ edEditando = b.dataset.edEdit; renderEditor(); }));
+  document.querySelectorAll("#edCont [data-ed-del]").forEach(b=>b.addEventListener("click", ()=>{
+    const id = b.dataset.edDel;
+    E.contenido[edTipo].usuario = (E.contenido[edTipo].usuario||[]).filter(x=>String(x.id)!==String(id));
+    if(String(edEditando)===String(id)) edEditando = null;
+    guardar(); renderEditor();
+  }));
+  $("#edGuardar").addEventListener("click", ()=>{
+    const datos = edLeerForm(edTipo);
+    if(!datos){ const ta = $("#edTexto"); if(ta){ ta.style.borderColor = "var(--brasa)"; ta.focus(); } return; }
+    if(editItem){ Object.assign(editItem, datos); }
+    else { datos.id = Date.now(); (E.contenido[edTipo].usuario = E.contenido[edTipo].usuario||[]).push(datos); }
+    edEditando = null; guardar(); renderEditor();
+  });
+  const c = $("#edCancelar"); if(c) c.addEventListener("click", ()=>{ edEditando = null; renderEditor(); });
+}
+function hojaEditor(){
+  edEditando = null;
+  hoja("Mi contenido", "Crea lo tuyo. Aparece junto al contenido incluido en cada sección.",
+    '<div class="segmento" id="edTabs">' + ED_TIPOS.map(t=>'<button type="button" class="seg'+(t[0]===edTipo?' activo':'')+'" data-ed-tipo="'+t[0]+'">'+t[1]+'</button>').join("") + '</div>' +
+    '<div id="edCont"></div>' +
+    '<div class="acciones"><button class="accion" id="edCerrar">Cerrar</button></div>',
+    ()=>{
+      renderEditor();
+      document.querySelectorAll("#edTabs .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#edTabs .seg").forEach(x=>x.classList.remove("activo"));
+        b.classList.add("activo");
+        edTipo = b.dataset.edTipo; edEditando = null; renderEditor();
+      }));
+      $("#edCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
@@ -2085,6 +2199,7 @@ function hojaAjustes(){
   const opcVoz = '<option value="">Automática (mejor disponible)</option>' + voces.map(v=>'<option value="'+esc(v.name)+'"'+(a.vozNombre===v.name?' selected':'')+'>'+esc(v.name)+' · '+v.lang+(Voz.mejor(v)?' · mejorada':'')+'</option>').join("");
   hoja("Ajustes", "",
     '<div class="campo"><label class="campo-et" for="sNombre">Tu nombre</label><input class="campo-in" type="text" id="sNombre" placeholder="¿Cómo te llamas?" value="'+esc(a.nombre||"")+'" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px"><p class="campo-ayuda">Con lo que la app te saluda cada día.</p></div>' +
+    '<div class="fila" data-abrir="editor" style="cursor:pointer"><div><div class="fila-txt">Mi contenido</div><div class="fila-ayuda">Crea tus propias frases, historias, doctrina y salmos.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="campo"><label class="campo-et">Tema</label>' +
       '<div class="segmento" id="segTema">' +
       ['sistema','claro','oscuro'].map(v=>'<button type="button" class="seg'+(((a.tema||"sistema")===v)?' activo':'')+'" data-tema="'+v+'">'+({sistema:"Sistema",claro:"Claro",oscuro:"Oscuro"}[v])+'</button>').join("") +
@@ -2167,6 +2282,7 @@ document.addEventListener("click", e=>{
   else if(k === "salmos") hojaSalmos();
   else if(k === "ancla") hojaAncla();
   else if(k === "ajustes") hojaAjustes();
+  else if(k === "editor") hojaEditor();
 });
 function mostrarTab(tab){
   ["inicio","explorar","sonido","diario"].forEach(t=>{
