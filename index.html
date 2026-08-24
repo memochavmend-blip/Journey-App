@@ -462,6 +462,31 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .tab:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:10px}
 body.encendida .tabbar,body.encendida .gear{display:none}
 
+/* ── Onboarding ── */
+.onb{position:fixed;inset:0;z-index:90;background:var(--noche);display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 40px) 30px calc(env(safe-area-inset-bottom) + 30px)}
+.onb-dots{display:flex;gap:7px;justify-content:center}
+.onb-dot{width:7px;height:7px;border-radius:50%;background:var(--linea-fuerte);transition:background .3s ease}
+.onb-dot.on{background:var(--llama)}
+.onb-cont{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:440px;margin:0 auto;width:100%}
+.onb-paso{display:none;flex-direction:column;animation:onbIn .4s ease}
+.onb-paso.activo{display:flex}
+@keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.onb-mark{font-size:2.4rem;color:var(--llama);margin-bottom:18px;line-height:1}
+.onb-t{font-family:var(--serif);font-size:2rem;line-height:1.15;color:var(--tinta);margin:0 0 14px}
+.onb-p{font-size:15px;line-height:1.6;color:var(--tinta-baja);margin:0 0 28px}
+.onb-input{width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:14px;padding:15px 16px;font-family:var(--serif);font-size:1.25rem;color:var(--tinta);outline:none;margin-bottom:28px}
+.onb-input:focus{border-color:var(--llama)}
+.onb-chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:30px}
+.onb-chip{padding:12px 16px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
+.onb-chip.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 16%,transparent)}
+.onb-chip:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.onb-btn{margin-top:16px;padding:16px;border-radius:14px;background:var(--tinta);color:var(--noche);font-size:15px;font-weight:500;transition:opacity .2s ease}
+.onb-btn:active{opacity:.85}
+.onb-btn:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.onb-saltar{align-self:center;padding:10px;font-size:13px;color:var(--tinta-tenue);transition:color .2s ease}
+.onb-saltar:hover,.onb-saltar:focus-visible{color:var(--tinta-baja)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -534,6 +559,57 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <button class="tab" data-tab="sonido" aria-label="Sonido"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-15 3 18 2-9h3"/></svg></span><span class="tab-lb">Sonido</span></button>
   <button class="tab" data-tab="diario" aria-label="Diario"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></svg></span><span class="tab-lb">Diario</span></button>
 </nav>
+
+<div class="onb oculto" id="onboarding">
+  <div class="onb-dots" id="onbDots">
+    <span class="onb-dot on"></span><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot"></span>
+  </div>
+  <div class="onb-cont">
+    <div class="onb-paso activo" data-paso="1">
+      <div class="onb-mark" aria-hidden="true">◦</div>
+      <h1 class="onb-t">Práctica</h1>
+      <p class="onb-p">Un lugar para tu oración, tu silencio y tu día. En un minuto lo ajustamos a ti.</p>
+      <button class="onb-btn" data-onb-next>Empezar</button>
+    </div>
+    <div class="onb-paso" data-paso="2">
+      <h1 class="onb-t">¿Cómo te llamas?</h1>
+      <p class="onb-p">Para saludarte cada día.</p>
+      <input class="onb-input" id="onbNombre" type="text" placeholder="Tu nombre" autocomplete="given-name">
+      <button class="onb-btn" data-onb-next>Continuar</button>
+    </div>
+    <div class="onb-paso" data-paso="3">
+      <h1 class="onb-t">¿Qué te trae aquí?</h1>
+      <p class="onb-p">Elige lo que te importa. Puedes cambiarlo después.</p>
+      <div class="onb-chips" id="onbIntereses">
+        <button class="onb-chip" data-int="oracion">Oración diaria</button>
+        <button class="onb-chip" data-int="meditacion">Meditación</button>
+        <button class="onb-chip" data-int="journal">Journal</button>
+        <button class="onb-chip" data-int="foco">Concentración</button>
+        <button class="onb-chip" data-int="estudio">Estudio y reflexión</button>
+      </div>
+      <button class="onb-btn" data-onb-next>Continuar</button>
+    </div>
+    <div class="onb-paso" data-paso="4">
+      <h1 class="onb-t">Tu ambiente</h1>
+      <p class="onb-p">Cómo se ve y se siente. Todo se puede cambiar luego en Ajustes.</p>
+      <div class="campo"><label class="campo-et">Tema</label>
+        <div class="segmento" id="onbTema">
+          <button type="button" class="seg activo" data-tema="sistema">Sistema</button>
+          <button type="button" class="seg" data-tema="claro">Claro</button>
+          <button type="button" class="seg" data-tema="oscuro">Oscuro</button>
+        </div>
+      </div>
+      <div class="fila" style="margin-top:6px"><div><div class="fila-txt">Sonido de ambiente</div><div class="fila-ayuda">Un lecho suave mientras usas la app.</div></div><button class="switch on" id="onbAmb" role="switch"></button></div>
+      <button class="onb-btn" data-onb-next>Continuar</button>
+    </div>
+    <div class="onb-paso" data-paso="5">
+      <h1 class="onb-t" id="onbListoTitulo">Todo listo.</h1>
+      <p class="onb-p">Práctica viene con oraciones, meditaciones e historias listas. Úsalas tal cual, y con el tiempo hazlas tuyas.</p>
+      <button class="onb-btn" id="onbFin">Comenzar</button>
+    </div>
+  </div>
+  <button class="onb-saltar" id="onbSaltar">Saltar por ahora</button>
+</div>
 
 <!-- ══════ PRÁCTICA ══════ -->
 <section id="practica" class="oculto">
@@ -610,14 +686,14 @@ let E = {
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
-  ajustes:{ nombre:"Guillermo", tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
+  ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {nombre:"Guillermo",tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"Guillermo",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
     E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
@@ -2181,11 +2257,59 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
 }
 
 /* ════════════════ ARRANQUE ════════════════ */
+let onbPaso = 1;
+function irOnb(n){
+  const total = document.querySelectorAll(".onb-paso").length;
+  if(n > total){ terminarOnb(); return; }
+  onbPaso = n;
+  document.querySelectorAll(".onb-paso").forEach(p=>p.classList.toggle("activo", +p.dataset.paso === n));
+  document.querySelectorAll("#onbDots .onb-dot").forEach((d,i)=>d.classList.toggle("on", i < n));
+  if(n === 5){ const t = $("#onbListoTitulo"); if(t){ const nom = (E.ajustes.nombre||"").trim(); t.textContent = nom ? "Listo, " + nom + "." : "Todo listo."; } }
+  if(n === 2){ const inp = $("#onbNombre"); if(inp){ try{ inp.focus(); }catch(e){} } }
+}
+function terminarOnb(){
+  E.ajustes.onboarded = true; guardar();
+  $("#onboarding").classList.add("oculto");
+  render();
+}
+function mostrarOnboarding(){
+  // reflejar ajustes actuales
+  const inp = $("#onbNombre"); if(inp) inp.value = E.ajustes.nombre || "";
+  document.querySelectorAll("#onbTema .seg").forEach(b=>b.classList.toggle("activo", b.dataset.tema === (E.ajustes.tema||"sistema")));
+  const amb = $("#onbAmb"); if(amb) amb.classList.toggle("on", E.ajustes.ambienteApp !== false);
+  (E.ajustes.intereses||[]).forEach(k=>{ const c = document.querySelector('#onbIntereses .onb-chip[data-int="'+k+'"]'); if(c) c.classList.add("on"); });
+  $("#onboarding").classList.remove("oculto");
+  irOnb(1);
+}
+(function cablearOnboarding(){
+  const inp = $("#onbNombre"); if(inp) inp.addEventListener("input", e=>{ E.ajustes.nombre = e.target.value; });
+  document.querySelectorAll("#onbIntereses .onb-chip").forEach(c=>{
+    c.addEventListener("click", ()=>{
+      c.classList.toggle("on");
+      E.ajustes.intereses = E.ajustes.intereses || [];
+      const k = c.dataset.int, i = E.ajustes.intereses.indexOf(k);
+      if(i >= 0) E.ajustes.intereses.splice(i,1); else E.ajustes.intereses.push(k);
+    });
+  });
+  document.querySelectorAll("#onbTema .seg").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      document.querySelectorAll("#onbTema .seg").forEach(x=>x.classList.remove("activo"));
+      b.classList.add("activo");
+      E.ajustes.tema = b.dataset.tema; aplicarTema();
+    });
+  });
+  const amb = $("#onbAmb"); if(amb) amb.addEventListener("click", ()=>{ const on = !amb.classList.contains("on"); amb.classList.toggle("on", on); E.ajustes.ambienteApp = on; });
+  document.querySelectorAll("[data-onb-next]").forEach(b=>b.addEventListener("click", ()=>irOnb(onbPaso + 1)));
+  const fin = $("#onbFin"); if(fin) fin.addEventListener("click", terminarOnb);
+  const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
+})();
+
 (async function(){
   nodos();
   await cargar();
   aplicarTema();
   render();
+  if(!E.ajustes.onboarded){ mostrarOnboarding(); }
   setInterval(()=>{ if(!$("#inicio").classList.contains("oculto")) render(); }, 60000);
 })();
 </script>
