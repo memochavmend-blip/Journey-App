@@ -480,8 +480,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-dot{width:7px;height:7px;border-radius:50%;background:var(--linea-fuerte);transition:background .3s ease}
 .onb-dot.on{background:var(--llama)}
 .onb-cont{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:440px;margin:0 auto;width:100%}
-.onb-paso{display:none;flex-direction:column;animation:onbIn .4s ease}
-.onb-paso.activo{display:flex}
+.onb-cont h1,.onb-cont p{animation:onbIn .35s ease}
 @keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .onb-mark{font-size:2.4rem;color:var(--llama);margin-bottom:18px;line-height:1}
 .onb-t{font-family:var(--serif);font-size:2rem;line-height:1.15;color:var(--tinta);margin:0 0 14px}
@@ -497,6 +496,18 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-btn:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
 .onb-saltar{align-self:center;padding:10px;font-size:13px;color:var(--tinta-tenue);transition:color .2s ease}
 .onb-saltar:hover,.onb-saltar:focus-visible{color:var(--tinta-baja)}
+.onb-top{display:flex;align-items:center;justify-content:center;position:relative;min-height:24px}
+.onb-back{position:absolute;left:0;top:50%;transform:translateY(-50%);width:34px;height:34px;font-size:20px;color:var(--tinta-baja);display:flex;align-items:center;justify-content:center}
+.onb-back:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
+.onb-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:30px}
+.onb-opt{padding:16px 18px;border:1px solid var(--linea-fuerte);border-radius:14px;font-size:15px;color:var(--tinta-baja);text-align:left;transition:border-color .2s,color .2s,background .2s}
+.onb-opt.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 14%,transparent)}
+.onb-opt:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.onb-saltar-paso{align-self:center;margin-top:12px;padding:8px;font-size:13px;color:var(--tinta-tenue);transition:color .2s ease}
+.onb-saltar-paso:hover,.onb-saltar-paso:focus-visible{color:var(--tinta-baja)}
+.pref-bloque{margin-bottom:26px}
+.pref-t{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 13px}
+.pref-bloque .onb-chips,.pref-bloque .onb-opts{margin-bottom:0}
 
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
@@ -572,53 +583,11 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 </nav>
 
 <div class="onb oculto" id="onboarding">
-  <div class="onb-dots" id="onbDots">
-    <span class="onb-dot on"></span><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot"></span><span class="onb-dot"></span>
+  <div class="onb-top">
+    <button class="onb-back oculto" id="onbAtras" aria-label="Atrás">←</button>
+    <div class="onb-dots" id="onbDots"></div>
   </div>
-  <div class="onb-cont">
-    <div class="onb-paso activo" data-paso="1">
-      <div class="onb-mark" aria-hidden="true">◦</div>
-      <h1 class="onb-t">Práctica</h1>
-      <p class="onb-p">Un lugar para tu oración, tu silencio y tu día. En un minuto lo ajustamos a ti.</p>
-      <button class="onb-btn" data-onb-next>Empezar</button>
-    </div>
-    <div class="onb-paso" data-paso="2">
-      <h1 class="onb-t">¿Cómo te llamas?</h1>
-      <p class="onb-p">Para saludarte cada día.</p>
-      <input class="onb-input" id="onbNombre" type="text" placeholder="Tu nombre" autocomplete="given-name">
-      <button class="onb-btn" data-onb-next>Continuar</button>
-    </div>
-    <div class="onb-paso" data-paso="3">
-      <h1 class="onb-t">¿Qué te trae aquí?</h1>
-      <p class="onb-p">Elige lo que te importa. Puedes cambiarlo después.</p>
-      <div class="onb-chips" id="onbIntereses">
-        <button class="onb-chip" data-int="oracion">Oración diaria</button>
-        <button class="onb-chip" data-int="meditacion">Meditación</button>
-        <button class="onb-chip" data-int="journal">Journal</button>
-        <button class="onb-chip" data-int="foco">Concentración</button>
-        <button class="onb-chip" data-int="estudio">Estudio y reflexión</button>
-      </div>
-      <button class="onb-btn" data-onb-next>Continuar</button>
-    </div>
-    <div class="onb-paso" data-paso="4">
-      <h1 class="onb-t">Tu ambiente</h1>
-      <p class="onb-p">Cómo se ve y se siente. Todo se puede cambiar luego en Ajustes.</p>
-      <div class="campo"><label class="campo-et">Tema</label>
-        <div class="segmento" id="onbTema">
-          <button type="button" class="seg activo" data-tema="sistema">Sistema</button>
-          <button type="button" class="seg" data-tema="claro">Claro</button>
-          <button type="button" class="seg" data-tema="oscuro">Oscuro</button>
-        </div>
-      </div>
-      <div class="fila" style="margin-top:6px"><div><div class="fila-txt">Sonido de ambiente</div><div class="fila-ayuda">Un lecho suave mientras usas la app.</div></div><button class="switch on" id="onbAmb" role="switch"></button></div>
-      <button class="onb-btn" data-onb-next>Continuar</button>
-    </div>
-    <div class="onb-paso" data-paso="5">
-      <h1 class="onb-t" id="onbListoTitulo">Todo listo.</h1>
-      <p class="onb-p">Práctica viene con oraciones, meditaciones e historias listas. Úsalas tal cual, y con el tiempo hazlas tuyas.</p>
-      <button class="onb-btn" id="onbFin">Comenzar</button>
-    </div>
-  </div>
+  <div class="onb-cont" id="onbCont"></div>
   <button class="onb-saltar" id="onbSaltar">Saltar por ahora</button>
 </div>
 
@@ -698,6 +667,7 @@ let E = {
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
   contenido:{ ancla:{usuario:[]}, historias:{usuario:[]}, doctrina:{usuario:[]}, salmos:{usuario:[]} },
+  perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
   ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
@@ -712,6 +682,9 @@ async function cargar(){
     ["journal","diario","semanal","mensual"].forEach(k=>{ if(!E.registro[k] || typeof E.registro[k] !== "object") E.registro[k] = {}; });
     E.contenido = Object.assign({ancla:{usuario:[]},historias:{usuario:[]},doctrina:{usuario:[]},salmos:{usuario:[]}}, g.contenido||{});
     ["ancla","historias","doctrina","salmos"].forEach(k=>{ if(!E.contenido[k] || typeof E.contenido[k] !== "object") E.contenido[k] = {usuario:[]}; if(!Array.isArray(E.contenido[k].usuario)) E.contenido[k].usuario = []; });
+    E.perfil = Object.assign({categorias:[], tono:"mezcla", sub:{}, hecho:false}, g.perfil||{});
+    if(!Array.isArray(E.perfil.categorias)) E.perfil.categorias = [];
+    if(!E.perfil.sub || typeof E.perfil.sub !== "object") E.perfil.sub = {};
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
@@ -2176,6 +2149,34 @@ function renderEditor(){
   });
   const c = $("#edCancelar"); if(c) c.addEventListener("click", ()=>{ edEditando = null; renderEditor(); });
 }
+function hojaPreferenciasContenido(){
+  const cuerpo = ()=>{
+    let h = '<div class="pref-bloque"><p class="pref-t">¿Qué te trae aquí?</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-pcat") + '</div>';
+    h += '<div class="pref-bloque"><p class="pref-t">¿Desde dónde lo vives?</p><div class="onb-opts" id="prefTono">' +
+      TONOS.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-ptono="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div></div>';
+    (E.perfil.categorias||[]).forEach(c=>{
+      if(SEGUIMIENTOS[c]){
+        E.perfil.sub[c] = E.perfil.sub[c] || [];
+        const chips = '<div class="onb-chips">' + SEGUIMIENTOS[c].opts.map(o=>'<button type="button" class="onb-chip'+((E.perfil.sub[c].indexOf(o[0])>=0)?" on":"")+'" data-psub="'+c+'|'+o[0]+'">'+esc(o[1])+'</button>').join("") + '</div>';
+        h += '<div class="pref-bloque"><p class="pref-t">'+esc(SEGUIMIENTOS[c].q)+'</p>' + chips + '</div>';
+      }
+    });
+    return h;
+  };
+  hoja("Preferencias de contenido", "Lo que elegiste al empezar. Cámbialo cuando quieras.",
+    '<div id="prefCont">' + cuerpo() + '</div><div class="acciones"><button class="accion" id="prefCerrar">Cerrar</button></div>',
+    ()=>{
+      const re = ()=>{ $("#prefCont").innerHTML = cuerpo(); cablear(); };
+      function cablear(){
+        document.querySelectorAll("[data-pcat]").forEach(b=>b.addEventListener("click", ()=>{ toggleArr(E.perfil.categorias, b.dataset.pcat); guardar(); re(); }));
+        document.querySelectorAll("#prefTono .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#prefTono .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.ptono; guardar(); }));
+        document.querySelectorAll("[data-psub]").forEach(b=>b.addEventListener("click", ()=>{ const p = b.dataset.psub.split("|"), c = p[0], tag = p[1]; b.classList.toggle("on"); E.perfil.sub[c] = E.perfil.sub[c] || []; toggleArr(E.perfil.sub[c], tag); guardar(); }));
+      }
+      cablear();
+      $("#prefCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
 function hojaEditor(){
   edEditando = null;
   hoja("Mi contenido", "Crea lo tuyo. Aparece junto al contenido incluido en cada sección.",
@@ -2200,6 +2201,7 @@ function hojaAjustes(){
   hoja("Ajustes", "",
     '<div class="campo"><label class="campo-et" for="sNombre">Tu nombre</label><input class="campo-in" type="text" id="sNombre" placeholder="¿Cómo te llamas?" value="'+esc(a.nombre||"")+'" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px"><p class="campo-ayuda">Con lo que la app te saluda cada día.</p></div>' +
     '<div class="fila" data-abrir="editor" style="cursor:pointer"><div><div class="fila-txt">Mi contenido</div><div class="fila-ayuda">Crea tus propias frases, historias, doctrina y salmos.</div></div><span class="nav-card-ch">›</span></div>' +
+    '<div class="fila" data-abrir="preferencias" style="cursor:pointer"><div><div class="fila-txt">Preferencias de contenido</div><div class="fila-ayuda">Lo que elegiste al empezar: categorías, tono y temas.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="campo"><label class="campo-et">Tema</label>' +
       '<div class="segmento" id="segTema">' +
       ['sistema','claro','oscuro'].map(v=>'<button type="button" class="seg'+(((a.tema||"sistema")===v)?' activo':'')+'" data-tema="'+v+'">'+({sistema:"Sistema",claro:"Claro",oscuro:"Oscuro"}[v])+'</button>').join("") +
@@ -2283,6 +2285,7 @@ document.addEventListener("click", e=>{
   else if(k === "ancla") hojaAncla();
   else if(k === "ajustes") hojaAjustes();
   else if(k === "editor") hojaEditor();
+  else if(k === "preferencias") hojaPreferenciasContenido();
 });
 function mostrarTab(tab){
   ["inicio","explorar","sonido","diario"].forEach(t=>{
@@ -2373,59 +2376,95 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
 }
 
 /* ════════════════ ARRANQUE ════════════════ */
-let onbPaso = 1;
-function irOnb(n){
-  const total = document.querySelectorAll(".onb-paso").length;
-  if(n > total){ terminarOnb(); return; }
-  onbPaso = n;
-  document.querySelectorAll(".onb-paso").forEach(p=>p.classList.toggle("activo", +p.dataset.paso === n));
-  document.querySelectorAll("#onbDots .onb-dot").forEach((d,i)=>d.classList.toggle("on", i < n));
-  if(n === 5){ const t = $("#onbListoTitulo"); if(t){ const nom = (E.ajustes.nombre||"").trim(); t.textContent = nom ? "Listo, " + nom + "." : "Todo listo."; } }
-  if(n === 2){ const inp = $("#onbNombre"); if(inp){ try{ inp.focus(); }catch(e){} } }
+const CATEGORIAS = [
+  ["oracion","Oración diaria"],["manifestacion","Manifestación"],["afirmaciones","Afirmaciones"],
+  ["meditacion","Meditaciones"],["journal","Journal"],["concentracion","Concentración"],["estudio","Estudio y reflexión"]
+];
+const TONOS = [["cristiano","Cristiano y bíblico"],["espiritual","Espiritual, sin religión específica"],["mezcla","Una mezcla"]];
+const SEGUIMIENTOS = {
+  oracion:      { q:"¿En qué momentos rezas?", opts:[["manana","Mañana"],["noche","Noche"],["dia","A lo largo del día"]] },
+  manifestacion:{ q:"¿Qué quieres llamar a tu vida?", opts:[["abundancia","Abundancia"],["salud","Salud"],["relaciones","Relaciones"],["proposito","Propósito y carrera"]] },
+  afirmaciones: { q:"¿Qué quieres reforzar en ti?", opts:[["confianza","Confianza"],["calma","Calma"],["disciplina","Disciplina"],["merecer","Merecerlo"],["fe","Fe"]] },
+  meditacion:   { q:"¿Para qué las buscas?", opts:[["ansiedad","Calmar ansiedad"],["enfoque","Enfocarme"],["dormir","Dormir"],["gratitud","Gratitud"]] },
+  journal:      { q:"¿Qué te ayuda a escribir?", opts:[["guiadas","Preguntas guiadas"],["libre","Página libre"],["gratitud","Gratitud"],["revisar","Revisar mi día"]] },
+  concentracion:{ q:"¿Qué sonido te centra?", opts:[["marron","Ruido marrón"],["blanco","Blanco"],["binaural","Binaural"],["naturaleza","Naturaleza"]] },
+  estudio:      { q:"¿Qué te gusta leer?", opts:[["escritura","Salmos y Escritura"],["parabola","Parábolas e historias"],["ensayo","Ensayos y doctrina"],["tradiciones","Otras tradiciones"]] }
+};
+function toggleArr(arr, k){ const i = arr.indexOf(k); if(i>=0) arr.splice(i,1); else arr.push(k); }
+function onbChips(opts, sel, attr){
+  return '<div class="onb-chips">' + opts.map(o=>'<button type="button" class="onb-chip'+(sel.indexOf(o[0])>=0?" on":"")+'" '+attr+'="'+o[0]+'">'+esc(o[1])+'</button>').join("") + '</div>';
 }
+function onbBtn(label, fin){ return '<button class="onb-btn" id="onbNext" data-fin="'+(fin?"1":"")+'">'+label+'</button>'; }
+
+let onbSeq = [], onbIdx = 0;
+function onbConstruirSeq(){
+  const seq = ["bienvenida","nombre","categorias","tono"];
+  (E.perfil.categorias||[]).forEach(c=>{ if(SEGUIMIENTOS[c]) seq.push("seg:"+c); });
+  seq.push("preferencias","listo");
+  return seq;
+}
+function onbPantalla(tipo){
+  const nom = (E.ajustes.nombre||"").trim();
+  if(tipo === "bienvenida") return { html:'<div class="onb-mark" aria-hidden="true">◦</div><h1 class="onb-t">Práctica</h1><p class="onb-p">Un lugar para tu oración, tu silencio y tu día. En un minuto lo ajustamos a ti.</p>' + onbBtn("Empezar") };
+  if(tipo === "nombre") return {
+    html:'<h1 class="onb-t">¿Cómo te llamas?</h1><p class="onb-p">Para saludarte cada día.</p><input class="onb-input" id="onbNombre" type="text" placeholder="Tu nombre" value="'+esc(E.ajustes.nombre||"")+'" autocomplete="given-name">' + onbBtn("Continuar"),
+    wire:()=>{ const i=$("#onbNombre"); if(i){ i.addEventListener("input", e=>{ E.ajustes.nombre = e.target.value; }); try{ i.focus(); }catch(e){} } } };
+  if(tipo === "categorias") return {
+    html:'<h1 class="onb-t">¿Qué te trae aquí?</h1><p class="onb-p">Elige lo que te importa. Puedes cambiarlo después.</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-cat") + onbBtn("Continuar"),
+    wire:()=>{ document.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.categorias, b.dataset.cat); })); } };
+  if(tipo === "tono") return {
+    html:'<h1 class="onb-t">¿Desde dónde lo vives?</h1><p class="onb-p">Para que el contenido te quede a la medida.</p><div class="onb-opts" id="onbTono">' + TONOS.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-tono="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div>' + onbBtn("Continuar"),
+    wire:()=>{ document.querySelectorAll("#onbTono .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbTono .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.tono; })); } };
+  if(tipo.indexOf("seg:") === 0){
+    const c = tipo.slice(4), s = SEGUIMIENTOS[c];
+    E.perfil.sub[c] = E.perfil.sub[c] || [];
+    return {
+      html:'<h1 class="onb-t">'+esc(s.q)+'</h1><p class="onb-p">Elige una o varias. O afínalo después.</p>' + onbChips(s.opts, E.perfil.sub[c], "data-sub") + onbBtn("Continuar") + '<button class="onb-saltar-paso" id="onbSaltarPaso">Después lo afino</button>',
+      wire:()=>{ document.querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.sub[c], b.dataset.sub); })); const sp=$("#onbSaltarPaso"); if(sp) sp.addEventListener("click", onbSig); } };
+  }
+  if(tipo === "preferencias") return {
+    html:'<h1 class="onb-t">Tu ambiente</h1><p class="onb-p">Cómo se ve y se siente. Todo se puede cambiar luego en Ajustes.</p>' +
+      '<div class="campo"><label class="campo-et">Tema</label><div class="segmento" id="onbTema">' + [["sistema","Sistema"],["claro","Claro"],["oscuro","Oscuro"]].map(t=>'<button type="button" class="seg'+((E.ajustes.tema||"sistema")===t[0]?" activo":"")+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") + '</div></div>' +
+      '<div class="fila" style="margin-top:6px"><div><div class="fila-txt">Sonido de ambiente</div><div class="fila-ayuda">Un lecho suave mientras usas la app.</div></div><button class="switch'+(E.ajustes.ambienteApp!==false?" on":"")+'" id="onbAmb" role="switch"></button></div>' + onbBtn("Continuar"),
+    wire:()=>{
+      document.querySelectorAll("#onbTema .seg").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbTema .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo"); E.ajustes.tema=b.dataset.tema; aplicarTema(); }));
+      const amb=$("#onbAmb"); if(amb) amb.addEventListener("click", ()=>{ const on=!amb.classList.contains("on"); amb.classList.toggle("on",on); E.ajustes.ambienteApp=on; }); } };
+  if(tipo === "listo") return { html:'<h1 class="onb-t">'+(nom?"Listo, "+esc(nom)+".":"Todo listo.")+'</h1><p class="onb-p">Práctica viene con oraciones, meditaciones e historias listas, afinadas a lo que elegiste. Úsalas tal cual, y con el tiempo hazlas tuyas en «Mi contenido».</p>' + onbBtn("Comenzar", true) };
+  return { html:"" };
+}
+function onbRender(){
+  const p = onbPantalla(onbSeq[onbIdx]);
+  const cont = $("#onbCont"); cont.innerHTML = p.html; cont.scrollTop = 0;
+  $("#onbDots").innerHTML = onbSeq.map((_,i)=>'<span class="onb-dot'+(i<=onbIdx?" on":"")+'"></span>').join("");
+  const at = $("#onbAtras"); if(at) at.classList.toggle("oculto", onbIdx === 0);
+  if(p.wire) p.wire();
+  const nx = $("#onbNext"); if(nx) nx.addEventListener("click", ()=>{ if(nx.dataset.fin) terminarOnb(); else onbSig(); });
+}
+function onbSig(){
+  if(onbSeq[onbIdx] === "categorias"){ const pos = onbIdx; onbSeq = onbConstruirSeq(); onbIdx = pos; }
+  onbIdx++;
+  if(onbIdx >= onbSeq.length){ terminarOnb(); return; }
+  onbRender();
+}
+function onbAtras(){ if(onbIdx > 0){ onbIdx--; onbRender(); } }
 function terminarOnb(){
-  E.ajustes.onboarded = true; guardar();
+  E.ajustes.onboarded = true; E.perfil.hecho = true; guardar();
   $("#onboarding").classList.add("oculto");
   render();
 }
 function mostrarOnboarding(){
-  // reflejar ajustes actuales
-  const inp = $("#onbNombre"); if(inp) inp.value = E.ajustes.nombre || "";
-  document.querySelectorAll("#onbTema .seg").forEach(b=>b.classList.toggle("activo", b.dataset.tema === (E.ajustes.tema||"sistema")));
-  const amb = $("#onbAmb"); if(amb) amb.classList.toggle("on", E.ajustes.ambienteApp !== false);
-  (E.ajustes.intereses||[]).forEach(k=>{ const c = document.querySelector('#onbIntereses .onb-chip[data-int="'+k+'"]'); if(c) c.classList.add("on"); });
+  onbSeq = onbConstruirSeq(); onbIdx = 0;
   $("#onboarding").classList.remove("oculto");
-  irOnb(1);
-}
-(function cablearOnboarding(){
-  const inp = $("#onbNombre"); if(inp) inp.addEventListener("input", e=>{ E.ajustes.nombre = e.target.value; });
-  document.querySelectorAll("#onbIntereses .onb-chip").forEach(c=>{
-    c.addEventListener("click", ()=>{
-      c.classList.toggle("on");
-      E.ajustes.intereses = E.ajustes.intereses || [];
-      const k = c.dataset.int, i = E.ajustes.intereses.indexOf(k);
-      if(i >= 0) E.ajustes.intereses.splice(i,1); else E.ajustes.intereses.push(k);
-    });
-  });
-  document.querySelectorAll("#onbTema .seg").forEach(b=>{
-    b.addEventListener("click", ()=>{
-      document.querySelectorAll("#onbTema .seg").forEach(x=>x.classList.remove("activo"));
-      b.classList.add("activo");
-      E.ajustes.tema = b.dataset.tema; aplicarTema();
-    });
-  });
-  const amb = $("#onbAmb"); if(amb) amb.addEventListener("click", ()=>{ const on = !amb.classList.contains("on"); amb.classList.toggle("on", on); E.ajustes.ambienteApp = on; });
-  document.querySelectorAll("[data-onb-next]").forEach(b=>b.addEventListener("click", ()=>irOnb(onbPaso + 1)));
-  const fin = $("#onbFin"); if(fin) fin.addEventListener("click", terminarOnb);
+  onbRender();
+  const at = $("#onbAtras"); if(at) at.addEventListener("click", onbAtras);
   const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
-})();
-
+}
 (async function(){
   nodos();
   await cargar();
   aplicarTema();
   render();
-  if(!E.ajustes.onboarded){ mostrarOnboarding(); }
+  if(!E.perfil.hecho){ mostrarOnboarding(); }
   setInterval(()=>{ if(!$("#inicio").classList.contains("oculto")) render(); }, 60000);
 })();
 </script>
