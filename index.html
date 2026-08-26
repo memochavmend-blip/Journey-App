@@ -509,6 +509,37 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .pref-t{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 13px}
 .pref-bloque .onb-chips,.pref-bloque .onb-opts{margin-bottom:0}
 
+/* ── Mensaje de hoy + Ahora mismo (inicio) ── */
+.hoy{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.hoy-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
+.hoy-txt{font-family:var(--serif);font-size:1.2rem;line-height:1.4;color:var(--tinta);margin:0}
+.ahora{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;margin-top:14px;padding:15px 18px;border-radius:14px;border:1px solid var(--linea-fuerte);background:transparent;transition:border-color .2s,background .2s}
+.ahora:hover,.ahora:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
+.ahora:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.ahora-t{font-family:var(--serif);font-size:1.1rem;color:var(--tinta)}
+.ahora-s{font-size:12.5px;color:var(--tinta-baja)}
+
+/* ── SOS · Ahora mismo ── */
+.sos{position:fixed;inset:0;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 30px) 32px calc(env(safe-area-inset-bottom) + 30px);gap:0}
+.sos-respira{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:38px;
+  background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--llama) 22%,transparent), transparent 70%);
+  border:1px solid var(--linea-fuerte);animation:respirar 11s ease-in-out infinite}
+.sos-guia{font-family:var(--serif);font-size:1.15rem;color:var(--tinta-baja);letter-spacing:.02em}
+@keyframes respirar{
+  0%{transform:scale(.72)}
+  36%{transform:scale(1.05)}
+  50%{transform:scale(1.05)}
+  86%{transform:scale(.72)}
+  100%{transform:scale(.72)}
+}
+.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:0 0 34px;min-height:4.5rem;transition:opacity .5s ease}
+.sos-acc{display:flex;gap:12px}
+.sos-btn{padding:13px 26px;border-radius:12px;border:1px solid var(--linea-fuerte);font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.sos-btn:hover,.sos-btn:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.sos-btn:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.sos-salir{border-color:transparent;color:var(--tinta-tenue)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -542,7 +573,18 @@ body.encendida .tabbar,body.encendida .gear{display:none}
       </div>
     </div>
 
+    <div class="hoy" id="hoy">
+      <p class="hoy-label">Mensaje de hoy</p>
+      <p class="hoy-txt" id="hoyTxt"></p>
+    </div>
+
     <div class="ritos" id="ritos"></div>
+
+    <button class="ahora" id="ahoraBtn">
+      <span class="ahora-t">Ahora mismo</span>
+      <span class="ahora-s">Un momento difícil · respira conmigo</span>
+    </button>
+
     <div class="aviso oculto" id="avisoVision"></div>
   </div>
 
@@ -589,6 +631,15 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   </div>
   <div class="onb-cont" id="onbCont"></div>
   <button class="onb-saltar" id="onbSaltar">Saltar por ahora</button>
+</div>
+
+<div class="sos oculto" id="sos">
+  <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span></div>
+  <p class="sos-linea" id="sosLinea"></p>
+  <div class="sos-acc">
+    <button class="sos-btn" id="sosOtra">Otra</button>
+    <button class="sos-btn sos-salir" id="sosSalir">Salir</button>
+  </div>
 </div>
 
 <!-- ══════ PRÁCTICA ══════ -->
@@ -913,6 +964,43 @@ const MENSUAL_HITOS = [
   "Foco — avancé mi prioridad principal sin dispersarme",
   "Cuerpo — cuidé sueño, comida y movimiento",
   "Límites — protegí mi energía de lo que no suma"
+];
+// ── Ola 1 · calma / presencia (el clúster de mayor engagement) ──
+const MENSAJES = [
+  "Hoy no empieza con lo que te falta, sino con lo que ya eres.",
+  "Lo que cuidas en silencio hoy, mañana lo agradeces.",
+  "No tienes que hacerlo todo. Solo lo siguiente.",
+  "Dios está contigo en lo pequeño de este día, no solo en lo grande.",
+  "Una cosa a la vez. Con eso alcanza para hoy.",
+  "Lo que siembras hoy, aunque no lo veas, ya está creciendo.",
+  "Respira antes de empezar. El día te espera contigo, no en tu contra.",
+  "Tu paz no depende de que todo salga bien, sino de a Quién le entregas el día.",
+  "Hay más fuerza dentro de ti de la que tus días fáciles te dejaron ver.",
+  "Empieza por gratitud. Cambia el peso del día entero.",
+  "No corras. Lo importante rara vez tiene prisa.",
+  "Hoy puedes empezar de nuevo. La cuenta se reinicia cada mañana.",
+  "Eres suficiente hoy, antes de lograr nada.",
+  "Lo que entregas deja de pesarte. Suelta lo que no te toca cargar.",
+  "El día es a tu favor. Camínalo despacio.",
+  "Basta con presentarte. Lo demás se va acomodando."
+];
+const CALMA = [
+  "Respira. Solo esto: el aire que entra, el aire que sale. Nada más por ahora.",
+  "Estás a salvo en este momento. Es lo único que tienes que sostener.",
+  "No estás solo en esto. Algo más grande te está sosteniendo ahora mismo.",
+  "Esto también va a pasar. No eres lo que sientes hoy.",
+  "No tienes que resolverlo todo esta noche. Solo tienes que respirar.",
+  "«No temas, porque yo estoy contigo.»<span class=\"ancla-ref\">Isaías 41</span>",
+  "Suelta los hombros. Afloja la mandíbula. Estás bien por ahora.",
+  "Un respiro a la vez. Eso es todo lo que se te pide.",
+  "«Dios es nuestro refugio y fortaleza, nuestro pronto auxilio en la angustia.»<span class=\"ancla-ref\">Salmo 46</span>",
+  "Tu mente corre al futuro. Tráela aquí: en este instante, todavía estás bien.",
+  "No tienes que sentirte fuerte. Solo quédate. Respira. Quédate.",
+  "Este miedo no es un hecho. Es una ola, y las olas bajan.",
+  "Pon una mano en el pecho. Siente que sigues aquí. Eso basta.",
+  "«Vengan a mí los que están cansados, y yo los haré descansar.»<span class=\"ancla-ref\">Mateo 11</span>",
+  "Estás a salvo. Estás sostenido. Esto va a pasar.",
+  "Nada tiene que decidirse ahora. Solo respira hasta que la ola baje."
 ];
 // Audio alojado en el repo (rutas relativas). Un archivo por ritual; se puede dividir por sección después.
 const AUDIO_RITUAL = { manana:"audio/manana-01.mp3", noche:"audio/noche-01.mp3", nucleo:"audio/nucleo-01.mp3" };
@@ -1582,6 +1670,7 @@ function render(){
   const nom = (E.ajustes.nombre || "").trim();
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
+  const _hoy = $("#hoyTxt"); if(_hoy) _hoy.textContent = MENSAJES[Math.floor(Date.now()/86400000) % MENSAJES.length];
   $("#rubricaHora").textContent = h < 12 ? "Activación" : h < 19 ? "En medio del día" : "Rendición";
   $("#fecha").textContent = DIAS_L[ahora.getDay()] + " " + ahora.getDate() + " de " + MESES_L[ahora.getMonth()] + " · " + String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
 
@@ -2459,6 +2548,42 @@ function mostrarOnboarding(){
   const at = $("#onbAtras"); if(at) at.addEventListener("click", onbAtras);
   const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
 }
+let sosTimer = null, sosT0 = 0;
+function fraseCalma(){ return CALMA[Math.floor(Math.random()*CALMA.length)]; }
+function abrirSOS(){
+  $("#sosLinea").innerHTML = fraseCalma();
+  $("#sosLinea").style.opacity = "1";
+  $("#sos").classList.remove("oculto");
+  document.body.classList.add("encendida");
+  sosT0 = Date.now();
+  const guia = $("#sosGuia");
+  const actualizar = ()=>{
+    const t = (Date.now() - sosT0) % 11000;
+    const txt = t < 4000 ? "Inhala" : t < 5500 ? "Sostén" : t < 9500 ? "Exhala" : "Sostén";
+    if(guia.textContent !== txt) guia.textContent = txt;
+  };
+  actualizar();
+  clearInterval(sosTimer); sosTimer = setInterval(actualizar, 350);
+  padBed = false;
+  try{ Pad.desbloquear(); if(E.ajustes.pad) Pad.iniciar(escenaActiva("noche"), E.ajustes.padVol * 0.5); }catch(e){}
+}
+function cerrarSOS(){
+  clearInterval(sosTimer); sosTimer = null;
+  $("#sos").classList.add("oculto");
+  document.body.classList.remove("encendida");
+  padBed = false;
+  try{ Pad.detener(1.5); }catch(e){}
+  ambienteBed();
+}
+(function cablearSOS(){
+  const ab = $("#ahoraBtn"); if(ab) ab.addEventListener("click", abrirSOS);
+  const sa = $("#sosSalir"); if(sa) sa.addEventListener("click", cerrarSOS);
+  const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
+    const l = $("#sosLinea"); l.style.opacity = "0";
+    setTimeout(()=>{ l.innerHTML = fraseCalma(); l.style.opacity = "1"; }, 320);
+  });
+})();
+
 (async function(){
   nodos();
   await cargar();
