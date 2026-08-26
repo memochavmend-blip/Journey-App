@@ -573,6 +573,18 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .manif-opt{padding:16px 18px;border:1px solid var(--linea-fuerte);border-radius:14px;font-family:var(--serif);font-size:1.08rem;color:var(--tinta);text-align:left;transition:border-color .2s,background .2s}
 .manif-opt:hover,.manif-opt:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
 
+/* ── Feedback (👍/👎) ── */
+.fb{display:flex;justify-content:center;gap:14px;margin:2px 0 20px}
+.fb-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--linea-fuerte);display:flex;align-items:center;justify-content:center;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s,transform .12s}
+.fb-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+.fb-btn:active{transform:scale(.9)}
+.fb-btn:hover,.fb-btn:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.fb-btn:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.fb-abajo svg{transform:rotate(180deg)}
+.fb-abajo:hover,.fb-abajo:focus-visible{border-color:var(--brasa);color:var(--brasa)}
+.pref-reset{display:block;width:100%;text-align:center;padding:12px;margin-top:6px;font-size:13px;color:var(--tinta-tenue);transition:color .2s}
+.pref-reset:hover,.pref-reset:focus-visible{color:var(--tinta-baja)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -775,6 +787,7 @@ let E = {
   contenido:{ ancla:{usuario:[]}, historias:{usuario:[]}, doctrina:{usuario:[]}, salmos:{usuario:[]} },
   perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
   manifestacion:{ decl:"", fecha:"", m:false, t:false, n:false },
+  feedback:{ pesos:{}, ocultos:[] },
   ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
@@ -793,6 +806,9 @@ async function cargar(){
     if(!Array.isArray(E.perfil.categorias)) E.perfil.categorias = [];
     if(!E.perfil.sub || typeof E.perfil.sub !== "object") E.perfil.sub = {};
     E.manifestacion = Object.assign({decl:"", fecha:"", m:false, t:false, n:false}, g.manifestacion||{});
+    E.feedback = Object.assign({pesos:{}, ocultos:[]}, g.feedback||{});
+    if(!E.feedback.pesos || typeof E.feedback.pesos !== "object") E.feedback.pesos = {};
+    if(!Array.isArray(E.feedback.ocultos)) E.feedback.ocultos = [];
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
@@ -2272,11 +2288,22 @@ function filtraTexto(lista){
 function calmaActivas(){ return filtraTexto(CALMA); }
 function mensajesActivos(){ return filtraTexto(MENSAJES); }
 
+// ── Feedback (👍/👎) → pesos por etiqueta + ocultar piezas ──
+function fbPeso(tags){ return (tags||[]).reduce((s,t)=>s + (E.feedback.pesos[t]||0), 0); }
+function fbOculto(id){ return E.feedback.ocultos.indexOf(id) >= 0; }
+function fbGusta(id, tags){ (tags||[]).forEach(t=>{ E.feedback.pesos[t] = Math.min(8, (E.feedback.pesos[t]||0) + 1); }); guardar(); }
+function fbNoGusta(id, tags){ (tags||[]).forEach(t=>{ E.feedback.pesos[t] = Math.max(-8, (E.feedback.pesos[t]||0) - 1); }); if(E.feedback.ocultos.indexOf(id) < 0) E.feedback.ocultos.push(id); guardar(); }
+function fbHTML(){ return '<div class="fb"><button class="fb-btn" data-fb="up" aria-label="Me gusta"><svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg></button><button class="fb-btn fb-abajo" data-fb="down" aria-label="No es para mí"><svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg></button></div>'; }
+
 function anclasTodas(){
-  return filtraTexto(ANCLAS).concat((E.contenido.ancla.usuario||[]).map(u=>esc(u.texto||"")));
+  const l = filtraTexto(ANCLAS).concat((E.contenido.ancla.usuario||[]).map(u=>esc(u.texto||"")));
+  const v = l.filter(a=>!fbOculto(a));
+  return v.length ? v : l;
 }
 function salmosTodos(){
-  return SALMOS.concat((E.contenido.salmos.usuario||[]).map(u=>esc(u.texto||"").replace(/\n/g,"<br>") + (u.ref?'<span class="ancla-ref">'+esc(u.ref)+'</span>':'')));
+  const l = SALMOS.concat((E.contenido.salmos.usuario||[]).map(u=>esc(u.texto||"").replace(/\n/g,"<br>") + (u.ref?'<span class="ancla-ref">'+esc(u.ref)+'</span>':'')));
+  const v = l.filter(s=>!fbOculto(s));
+  return v.length ? v : l;
 }
 function historiasTodas(){
   return HISTORIAS.concat(E.contenido.historias.usuario||[]);
@@ -2295,13 +2322,19 @@ function histTemasActivos(){
 }
 function afirmacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [];
-  const l = sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES;
-  return l.length ? l : AFIRMACIONES;
+  let l = sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice();
+  l = l.filter(a=>!fbOculto(a.x));
+  if(!l.length) l = AFIRMACIONES.filter(a=>!fbOculto(a.x));
+  if(!l.length) l = AFIRMACIONES.slice();
+  return l.sort((a,b)=>(fbPeso([b.t]) + Math.random()*0.7) - (fbPeso([a.t]) + Math.random()*0.7));
 }
 function manifestacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [];
-  const l = sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES;
-  return l.length ? l : MANIFESTACIONES;
+  let l = sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice();
+  l = l.filter(m=>!fbOculto(m.x));
+  if(!l.length) l = MANIFESTACIONES.filter(m=>!fbOculto(m.x));
+  if(!l.length) l = MANIFESTACIONES.slice();
+  return l.sort((a,b)=>(fbPeso([b.t]) + Math.random()*0.7) - (fbPeso([a.t]) + Math.random()*0.7));
 }
 
 function hojaHistorias(){
@@ -2361,34 +2394,44 @@ function hojaMeditacion(){
 }
 
 function hojaAncla(){
-  const lista = anclasTodas();
+  let lista = anclasTodas();
   if(anclaI === null || anclaI >= lista.length) anclaI = Math.floor(Date.now()/86400000) % lista.length;
   hoja("Ancla", "Una línea para volver al centro.",
     '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + lista[anclaI] + '</p></div>' +
+    fbHTML() +
     '<div class="acciones"><button class="accion" id="anclaOtra">Otra</button><button class="accion" id="anclaCerrar">Cerrar</button></div>',
     ()=>{
-      $("#anclaOtra").addEventListener("click", ()=>{
-        const l = anclasTodas();
-        anclaI = (anclaI + 1) % l.length;
-        $("#anclaTxt").innerHTML = l[anclaI];
-      });
+      const mostrar = ()=>{ if(anclaI >= lista.length) anclaI = 0; $("#anclaTxt").innerHTML = lista[anclaI] || ""; };
+      $("#anclaOtra").addEventListener("click", ()=>{ anclaI = (anclaI + 1) % lista.length; mostrar(); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
+        const cur = lista[anclaI]; if(cur === undefined) return;
+        if(b.dataset.fb === "up"){ fbGusta(cur, []); pulso("#anclaTxt"); anclaI = (anclaI + 1) % lista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(cur, []); lista.splice(anclaI, 1); if(!lista.length){ lista = anclasTodas(); anclaI = 0; } mostrar(); }
+      }));
       $("#anclaCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
-let afI = null;
+let afLista = [], afI = 0;
 function hojaAfirmaciones(){
-  const lista = afirmacionesActivas();
-  if(afI === null || afI >= lista.length) afI = Math.floor(Date.now()/86400000) % lista.length;
+  afLista = afirmacionesActivas(); afI = 0;
   hoja("Afirmaciones", "Dilo en voz alta. Repítelo hasta que se sienta verdad.",
-    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(lista[afI].x) + '</p></div>' +
+    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(afLista[afI].x) + '</p></div>' +
+    fbHTML() +
     '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
     ()=>{
-      $("#afOtra").addEventListener("click", ()=>{ const l = afirmacionesActivas(); afI = (afI+1) % l.length; $("#afTxt").textContent = l[afI].x; });
-      $("#afRepetir").addEventListener("click", ()=>{ const l = afirmacionesActivas(); abrirRepetir(l[afI].x); });
+      const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? afLista[afI].x : ""; };
+      $("#afOtra").addEventListener("click", ()=>{ afI = (afI + 1) % afLista.length; mostrar(); });
+      $("#afRepetir").addEventListener("click", ()=>{ if(afLista[afI]) abrirRepetir(afLista[afI].x); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
+        const it = afLista[afI]; if(!it) return;
+        if(b.dataset.fb === "up"){ fbGusta(it.x, [it.t]); pulso("#afTxt"); afI = (afI + 1) % afLista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(it.x, [it.t]); afLista.splice(afI, 1); if(!afLista.length){ afLista = afirmacionesActivas(); afI = 0; } mostrar(); }
+      }));
       $("#afCerrar").addEventListener("click", cerrarHoja);
     });
 }
+function pulso(sel){ const t = $(sel); if(!t) return; t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso"); }
 let repN = 0;
 function abrirRepetir(texto){
   $("#repTxt").textContent = texto; repN = 0; $("#repCount").textContent = "";
@@ -2441,17 +2484,20 @@ function cerrar369(marcar){
 
 let salmoI = null;
 function hojaSalmos(){
-  const lista = salmosTodos();
+  let lista = salmosTodos();
   if(salmoI === null || salmoI >= lista.length) salmoI = Math.floor(Date.now()/86400000) % lista.length;
   hoja("Salmos", "Los salmos que más han sostenido a la gente.",
     '<div class="ancla-caja salmo-caja"><p class="ancla-txt salmo" id="salmoTxt">' + lista[salmoI] + '</p></div>' +
+    fbHTML() +
     '<div class="acciones"><button class="accion" id="salmoOtro">Otro salmo</button><button class="accion" id="salmoCerrar">Cerrar</button></div>',
     ()=>{
-      $("#salmoOtro").addEventListener("click", ()=>{
-        const l = salmosTodos();
-        salmoI = (salmoI + 1) % l.length;
-        $("#salmoTxt").innerHTML = l[salmoI];
-      });
+      const mostrar = ()=>{ if(salmoI >= lista.length) salmoI = 0; $("#salmoTxt").innerHTML = lista[salmoI] || ""; };
+      $("#salmoOtro").addEventListener("click", ()=>{ salmoI = (salmoI + 1) % lista.length; mostrar(); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
+        const cur = lista[salmoI]; if(cur === undefined) return;
+        if(b.dataset.fb === "up"){ fbGusta(cur, []); pulso("#salmoTxt"); salmoI = (salmoI + 1) % lista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(cur, []); lista.splice(salmoI, 1); if(!lista.length){ lista = salmosTodos(); salmoI = 0; } mostrar(); }
+      }));
       $("#salmoCerrar").addEventListener("click", cerrarHoja);
     });
 }
@@ -2536,7 +2582,7 @@ function hojaPreferenciasContenido(){
     return h;
   };
   hoja("Preferencias de contenido", "Lo que elegiste al empezar. Cámbialo cuando quieras.",
-    '<div id="prefCont">' + cuerpo() + '</div><div class="acciones"><button class="accion" id="prefCerrar">Cerrar</button></div>',
+    '<div id="prefCont">' + cuerpo() + '</div><button class="pref-reset" id="prefReset">Reiniciar mis 👍 / 👎</button><div class="acciones"><button class="accion" id="prefCerrar">Cerrar</button></div>',
     ()=>{
       const re = ()=>{ $("#prefCont").innerHTML = cuerpo(); cablear(); };
       function cablear(){
@@ -2545,6 +2591,7 @@ function hojaPreferenciasContenido(){
         document.querySelectorAll("[data-psub]").forEach(b=>b.addEventListener("click", ()=>{ const p = b.dataset.psub.split("|"), c = p[0], tag = p[1]; b.classList.toggle("on"); E.perfil.sub[c] = E.perfil.sub[c] || []; toggleArr(E.perfil.sub[c], tag); guardar(); }));
       }
       cablear();
+      const rst = $("#prefReset"); if(rst) rst.addEventListener("click", ()=>{ E.feedback = { pesos:{}, ocultos:[] }; guardar(); rst.textContent = "Listo — se reinició"; });
       $("#prefCerrar").addEventListener("click", cerrarHoja);
     });
 }
