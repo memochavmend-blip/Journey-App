@@ -540,6 +540,39 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-btn:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
 .sos-salir{border-color:transparent;color:var(--tinta-tenue)}
 
+/* ── Afirmaciones · repetir + Manifestación · 369 (overlays) ── */
+.rep,.m369{position:fixed;inset:0;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 40px) 32px calc(env(safe-area-inset-bottom) + 34px)}
+.rep-txt,.m369-decl{font-family:var(--serif);font-size:1.9rem;line-height:1.4;color:var(--tinta);text-align:center;max-width:26ch;margin:0 0 20px}
+.rep-count,.m369-count{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 28px;min-height:1.2em}
+.m369-count{margin:0 0 26px}
+.rep-decir{padding:15px 34px;border-radius:999px;background:var(--tinta);color:var(--noche);font-size:15px;font-weight:500;transition:transform .12s ease,opacity .2s}
+.rep-decir:active{transform:scale(.96)}
+.rep-decir:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.pulso{animation:pulsoAf .5s ease}
+@keyframes pulsoAf{0%{transform:scale(1)}40%{transform:scale(1.04);opacity:.85}100%{transform:scale(1)}}
+.m369{justify-content:center}
+.m369-x{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:20px;width:38px;height:38px;font-size:17px;color:var(--tinta-tenue);display:flex;align-items:center;justify-content:center}
+.m369-vis{display:flex;flex-direction:column;align-items:center;gap:22px;animation:onbIn .5s ease}
+.m369-vis-t{font-family:var(--serif);font-size:1.3rem;line-height:1.5;color:var(--tinta-baja);text-align:center;max-width:24ch;margin:0}
+.m369-listo{padding:15px 40px;border-radius:12px;background:var(--tinta);color:var(--noche);font-size:15px;font-weight:500}
+.m369-listo:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+
+/* ── Manifestación (superficie) ── */
+.manif-decl{background:var(--panel);border:1px solid var(--linea-fuerte);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center}
+.manif-decl-l{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 10px}
+.manif-decl-x{font-family:var(--serif);font-size:1.3rem;line-height:1.4;color:var(--tinta);margin:0 0 14px}
+.manif-cambiar{font-size:12.5px;color:var(--brasa);padding:5px}
+.manif-ses{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.manif-sesion{display:flex;align-items:center;justify-content:space-between;width:100%;padding:17px 20px;border:1px solid var(--linea-fuerte);border-radius:14px;text-align:left;transition:border-color .2s,background .2s}
+.manif-sesion:hover,.manif-sesion:focus-visible{border-color:var(--llama)}
+.manif-sesion.hecho{border-color:var(--linea);background:color-mix(in srgb,var(--llama) 8%,transparent);opacity:.75}
+.manif-ses-t{font-family:var(--serif);font-size:1.15rem;color:var(--tinta)}
+.manif-ses-r{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--tinta-baja)}
+.manif-opts{display:flex;flex-direction:column;gap:9px}
+.manif-opt{padding:16px 18px;border:1px solid var(--linea-fuerte);border-radius:14px;font-family:var(--serif);font-size:1.08rem;color:var(--tinta);text-align:left;transition:border-color .2s,background .2s}
+.manif-opt:hover,.manif-opt:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
+
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   .respiro-aro{transition-duration:4s !important}
@@ -591,6 +624,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <div class="panel oculto" id="panelExplorar">
     <h1 class="panel-titulo">Explorar</h1>
     <div class="nav-cards">
+      <button class="nav-card" data-abrir="afirmaciones"><span class="nav-card-tx"><span class="nav-card-t">Afirmaciones</span><span class="nav-card-s">Dilo hasta que se sienta verdad</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="manifestacion"><span class="nav-card-tx"><span class="nav-card-t">Manifestación</span><span class="nav-card-s">Método 369 · lo que llamas a tu vida</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="meditacion"><span class="nav-card-tx"><span class="nav-card-t">Meditación</span><span class="nav-card-s">Guiadas, con voz y ambiente</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span><span class="nav-card-s">Estudio, una vez por semana</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span><span class="nav-card-s">Relatos para reflexionar</span></span><span class="nav-card-ch">›</span></button>
@@ -639,6 +674,26 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <div class="sos-acc">
     <button class="sos-btn" id="sosOtra">Otra</button>
     <button class="sos-btn sos-salir" id="sosSalir">Salir</button>
+  </div>
+</div>
+
+<div class="rep oculto" id="repetir">
+  <p class="rep-txt" id="repTxt"></p>
+  <p class="rep-count" id="repCount"></p>
+  <div class="sos-acc">
+    <button class="rep-decir" id="repDecir">Lo dije</button>
+    <button class="sos-btn sos-salir" id="repListo">Listo</button>
+  </div>
+</div>
+
+<div class="m369 oculto" id="m369">
+  <button class="m369-x" id="m369Salir" aria-label="Salir">✕</button>
+  <p class="m369-count" id="m369Count"></p>
+  <p class="m369-decl" id="m369Decl"></p>
+  <button class="rep-decir" id="m369Decir">Lo dije</button>
+  <div class="m369-vis oculto" id="m369Vis">
+    <p class="m369-vis-t">Ahora ciérralo con gratitud. Siéntelo como si ya fuera tuyo.</p>
+    <button class="m369-listo" id="m369Listo">Listo</button>
   </div>
 </div>
 
@@ -719,6 +774,7 @@ let E = {
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
   contenido:{ ancla:{usuario:[]}, historias:{usuario:[]}, doctrina:{usuario:[]}, salmos:{usuario:[]} },
   perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
+  manifestacion:{ decl:"", fecha:"", m:false, t:false, n:false },
   ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
 };
 
@@ -736,6 +792,7 @@ async function cargar(){
     E.perfil = Object.assign({categorias:[], tono:"mezcla", sub:{}, hecho:false}, g.perfil||{});
     if(!Array.isArray(E.perfil.categorias)) E.perfil.categorias = [];
     if(!E.perfil.sub || typeof E.perfil.sub !== "object") E.perfil.sub = {};
+    E.manifestacion = Object.assign({decl:"", fecha:"", m:false, t:false, n:false}, g.manifestacion||{});
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
@@ -1001,6 +1058,62 @@ const CALMA = [
   "«Vengan a mí los que están cansados, y yo los haré descansar.»<span class=\"ancla-ref\">Mateo 11</span>",
   "Estás a salvo. Estás sostenido. Esto va a pasar.",
   "Nada tiene que decidirse ahora. Solo respira hasta que la ola baje."
+];
+// ── Afirmaciones (primera persona) — etiquetadas por subtema del perfil ──
+const AFIRMACIONES = [
+  { t:"confianza", x:"Confío en lo que sé y en lo que soy capaz de aprender." },
+  { t:"confianza", x:"Tengo lo que se necesita para lo que tengo enfrente." },
+  { t:"confianza", x:"Hablo y actúo desde mi valor, no desde el miedo." },
+  { t:"confianza", x:"Merezco ocupar espacio y que me escuchen." },
+  { t:"confianza", x:"Cada paso que doy me hace más capaz." },
+  { t:"confianza", x:"No necesito permiso para empezar." },
+  { t:"calma", x:"Estoy a salvo. Puedo soltar la prisa." },
+  { t:"calma", x:"Respiro, y con cada exhalación suelto lo que no controlo." },
+  { t:"calma", x:"Elijo la calma por encima de la preocupación." },
+  { t:"calma", x:"Lo que me inquieta hoy, mañana será más pequeño." },
+  { t:"calma", x:"Estoy en paz con lo que aún no tiene respuesta." },
+  { t:"calma", x:"Mi mente puede descansar. No todo depende de mí." },
+  { t:"disciplina", x:"Hago lo que dije que haría, aunque no tenga ganas." },
+  { t:"disciplina", x:"Soy constante en lo pequeño, y lo pequeño construye lo grande." },
+  { t:"disciplina", x:"Elijo hoy lo que mi yo de mañana me va a agradecer." },
+  { t:"disciplina", x:"No espero motivación; empiezo, y la motivación llega." },
+  { t:"disciplina", x:"Termino lo que empiezo." },
+  { t:"merecer", x:"Soy suficiente hoy, antes de lograr nada." },
+  { t:"merecer", x:"No tengo que ganarme mi valor; ya lo tengo." },
+  { t:"merecer", x:"Merezco descanso, amor y cosas buenas." },
+  { t:"merecer", x:"Me trato con la misma paciencia con la que trato a quien quiero." },
+  { t:"merecer", x:"Me perdono por lo que no supe hacer mejor antes." },
+  { t:"merecer", x:"Soy digno de lo que estoy pidiendo." },
+  { t:"fe", x:"Algo más grande que yo sostiene lo que no puedo cargar." },
+  { t:"fe", x:"Confío en el tiempo de Dios, aunque no lo entienda." },
+  { t:"fe", x:"Todo lo puedo en Aquel que me fortalece." },
+  { t:"fe", x:"Lo que es para mí, no va a pasar de largo." },
+  { t:"fe", x:"Entrego lo que me preocupa y descanso en que está en buenas manos." },
+  { t:"fe", x:"No camino solo." }
+];
+// ── Manifestación (declaraciones en presente) — etiquetadas por tema ──
+const MANIFESTACIONES = [
+  { t:"abundancia", x:"El dinero llega a mí con facilidad y desde muchas fuentes." },
+  { t:"abundancia", x:"Vivo en abundancia y comparto desde lo que me sobra." },
+  { t:"abundancia", x:"Soy un imán para las oportunidades que me hacen crecer." },
+  { t:"abundancia", x:"Recibo más de lo que necesito, y sé administrarlo bien." },
+  { t:"abundancia", x:"La prosperidad es mi estado natural." },
+  { t:"abundancia", x:"Cada día se abren caminos nuevos hacia mi abundancia." },
+  { t:"salud", x:"Mi cuerpo está sano, fuerte y lleno de energía." },
+  { t:"salud", x:"Cada día cuido mi cuerpo y él me responde con vitalidad." },
+  { t:"salud", x:"Duermo profundo y despierto renovado." },
+  { t:"salud", x:"La salud fluye por cada parte de mí." },
+  { t:"salud", x:"Elijo lo que me nutre y me da vida." },
+  { t:"relaciones", x:"Atraigo a mi vida personas que me suman y me quieren bien." },
+  { t:"relaciones", x:"Doy y recibo amor con libertad y sin miedo." },
+  { t:"relaciones", x:"Estoy rodeado de relaciones sanas y sinceras." },
+  { t:"relaciones", x:"El amor que doy regresa a mí multiplicado." },
+  { t:"relaciones", x:"Merezco un amor que me elige todos los días." },
+  { t:"proposito", x:"Estoy exactamente donde necesito estar para mi propósito." },
+  { t:"proposito", x:"Mi trabajo tiene sentido y da fruto." },
+  { t:"proposito", x:"Cada día me acerco más a la vida que estoy construyendo." },
+  { t:"proposito", x:"Uso mis dones y el mundo los recibe." },
+  { t:"proposito", x:"Tengo claridad sobre mi siguiente paso, y lo doy." }
 ];
 // Audio alojado en el repo (rutas relativas). Un archivo por ritual; se puede dividir por sección después.
 const AUDIO_RITUAL = { manana:"audio/manana-01.mp3", noche:"audio/noche-01.mp3", nucleo:"audio/nucleo-01.mp3" };
@@ -2084,6 +2197,16 @@ function historiasTodas(){
 function doctrinaTodas(){
   return DOCTRINA.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
 }
+function afirmacionesActivas(){
+  const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [];
+  const l = sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES;
+  return l.length ? l : AFIRMACIONES;
+}
+function manifestacionesActivas(){
+  const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [];
+  const l = sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES;
+  return l.length ? l : MANIFESTACIONES;
+}
 
 function hojaHistorias(){
   const temaInicial = "amor";
@@ -2154,6 +2277,69 @@ function hojaAncla(){
       });
       $("#anclaCerrar").addEventListener("click", cerrarHoja);
     });
+}
+
+let afI = null;
+function hojaAfirmaciones(){
+  const lista = afirmacionesActivas();
+  if(afI === null || afI >= lista.length) afI = Math.floor(Date.now()/86400000) % lista.length;
+  hoja("Afirmaciones", "Dilo en voz alta. Repítelo hasta que se sienta verdad.",
+    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(lista[afI].x) + '</p></div>' +
+    '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
+    ()=>{
+      $("#afOtra").addEventListener("click", ()=>{ const l = afirmacionesActivas(); afI = (afI+1) % l.length; $("#afTxt").textContent = l[afI].x; });
+      $("#afRepetir").addEventListener("click", ()=>{ const l = afirmacionesActivas(); abrirRepetir(l[afI].x); });
+      $("#afCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+let repN = 0;
+function abrirRepetir(texto){
+  $("#repTxt").textContent = texto; repN = 0; $("#repCount").textContent = "";
+  $("#repetir").classList.remove("oculto"); document.body.classList.add("encendida");
+}
+function cerrarRepetir(){ $("#repetir").classList.add("oculto"); document.body.classList.remove("encendida"); }
+
+function hojaManifestacion(){
+  const hoy = hoyISO();
+  if(E.manifestacion.fecha !== hoy){ E.manifestacion.fecha = hoy; E.manifestacion.m = false; E.manifestacion.t = false; E.manifestacion.n = false; guardar(); }
+  if(!E.manifestacion.decl){ hojaManifestElegir(); return; }
+  const ses = [["m","Mañana",3],["t","Tarde",6],["n","Noche",9]];
+  hoja("Manifestación", "Método 369. Declara lo que llamas a tu vida: 3 veces en la mañana, 6 en la tarde, 9 en la noche.",
+    '<div class="manif-decl"><p class="manif-decl-l">Tu declaración</p><p class="manif-decl-x">' + esc(E.manifestacion.decl) + '</p><button class="manif-cambiar" id="manifCambiar">Cambiar</button></div>' +
+    '<div class="manif-ses">' + ses.map(s=>'<button class="manif-sesion'+(E.manifestacion[s[0]]?' hecho':'')+'" data-ses="'+s[0]+'" data-reps="'+s[2]+'"><span class="manif-ses-t">'+s[1]+'</span><span class="manif-ses-r">'+(E.manifestacion[s[0]]?"✓ hecho":s[2]+" veces")+'</span></button>').join("") + '</div>' +
+    '<div class="acciones"><button class="accion" id="manifCerrar">Cerrar</button></div>',
+    ()=>{
+      $("#manifCambiar").addEventListener("click", hojaManifestElegir);
+      document.querySelectorAll(".manif-sesion").forEach(b=>b.addEventListener("click", ()=>{ if(!E.manifestacion[b.dataset.ses]) abrir369(b.dataset.ses, +b.dataset.reps); }));
+      $("#manifCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+function hojaManifestElegir(){
+  const lista = manifestacionesActivas();
+  hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
+    '<div class="manif-opts">' + lista.map((m,i)=>'<button class="manif-opt" data-decl="'+i+'">'+esc(m.x)+'</button>').join("") + '</div>' +
+    '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
+    ()=>{
+      const l = manifestacionesActivas();
+      document.querySelectorAll(".manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = l[+b.dataset.decl].x; guardar(); hojaManifestacion(); }));
+      $("#manifElegirCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+let m369 = { ses:"", meta:0, n:0 };
+function abrir369(ses, reps){
+  m369 = { ses:ses, meta:reps, n:0 };
+  $("#m369Decl").textContent = E.manifestacion.decl;
+  $("#m369Count").textContent = "0 / " + reps;
+  $("#m369Vis").classList.add("oculto");
+  $("#m369Decir").classList.remove("oculto");
+  $("#m369").classList.remove("oculto");
+  document.body.classList.add("encendida");
+}
+function cerrar369(marcar){
+  if(marcar){ E.manifestacion[m369.ses] = true; guardar(); }
+  $("#m369").classList.add("oculto"); document.body.classList.remove("encendida");
+  if(!$("#hojaFondo")) return;
+  hojaManifestacion();
 }
 
 let salmoI = null;
@@ -2364,6 +2550,8 @@ document.addEventListener("click", e=>{
   if(!b) return;
   const k = b.dataset.abrir;
   if(k === "vision") hojaVision();
+  else if(k === "afirmaciones") hojaAfirmaciones();
+  else if(k === "manifestacion") hojaManifestacion();
   else if(k === "arquitecto") hojaArquitecto();
   else if(k === "journal") hojaJournal();
   else if(k === "meditacion") hojaMeditacion();
@@ -2582,6 +2770,20 @@ function cerrarSOS(){
     const l = $("#sosLinea"); l.style.opacity = "0";
     setTimeout(()=>{ l.innerHTML = fraseCalma(); l.style.opacity = "1"; }, 320);
   });
+  // Afirmaciones · repetir
+  const rd = $("#repDecir"); if(rd) rd.addEventListener("click", ()=>{
+    repN++; $("#repCount").textContent = repN + (repN === 1 ? " vez" : " veces");
+    const t = $("#repTxt"); t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso");
+  });
+  const rl = $("#repListo"); if(rl) rl.addEventListener("click", cerrarRepetir);
+  // Manifestación · 369
+  const md = $("#m369Decir"); if(md) md.addEventListener("click", ()=>{
+    m369.n++; $("#m369Count").textContent = m369.n + " / " + m369.meta;
+    const t = $("#m369Decl"); t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso");
+    if(m369.n >= m369.meta){ $("#m369Decir").classList.add("oculto"); $("#m369Vis").classList.remove("oculto"); }
+  });
+  const ml = $("#m369Listo"); if(ml) ml.addEventListener("click", ()=>cerrar369(true));
+  const mx = $("#m369Salir"); if(mx) mx.addEventListener("click", ()=>cerrar369(false));
 })();
 
 (async function(){
