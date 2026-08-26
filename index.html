@@ -1814,7 +1814,7 @@ function render(){
   const nom = (E.ajustes.nombre || "").trim();
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
-  const _hoy = $("#hoyTxt"); if(_hoy) _hoy.textContent = MENSAJES[Math.floor(Date.now()/86400000) % MENSAJES.length];
+  const _hoy = $("#hoyTxt"); if(_hoy){ const _m = mensajesActivos(); _hoy.textContent = _m[Math.floor(Date.now()/86400000) % _m.length]; }
   $("#rubricaHora").textContent = h < 12 ? "Activación" : h < 19 ? "En medio del día" : "Rendición";
   $("#fecha").textContent = DIAS_L[ahora.getDay()] + " " + ahora.getDate() + " de " + MESES_L[ahora.getMonth()] + " · " + String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
 
@@ -2216,8 +2216,24 @@ function hojaSonido(){
 }
 
 // Contenido = incluido + tuyo (capa de usuario).
+// ── Motor de filtrado por perfil (tono → tradición) ──
+function tradPermitidas(){
+  const t = (E.perfil && E.perfil.tono) || "mezcla";
+  if(t === "cristiano") return { cristiano:1, universal:1 };
+  if(t === "espiritual") return { universal:1, budista:1 };
+  return { cristiano:1, universal:1, budista:1 };
+}
+function esCristiano(txt){ return /ancla-ref|\bDios\b|\bSe(ñ|n)or\b|Cristo|Esp[ií]ritu Santo|Jes[uú]s/i.test(String(txt)); }
+function filtraTexto(lista){
+  const perm = tradPermitidas();
+  const l = lista.filter(x => perm[esCristiano(x) ? "cristiano" : "universal"]);
+  return l.length ? l : lista;
+}
+function calmaActivas(){ return filtraTexto(CALMA); }
+function mensajesActivos(){ return filtraTexto(MENSAJES); }
+
 function anclasTodas(){
-  return ANCLAS.concat((E.contenido.ancla.usuario||[]).map(u=>esc(u.texto||"")));
+  return filtraTexto(ANCLAS).concat((E.contenido.ancla.usuario||[]).map(u=>esc(u.texto||"")));
 }
 function salmosTodos(){
   return SALMOS.concat((E.contenido.salmos.usuario||[]).map(u=>esc(u.texto||"").replace(/\n/g,"<br>") + (u.ref?'<span class="ancla-ref">'+esc(u.ref)+'</span>':'')));
@@ -2226,7 +2242,16 @@ function historiasTodas(){
   return HISTORIAS.concat(E.contenido.historias.usuario||[]);
 }
 function doctrinaTodas(){
-  return DOCTRINA.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
+  const perm = tradPermitidas();
+  let base = DOCTRINA.filter(d => perm[esCristiano(d.e) ? "cristiano" : "universal"]);
+  if(!base.length) base = DOCTRINA;
+  return base.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
+}
+function histTemasActivos(){
+  const perm = tradPermitidas();
+  const tradDe = { amor:"universal", abundancia:"universal", biblia:"cristiano", budismo:"budista" };
+  const l = HIST_TEMAS.filter(t => perm[tradDe[t[0]] || "universal"]);
+  return l.length ? l : HIST_TEMAS;
 }
 function afirmacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [];
@@ -2240,10 +2265,11 @@ function manifestacionesActivas(){
 }
 
 function hojaHistorias(){
-  const temaInicial = "amor";
+  const temas = histTemasActivos();
+  const temaInicial = temas[0][0];
   hoja("Historias", "Relatos para reflexionar. Amor, abundancia y tradiciones.",
     '<div class="segmento cad-tabs" id="histTabs">' +
-      HIST_TEMAS.map(t=>'<button type="button" class="seg'+(t[0]===temaInicial?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") +
+      temas.map(t=>'<button type="button" class="seg'+(t[0]===temaInicial?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") +
     '</div>' +
     '<div id="histCont"></div>' +
     '<div class="acciones"><button class="accion" id="histCerrar">Cerrar</button></div>',
@@ -2768,7 +2794,7 @@ function mostrarOnboarding(){
   const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
 }
 let sosTimer = null, sosT0 = 0;
-function fraseCalma(){ return CALMA[Math.floor(Math.random()*CALMA.length)]; }
+function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
 function abrirSOS(){
   $("#sosLinea").innerHTML = fraseCalma();
   $("#sosLinea").style.opacity = "1";
