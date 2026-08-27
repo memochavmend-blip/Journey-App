@@ -2358,8 +2358,8 @@ function histTemasActivos(){
   return l.length ? l : HIST_TEMAS;
 }
 function afirmacionesActivas(){
-  const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [];
-  const base = sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice();
+  const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = tradPermitidas();
+  const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>perm[esCristiano(a.x)?"cristiano":"universal"]);
   const mios = (E.contenido.afirmaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(mios).filter(a=>!fbOculto(a.x));
   if(!l.length) l = AFIRMACIONES.concat(mios).filter(a=>!fbOculto(a.x));
@@ -2367,8 +2367,8 @@ function afirmacionesActivas(){
   return l.sort((a,b)=>(fbPeso([b.t]) + Math.random()*0.7) - (fbPeso([a.t]) + Math.random()*0.7));
 }
 function manifestacionesActivas(){
-  const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [];
-  const base = sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice();
+  const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = tradPermitidas();
+  const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>perm[esCristiano(m.x)?"cristiano":"universal"]);
   const mios = (E.contenido.manifestaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(mios).filter(m=>!fbOculto(m.x));
   if(!l.length) l = MANIFESTACIONES.concat(mios).filter(m=>!fbOculto(m.x));
