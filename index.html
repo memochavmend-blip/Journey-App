@@ -460,6 +460,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.75;transition:opacity .2s}
+.gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:62;display:flex;justify-content:space-around;align-items:flex-end;
@@ -513,6 +514,13 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .hoy{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
 .hoy-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
 .hoy-txt{font-family:var(--serif);font-size:1.2rem;line-height:1.4;color:var(--tinta);margin:0}
+.hoy-share{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.hoy-share svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hoy-share:hover,.hoy-share:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.hoy-share:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.campo-rec{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.campo-rec .campo-et{margin:0}
+.campo-time{width:auto;flex:0 0 auto;padding:9px 12px;border:1px solid var(--linea-fuerte);border-radius:10px}
 .ahora{display:flex;flex-direction:column;gap:2px;width:100%;text-align:left;margin-top:14px;padding:15px 18px;border-radius:14px;border:1px solid var(--linea-fuerte);background:transparent;transition:border-color .2s,background .2s}
 .ahora:hover,.ahora:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
 .ahora:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
@@ -602,7 +610,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <!-- ══════ INICIO ══════ -->
 <main class="lienzo" id="inicio">
-  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes">⚙</button>
+  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
 
   <div class="panel" id="panelInicio">
     <p class="rubrica" id="rubricaHora">Antes de empezar</p>
@@ -621,6 +629,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <div class="hoy" id="hoy">
       <p class="hoy-label">Mensaje de hoy</p>
       <p class="hoy-txt" id="hoyTxt"></p>
+      <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
     </div>
 
     <div class="ritos" id="ritos"></div>
@@ -788,14 +797,15 @@ let E = {
   perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
   manifestacion:{ decl:"", fecha:"", m:false, t:false, n:false },
   feedback:{ pesos:{}, ocultos:[] },
-  ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
+  ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {nombre:"Guillermo",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"Guillermo",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},urlAudio:{},ritual:{}}, g.ajustes||{});
+    if(!E.ajustes.recordatorios || typeof E.ajustes.recordatorios !== "object") E.ajustes.recordatorios = {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
     E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
@@ -2636,9 +2646,16 @@ function hojaAjustes(){
     '<div class="fila"><div><div class="fila-txt">Cama sonora</div><div class="fila-ayuda">Pad generado en vivo. Mañana con brillo; noche grave, sin transientes.</div></div><button class="switch'+(a.pad?' on':'')+'" id="sPad" role="switch"></button></div>' +
     '<div class="fila"><div><div class="fila-txt">Ambiente en toda la app</div><div class="fila-ayuda">Un lecho de sonido continuo también fuera de la práctica (inicio, Journal, Doctrina…). Suave, no se corta al cambiar de pantalla.</div></div><button class="switch'+(a.ambienteApp?' on':'')+'" id="sAmbApp" role="switch"></button></div>' +
     '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sPadVol">Volumen del pad</label><input class="campo-in" type="range" id="sPadVol" min="0" max="1" step=".05" value="'+a.padVol+'"></div>' +
-    '<div class="campo"><label class="campo-et" for="sEscena">Escena de sonido</label><select class="campo-sel" id="sEscena">' +
+    '<div class="campo"><label class="campo-et" for="sEscena">Música de fondo de la app</label><select class="campo-sel" id="sEscena">' +
       [["auto","Automática (por ritual)"],["vela","Vela — cálida, tonal"],["noche","Noche — grave, profunda"],["eter","Éter — aérea, luminosa"],["lluvia","Lluvia — textura suave"],["oceano","Océano — olas lentas"]].map(o=>'<option value="'+o[0]+'"'+((a.escena||"auto")===o[0]?' selected':'')+'>'+o[1]+'</option>').join("") + '</select>' +
-      '<p class="campo-ayuda">El paisaje sonoro se genera en vivo y evoluciona solo. «Automática» usa Vela en el día y Noche al dormir. Se escucha en la práctica.</p></div>' +
+      '<p class="campo-ayuda">El paisaje sonoro que se escucha en todas las secciones (inicio, práctica, meditación, «Ahora mismo»…), no solo en Sonido. Se genera en vivo y evoluciona solo. «Automática» usa Vela de día y Noche al dormir.</p></div>' +
+    '<div class="fila" style="margin-top:8px"><div><div class="fila-txt">Recordatorios</div><div class="fila-ayuda">Un aviso para tu práctica de Mañana, Núcleo y Noche.</div></div><button class="switch'+(a.recordatorios&&a.recordatorios.on?' on':'')+'" id="sRecord" role="switch"></button></div>' +
+    '<div id="recordHoras" class="'+(a.recordatorios&&a.recordatorios.on?'':'oculto')+'">' +
+      '<div class="campo campo-rec"><label class="campo-et">Mañana</label><input class="campo-in campo-time" type="time" id="rMan" value="'+((a.recordatorios&&a.recordatorios.manana)||"07:00")+'"></div>' +
+      '<div class="campo campo-rec"><label class="campo-et">Núcleo</label><input class="campo-in campo-time" type="time" id="rNuc" value="'+((a.recordatorios&&a.recordatorios.nucleo)||"13:00")+'"></div>' +
+      '<div class="campo campo-rec"><label class="campo-et">Noche</label><input class="campo-in campo-time" type="time" id="rNoc" value="'+((a.recordatorios&&a.recordatorios.noche)||"21:00")+'"></div>' +
+      '<p class="campo-ayuda">Con la app instalada, te avisa cuando la abres cerca de la hora. Para avisos con la app cerrada hace falta un paso extra (notificaciones push); tu configuración queda guardada y lista para cuando se active.</p>' +
+    '</div>' +
     '<div class="campo"><label class="campo-et" for="sDormir">Temporizador de sueño</label><select class="campo-sel" id="sDormir">' +
       [0,10,20,30].map(m=>'<option value="'+m+'"'+(a.dormir===m?' selected':'')+'>'+(m?m+' minutos':'Sin temporizador')+'</option>').join("") + '</select>' +
       '<p class="campo-ayuda">La ventana hipnagógica son los primeros 10–20 min mientras te duermes. Audio toda la noche fragmenta el sueño; el track termina en silencio, no en loop.</p></div>' +
@@ -2671,6 +2688,15 @@ function hojaAjustes(){
       $("#sPausa").addEventListener("input", e=>{ E.ajustes.pausa = +e.target.value; $("#sPausaV").textContent = (+e.target.value/1000).toFixed(1)+" s"; guardar(); });
       $("#sPadVol").addEventListener("input", e=>{ E.ajustes.padVol = +e.target.value; Pad.volumen(+e.target.value); guardar(); });
       const se = $("#sEscena"); if(se) se.addEventListener("change", ()=>{ E.ajustes.escena = se.value; guardar(); });
+      const sr = $("#sRecord"); if(sr) sr.addEventListener("click", ()=>{
+        const on = !sr.classList.contains("on"); sr.classList.toggle("on", on);
+        E.ajustes.recordatorios = E.ajustes.recordatorios || {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
+        E.ajustes.recordatorios.on = on;
+        const rh = $("#recordHoras"); if(rh) rh.classList.toggle("oculto", !on);
+        if(on && "Notification" in window && Notification.permission === "default"){ try{ Notification.requestPermission(); }catch(e){} }
+        guardar();
+      });
+      [["rMan","manana"],["rNuc","nucleo"],["rNoc","noche"]].forEach(p=>{ const el = $("#"+p[0]); if(el) el.addEventListener("change", ()=>{ E.ajustes.recordatorios = E.ajustes.recordatorios||{on:true,manana:"07:00",nucleo:"13:00",noche:"21:00"}; E.ajustes.recordatorios[p[1]] = el.value; guardar(); }); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
       $("#sExportar").addEventListener("click", exportarDatos);
       const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
@@ -2881,6 +2907,31 @@ function mostrarOnboarding(){
   const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
 }
 let sosTimer = null, sosT0 = 0;
+const APP_NOMBRE = "Práctica", APP_URL = "https://memochavmend-blip.github.io/Journey-App/";
+function compartirHoy(){
+  const txt = ($("#hoyTxt").textContent || "").trim();
+  if(!txt) return;
+  const mensaje = "«" + txt + "»\n\n— vía " + APP_NOMBRE;
+  if(navigator.share){
+    navigator.share({ title: APP_NOMBRE, text: mensaje, url: APP_URL }).catch(()=>{});
+  } else {
+    try{
+      navigator.clipboard.writeText(mensaje + "\n" + APP_URL);
+      const b = $("#hoyShare"); if(b){ const o = b.innerHTML; b.textContent = "Copiado"; setTimeout(()=>{ b.innerHTML = o; }, 1600); }
+    }catch(e){}
+  }
+}
+let recNotif = {};
+function chequearRecordatorios(){
+  const r = E.ajustes.recordatorios;
+  if(!r || !r.on) return;
+  if(!("Notification" in window) || Notification.permission !== "granted") return;
+  const d = new Date(), hhmm = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"), hoy = hoyISO();
+  [["manana","Mañana","Es momento de tu práctica de la mañana."],["nucleo","Núcleo","Un momento para tu Núcleo."],["noche","Noche","Es momento de tu práctica de la noche."]].forEach(s=>{
+    const key = hoy + s[0];
+    if(r[s[0]] === hhmm && recNotif[key] !== 1){ recNotif[key] = 1; try{ new Notification(APP_NOMBRE + " · " + s[1], { body: s[2] }); }catch(e){} }
+  });
+}
 function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
 function abrirSOS(){
   $("#sosLinea").innerHTML = fraseCalma();
@@ -2897,7 +2948,7 @@ function abrirSOS(){
   actualizar();
   clearInterval(sosTimer); sosTimer = setInterval(actualizar, 350);
   padBed = false;
-  try{ Pad.desbloquear(); if(E.ajustes.pad) Pad.iniciar(escenaActiva("noche"), E.ajustes.padVol * 0.5); }catch(e){}
+  try{ Pad.desbloquear(); const esc = (E.ajustes.escena && E.ajustes.escena !== "auto") ? E.ajustes.escena : "oceano"; Pad.iniciar(esc, E.ajustes.padVol); }catch(e){}
 }
 function cerrarSOS(){
   clearInterval(sosTimer); sosTimer = null;
@@ -2909,6 +2960,8 @@ function cerrarSOS(){
 }
 (function cablearSOS(){
   const ab = $("#ahoraBtn"); if(ab) ab.addEventListener("click", abrirSOS);
+  const hs = $("#hoyShare"); if(hs) hs.addEventListener("click", compartirHoy);
+  setInterval(chequearRecordatorios, 30000);
   const sa = $("#sosSalir"); if(sa) sa.addEventListener("click", cerrarSOS);
   const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
     const l = $("#sosLinea"); l.style.opacity = "0";
