@@ -600,6 +600,19 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .fb-abajo:hover,.fb-abajo:focus-visible{border-color:var(--brasa);color:var(--brasa)}
 .pref-reset{display:block;width:100%;text-align:center;padding:12px;margin-top:6px;font-size:13px;color:var(--tinta-tenue);transition:color .2s}
 .pref-reset:hover,.pref-reset:focus-visible{color:var(--tinta-baja)}
+.er-bloque{margin-bottom:22px}
+.er-nom{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 10px}
+.er-linea{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--linea)}
+.er-txt{font-family:var(--serif);font-size:1.02rem;line-height:1.4;color:var(--tinta);flex:1}
+.er-acc{display:flex;gap:6px;flex:0 0 auto}
+.er-b{width:32px;height:32px;border-radius:8px;border:1px solid var(--linea-fuerte);color:var(--tinta-baja);font-size:14px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
+.er-b:hover,.er-b:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.er-x:hover,.er-x:focus-visible{border-color:var(--brasa);color:var(--brasa)}
+.er-add{margin-top:12px;padding:8px 14px;border:1px dashed var(--linea-fuerte);border-radius:10px;font-size:13px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.er-add:hover,.er-add:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.er-addbox{display:flex;gap:8px;margin-top:12px}
+.er-addbox .campo-in{flex:1}
+.er-addok{padding:0 18px;border-radius:10px;background:var(--tinta);color:var(--noche);font-size:14px;font-weight:500;flex:0 0 auto}
 
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
@@ -809,6 +822,8 @@ let E = {
   perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
   manifestacion:{ decl:"", fecha:"", m:false, t:false, n:false },
   feedback:{ pesos:{}, ocultos:[] },
+  ritos:{},
+  v:2,
   ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, urlAudio:{}, ritual:{} }
 };
 
@@ -831,9 +846,16 @@ async function cargar(){
     E.feedback = Object.assign({pesos:{}, ocultos:[]}, g.feedback||{});
     if(!E.feedback.pesos || typeof E.feedback.pesos !== "object") E.feedback.pesos = {};
     if(!Array.isArray(E.feedback.ocultos)) E.feedback.ocultos = [];
+    E.ritos = (g.ritos && typeof g.ritos === "object") ? g.ritos : {};
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
+    if(!g.v){
+      const af = E.contenido.afirmaciones.usuario, man = E.contenido.manifestaciones.usuario;
+      (L.identidad||[]).forEach(t=>{ if(!af.some(u=>(u.texto||"")===t)) af.push({ texto:t, id:Date.now()+Math.floor(Math.random()*1e6) }); });
+      (L.permiso||[]).concat(L.recepcion||[]).forEach(t=>{ if(!man.some(u=>(u.texto||"")===t)) man.push({ texto:t, id:Date.now()+Math.floor(Math.random()*1e6) }); });
+    }
+    E.v = 2;
   }
 }
 
@@ -955,72 +977,117 @@ const RITUALES = {
   manana:{
     id:"manana", nombre:"Mañana", sub:"Activación — vaciar, anclar, declarar", dur:"~9 min", tema:"dia",
     bloques:[
-      { num:"·",   nom:"Anclaje",    rub:"Tres respiraciones lentas", lineas:[{respiro:3},{t:"Dios está conmigo.",hold:6000}] },
-      { num:"I",   nom:"Entrega",    rub:"Vaciar antes de llenar",    lineas:L.entrega },
-      { num:"II",  nom:"Palabra",    rub:"Anclaje externo",           lineas:L.palabra },
-      { num:"III", nom:"Permiso",    rub:"La teología del dinero",    lineas:L.permiso },
-      { num:"IV",  nom:"Identidad",  rub:"Yo soy",                    lineas:L.identidad },
-      { num:"V",   nom:"Visión",     rub:"Ser · Hacer · Tener",       dinamico:bloqueVision },
-      { num:"VI",  nom:"Recepción",  rub:"Dejas de emitir y te abres",lineas:L.recepcion },
-      { num:"VII", nom:"Sello",      rub:"Confianza y cierre",        lineas:L.sello }
+      { num:"·",   nom:"Anclaje",     rub:"Tres respiraciones lentas", slot:"anclaje" },
+      { num:"I",   nom:"Entrega",     rub:"Vaciar antes de llenar",    slot:"entrega", n:4 },
+      { num:"II",  nom:"Palabra",     rub:"Anclaje externo",           slot:"palabra", n:2 },
+      { num:"III", nom:"Declaración", rub:"Lo que llamas a tu vida",   slot:"manifestacion", n:3 },
+      { num:"IV",  nom:"Identidad",   rub:"Quién eres",                slot:"afirmacion", n:3 },
+      { num:"V",   nom:"Visión",      rub:"Ser · Hacer · Tener",       slot:"vision" },
+      { num:"VI",  nom:"Recepción",   rub:"Te abres a recibir",        slot:"recepcion", n:3 },
+      { num:"VII", nom:"Sello",       rub:"Confianza y cierre",        slot:"cierre", n:4 }
     ]
   },
   noche:{
     id:"noche", nombre:"Noche", sub:"Rendición — sin declaraciones de logro", dur:"~6 min", tema:"noche",
     bloques:[
-      { num:"·",   nom:"Anclaje",   rub:"El día terminó", lineas:[{respiro:3}] },
-      { num:"I",   nom:"Gratitud",  rub:"En voz alta", lineas:[
-        { t:"Tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }]},
-      { num:"II",  nom:"Entrega",   rub:"Soltar el peso", lineas:[
-        "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
-        "Mi corazón te lo entrego completamente a Ti."]},
-      { num:"III", nom:"Descarga",  rub:"Limpiar la mente", lineas:[
-        "Dios, por favor calma mi mente, sana mi corazón y quita mis preocupaciones.",
-        "Ayúdame a dejar atrás aquello que ya pasó."]},
-      { num:"IV",  nom:"Salmo",     rub:"Salmo 23", lineas:[
-        "El Señor es mi pastor, y nada me faltará.",
-        "Aunque camine por valle de sombra de muerte, no temeré mal alguno, porque Tú, Señor, caminas conmigo."]},
-      { num:"V",   nom:"Reencuadre",rub:"Perspectiva", lineas:[
-        "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
-        "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso."]},
-      { num:"VI",  nom:"Seguridad", rub:"Tres veces. Cada vez más lento.", lineas:[
-        {t:"Todo está bien.",hold:4000},
-        {t:"Todo funciona para mi mayor y más alto bien.",hold:4500},
-        {t:"Estoy a salvo.",hold:4500},
-        {t:"Todo está bien.",hold:6000},
-        {t:"Todo funciona para mi mayor y más alto bien.",hold:6500},
-        {t:"Estoy a salvo.",hold:6500},
-        {t:"Todo está bien.",hold:8500},
-        {t:"Todo funciona para mi mayor y más alto bien.",hold:9000},
-        {t:"Estoy a salvo.",hold:10000}]},
-      { num:"VII", nom:"Cierre",    rub:"Silencio después", lineas:[
-        "Dios, confío en Ti.",
-        "Jesucristo, confío en Ti.",
-        "Espíritu Santo, confío en Ti.",
-        "Yo confío en mí.",
-        {t:"Te amo, Dios.",hold:10000}]}
+      { num:"·",   nom:"Anclaje",    rub:"El día terminó",   slot:"respiro" },
+      { num:"I",   nom:"Gratitud",   rub:"En voz alta",      slot:"gratitud" },
+      { num:"II",  nom:"Entrega",    rub:"Soltar el peso",   slot:"entrega", n:3 },
+      { num:"III", nom:"Palabra",    rub:"Un ancla",         slot:"palabra", n:2 },
+      { num:"IV",  nom:"Reencuadre", rub:"Perspectiva",      slot:"entrega", n:2 },
+      { num:"V",   nom:"Seguridad",  rub:"Tres veces, cada vez más lento", slot:"seguridad" },
+      { num:"VI",  nom:"Cierre",     rub:"Silencio después", slot:"cierre", n:3 }
     ]
   },
   nucleo:{
     id:"nucleo", nombre:"Núcleo", sub:"El innegociable — una línea por movimiento", dur:"3 min", tema:"dia",
     bloques:[
-      { num:"·",   nom:"Anclaje",   rub:"Empieza aquí", lineas:[{t:"Dios está conmigo.",hold:8000}] },
-      { num:"I",   nom:"Entrega",   rub:"", lineas:[{t:"Señor, entrego mi carga. Calma mi mente.",hold:9000}] },
-      { num:"II",  nom:"Palabra",   rub:"", lineas:[{t:"Todo lo puedo en Cristo que me fortalece.",hold:9000}] },
-      { num:"III", nom:"Permiso",   rub:"", lineas:[{t:"El dinero y el poder son parte de mi camino.",hold:9000}] },
-      { num:"IV",  nom:"Identidad", rub:"", lineas:[
-        {t:"Yo soy amor.",hold:7000},
-        {t:"Yo soy mensajero de Dios en el mundo.",hold:8000},
-        {t:"Yo soy el elegido.",hold:8000}]},
-      { num:"V",   nom:"Recepción", rub:"", lineas:[
-        {t:"Todo lo que pasa en mi vida es a mi favor.",hold:8000},
-        {t:"Ahora es mi tiempo.",hold:8000}]},
-      { num:"VI",  nom:"Sello",     rub:"", lineas:[
-        {t:"Gracias, Dios.",hold:6000},
-        {t:"Te amo, Dios.",hold:9000}]}
+      { num:"·",   nom:"Anclaje",     rub:"Empieza aquí", slot:"presencia", n:1, hold:8000 },
+      { num:"I",   nom:"Entrega",     rub:"",             slot:"entrega", n:1, hold:9000 },
+      { num:"II",  nom:"Palabra",     rub:"",             slot:"palabra", n:1, hold:9000 },
+      { num:"III", nom:"Declaración", rub:"",             slot:"manifestacion", n:1, hold:9000 },
+      { num:"IV",  nom:"Identidad",   rub:"",             slot:"afirmacion", n:1, hold:9000 },
+      { num:"V",   nom:"Sello",       rub:"",             slot:"cierre", n:1, hold:9000 }
     ]
   }
 };
+
+// Pools de liturgia por tradición (tono). Oraciones/salmos migrados; versiones universales para tono espiritual.
+const LIT = {
+  presencia:{
+    cristiano:["Dios está conmigo.","El Señor está aquí, en este instante."],
+    universal:["Estoy aquí. Estoy presente.","Este momento es lo único que existe, y estoy en él."]
+  },
+  entrega:{
+    cristiano:["Querido Dios: llévame a mi máximo potencial.","Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, protege el camino en el que estoy y no me dejes renunciar.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a Ti.","Ayúdame a dejar atrás aquello que ya pasó."],
+    universal:["Suelto lo que no puedo cargar.","Dejo ir lo que no depende de mí.","Que se vaya lo que no es para mí; que se revele lo que sí.","Calmo mi mente, sano lo que puedo, suelto lo demás.","Dejo atrás aquello que ya pasó.","Entrego lo que no está en mis manos."]
+  },
+  palabra:{
+    cristiano:["El Señor es mi pastor, y nada me faltará.","Todo lo puedo en Cristo que me fortalece.","Si Dios está conmigo, ¿quién contra mí?","Aunque camine por valle de sombra, no temeré, porque Tú vas conmigo.","Cuando abres tu mano, sacias a todo ser viviente.","El Señor escucha a todos los que lo invocan de verdad."],
+    universal:["Todo lo que necesito ya está en camino.","Tengo la fuerza para lo que este día me pida.","Nada de lo que temo es más grande que lo que me sostiene.","Lo que es para mí, no va a pasar de largo."]
+  },
+  recepcion:{
+    universal:["Me abro a recibir cosas buenas en mi vida.","Recibo más de lo que imaginé.","Todo lo que pasa en mi vida es a mi favor.","Estoy listo para lo que viene.","Ahora es mi tiempo."]
+  },
+  seguridad:{
+    universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo."]
+  },
+  cierre:{
+    cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
+    universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día."]
+  }
+};
+
+function elegirN(lista, n){
+  const l = lista.slice();
+  for(let i=l.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const tmp=l[i]; l[i]=l[j]; l[j]=tmp; }
+  return l.slice(0, Math.min(n, l.length));
+}
+function litPaso(slot, n){
+  const perm = tradPermitidas(), pool = LIT[slot] || {};
+  let cand = [];
+  if(pool.cristiano && perm.cristiano) cand = cand.concat(pool.cristiano);
+  if(pool.universal && perm.universal) cand = cand.concat(pool.universal);
+  if(!cand.length) cand = (pool.cristiano||[]).concat(pool.universal||[]);
+  const v = cand.filter(x=>!fbOculto(x));
+  return elegirN(v.length ? v : cand, n || cand.length);
+}
+function afirmacionesRitual(n){ return afirmacionesActivas().slice(0, n).map(a=>a.x); }
+function manifestacionesRitual(n){ return manifestacionesActivas().slice(0, n).map(m=>m.x); }
+
+function ritSemilla(slot, n){
+  if(slot === "afirmacion") return afirmacionesRitual(n||3);
+  if(slot === "manifestacion") return manifestacionesRitual(n||3);
+  return litPaso(slot, n||3);
+}
+// Devuelve las líneas guardadas del bloque; si no hay, las siembra desde el perfil y las guarda (queda estable).
+function ritLineas(id, b){
+  E.ritos[id] = E.ritos[id] || {};
+  if(Array.isArray(E.ritos[id][b.num])) return E.ritos[id][b.num].slice();
+  let txt = ritSemilla(b.slot, b.n);
+  if(!txt.length) txt = ["…"];
+  E.ritos[id][b.num] = txt.slice();
+  return txt.slice();
+}
+function construirRitual(id){
+  const p = RITUALES[id]; if(!p) return null;
+  const bloques = p.bloques.map(b=>{
+    if(b.slot === "vision") return { num:b.num, nom:b.nom, rub:b.rub, dinamico:bloqueVision };
+    if(b.slot === "respiro") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}] };
+    if(b.slot === "gratitud") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{ t:"Tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }] };
+    if(b.slot === "anclaje"){
+      const pres = ritLineas(id, { num:b.num, slot:"presencia", n:1 });
+      return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}].concat((pres.length?pres:["Estoy aquí."]).map(t=>({t:t, hold:6000}))) };
+    }
+    const txt = ritLineas(id, b);
+    const lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
+    return { num:b.num, nom:b.nom, rub:b.rub, lineas:lineas };
+  });
+  guardar();
+  return { id:p.id, nombre:p.nombre, sub:p.sub, dur:p.dur, tema:p.tema, bloques:bloques };
+}
+// Re-siembra un ritual completo desde el perfil actual (borra lo guardado y vuelve a armar).
+function regenerarRitual(id){ delete E.ritos[id]; construirRitual(id); guardar(); }
 
 const DOCTRINA = [
   { t:"El bloque sobre «Yo Soy» como mandato creador",
@@ -1606,7 +1673,7 @@ function duracion(o){
 }
 
 function abrirRitual(id){
-  const r = RITUALES[id]; if(!r) return;
+  const r = construirRitual(id); if(!r) return;
   P.rito = r; P.plan = aplanar(r); P.i = 0; P.modoAudio = false;
   P.inicioSesion = Date.now();
   P.vozOn = vozDe(r.id); P.ambOn = ambDe(r.id);
@@ -2364,7 +2431,7 @@ function afirmacionesActivas(){
   let l = base.concat(mios).filter(a=>!fbOculto(a.x));
   if(!l.length) l = AFIRMACIONES.concat(mios).filter(a=>!fbOculto(a.x));
   if(!l.length) l = AFIRMACIONES.slice();
-  return l.sort((a,b)=>(fbPeso([b.t]) + Math.random()*0.7) - (fbPeso([a.t]) + Math.random()*0.7));
+  return l.sort((a,b)=>(fbPeso([b.t]) + (b.t==="mio"?1.4:0) + Math.random()*0.7) - (fbPeso([a.t]) + (a.t==="mio"?1.4:0) + Math.random()*0.7));
 }
 function manifestacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = tradPermitidas();
@@ -2373,7 +2440,7 @@ function manifestacionesActivas(){
   let l = base.concat(mios).filter(m=>!fbOculto(m.x));
   if(!l.length) l = MANIFESTACIONES.concat(mios).filter(m=>!fbOculto(m.x));
   if(!l.length) l = MANIFESTACIONES.slice();
-  return l.sort((a,b)=>(fbPeso([b.t]) + Math.random()*0.7) - (fbPeso([a.t]) + Math.random()*0.7));
+  return l.sort((a,b)=>(fbPeso([b.t]) + (b.t==="mio"?1.4:0) + Math.random()*0.7) - (fbPeso([a.t]) + (a.t==="mio"?1.4:0) + Math.random()*0.7));
 }
 
 function hojaHistorias(){
@@ -2640,6 +2707,66 @@ function hojaPreferenciasContenido(){
     });
 }
 
+function ritOtra(id, b, actuales){
+  let pool;
+  if(b.slot === "afirmacion") pool = afirmacionesActivas().map(a=>a.x);
+  else if(b.slot === "manifestacion") pool = manifestacionesActivas().map(m=>m.x);
+  else { const p2 = LIT[b.slot] || {}, perm = tradPermitidas(); pool = []; if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]); }
+  const disp = pool.filter(x=>actuales.indexOf(x) < 0 && !fbOculto(x));
+  return disp.length ? disp[Math.floor(Math.random()*disp.length)] : null;
+}
+let erAddNum = null;
+const ER_EDITABLES = ["presencia","entrega","palabra","afirmacion","manifestacion","recepcion","cierre","seguridad","anclaje"];
+function hojaEditarRitual(id){
+  construirRitual(id);
+  const p = RITUALES[id];
+  const cuerpo = ()=>{
+    return p.bloques.filter(b=>ER_EDITABLES.indexOf(b.slot) >= 0).map(b=>{
+      const lineas = E.ritos[id][b.num] || [];
+      const filas = lineas.map((ln,i)=>'<div class="er-linea"><span class="er-txt">'+esc(ln)+'</span><span class="er-acc"><button class="er-b" data-swap="'+b.num+'|'+i+'" aria-label="Cambiar">⟳</button><button class="er-b er-x" data-del="'+b.num+'|'+i+'" aria-label="Quitar">✕</button></span></div>').join("");
+      const add = (b.num === erAddNum)
+        ? '<div class="er-addbox"><input class="campo-in" id="erAddIn" placeholder="Tu frase para este momento"><button class="er-addok" data-addok="'+b.num+'">Añadir</button></div>'
+        : '<button class="er-add" data-add="'+b.num+'">+ agregar frase</button>';
+      return '<div class="er-bloque"><p class="er-nom">'+esc(b.nom)+'</p>'+filas+add+'</div>';
+    }).join("");
+  };
+  hoja("Personalizar "+p.nombre, "Tu ritual, tuyo. Cambia, quita o agrega frases; se guardan y quedan fijas.",
+    '<div id="erCont">'+cuerpo()+'</div><button class="pref-reset" id="erRegen">Volver a generar desde mi perfil</button><div class="acciones"><button class="accion" id="erCerrar">Cerrar</button></div>',
+    ()=>{
+      const re = ()=>{ $("#erCont").innerHTML = cuerpo(); cablear(); if(erAddNum){ const i=$("#erAddIn"); if(i) try{ i.focus(); }catch(e){} } };
+      function cablear(){
+        document.querySelectorAll("[data-swap]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const pr = bn.dataset.swap.split("|"), num = pr[0], i = +pr[1], b = p.bloques.find(x=>x.num===num);
+          const nueva = ritOtra(id, b, E.ritos[id][num]); if(nueva){ E.ritos[id][num][i] = nueva; guardar(); re(); }
+        }));
+        document.querySelectorAll("[data-del]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const pr = bn.dataset.del.split("|"), num = pr[0], i = +pr[1]; E.ritos[id][num].splice(i,1); if(!E.ritos[id][num].length) E.ritos[id][num].push("…"); guardar(); re();
+        }));
+        document.querySelectorAll("[data-add]").forEach(bn=>bn.addEventListener("click", ()=>{ erAddNum = bn.dataset.add; re(); }));
+        document.querySelectorAll("[data-addok]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const num = bn.dataset.addok, v = (($("#erAddIn")||{}).value||"").trim();
+          if(v){ E.ritos[id][num] = E.ritos[id][num].filter(x=>x!=="…"); E.ritos[id][num].push(v); guardar(); }
+          erAddNum = null; re();
+        }));
+      }
+      cablear();
+      $("#erRegen").addEventListener("click", ()=>{ if(confirm("¿Volver a generar "+p.nombre+" desde tu perfil? Se reemplaza lo que tengas ahora.")){ regenerarRitual(id); re(); } });
+      $("#erCerrar").addEventListener("click", ()=>{ erAddNum = null; cerrarHoja(); });
+    });
+}
+function hojaRitualesElegir(){
+  erAddNum = null;
+  hoja("Personalizar rituales", "Haz tuyo cada ritual. Elige cuál ajustar.",
+    '<div class="nav-cards">' + ["manana","noche","nucleo"].map(id=>{
+      const r = RITUALES[id];
+      return '<button class="nav-card" data-rit="'+id+'"><span class="nav-card-tx"><span class="nav-card-t">'+r.nombre+'</span><span class="nav-card-s">'+esc(r.sub)+'</span></span><span class="nav-card-ch">›</span></button>';
+    }).join("") + '</div><div class="acciones"><button class="accion" id="ritElegirCerrar">Cerrar</button></div>',
+    ()=>{
+      document.querySelectorAll("[data-rit]").forEach(b=>b.addEventListener("click", ()=>hojaEditarRitual(b.dataset.rit)));
+      $("#ritElegirCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
 function hojaEditor(){
   edEditando = null;
   hoja("Mi contenido", "Crea lo tuyo. Aparece junto al contenido incluido en cada sección.",
@@ -2663,6 +2790,7 @@ function hojaAjustes(){
   const opcVoz = '<option value="">Automática (mejor disponible)</option>' + voces.map(v=>'<option value="'+esc(v.name)+'"'+(a.vozNombre===v.name?' selected':'')+'>'+esc(v.name)+' · '+v.lang+(Voz.mejor(v)?' · mejorada':'')+'</option>').join("");
   hoja("Ajustes", "",
     '<div class="campo"><label class="campo-et" for="sNombre">Tu nombre</label><input class="campo-in" type="text" id="sNombre" placeholder="¿Cómo te llamas?" value="'+esc(a.nombre||"")+'" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px"><p class="campo-ayuda">Con lo que la app te saluda cada día.</p></div>' +
+    '<div class="fila" data-abrir="rituales" style="cursor:pointer"><div><div class="fila-txt">Personalizar rituales</div><div class="fila-ayuda">Cambia, quita o agrega las frases de Mañana, Noche y Núcleo.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="fila" data-abrir="editor" style="cursor:pointer"><div><div class="fila-txt">Mi contenido</div><div class="fila-ayuda">Crea tus propias frases, historias, doctrina y salmos.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="fila" data-abrir="preferencias" style="cursor:pointer"><div><div class="fila-txt">Preferencias de contenido</div><div class="fila-ayuda">Lo que elegiste al empezar: categorías, tono y temas.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="campo"><label class="campo-et">Tema</label>' +
@@ -2766,6 +2894,7 @@ document.addEventListener("click", e=>{
   else if(k === "ancla") hojaAncla();
   else if(k === "ajustes") hojaAjustes();
   else if(k === "editor") hojaEditor();
+  else if(k === "rituales") hojaRitualesElegir();
   else if(k === "preferencias") hojaPreferenciasContenido();
 });
 function mostrarTab(tab){
