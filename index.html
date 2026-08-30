@@ -81,7 +81,7 @@ html[data-modo="oscuro"] body.tema-noche{
 }
 
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;padding:0;height:100%}
+html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none}
 body{
   background:var(--noche);
   color:var(--tinta);
@@ -130,7 +130,9 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 
 /* ─── ESTRUCTURA ─── */
 .lienzo{
-  max-width:640px;margin:0 auto;
+  position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:640px;overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   padding:calc(env(safe-area-inset-top) + 44px) 26px calc(env(safe-area-inset-bottom) + 56px) 52px;
 }
 .oculto{display:none !important}
@@ -214,6 +216,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .p-salir:focus-visible{outline:1px solid var(--llama);outline-offset:3px}
 
 .p-centro{flex:1;display:flex;flex-direction:column;justify-content:center;padding:22px 0}
+.p-centro.respirando{align-items:center;text-align:center}
 .p-bloque{
   font-family:var(--serif);font-size:.95rem;letter-spacing:.02em;color:var(--oro);
   margin:0 0 6px;font-style:italic;
@@ -228,16 +231,16 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .p-nota{margin-top:22px;font-size:13px;color:var(--tinta-baja);line-height:1.6;max-width:34ch}
 
 /* respiración */
-.respiro{display:flex;flex-direction:column;align-items:flex-start;gap:24px}
+.respiro{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1}
 .respiro-aro{
-  width:78px;height:78px;border-radius:50%;
-  border:1px solid var(--linea-fuerte);
+  width:180px;height:180px;border-radius:50%;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--llama) 20%,transparent), transparent 70%);
+  border:1px solid var(--linea-fuerte);transform:scale(.82);
   transition:transform 4s cubic-bezier(.4,0,.5,1),border-color 1.4s ease;
 }
-.respiro-aro.dentro{transform:scale(1.55);border-color:var(--llama)}
-.respiro-nucleo{width:9px;height:9px;border-radius:50%;background:var(--llama);opacity:.75}
-.respiro-txt{font-family:var(--serif);font-size:1.5rem;color:var(--tinta)}
+.respiro-aro.dentro{transform:scale(1.06);border-color:var(--llama)}
+.respiro-txt{font-family:var(--serif);font-size:1.2rem;color:var(--tinta-baja);letter-spacing:.02em}
 
 .p-bajo{transition:opacity .5s ease}
 .p-bajo.dormido{opacity:.16}
@@ -266,13 +269,14 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 @keyframes vela-in{from{opacity:0}to{opacity:1}}
 .hoja-caja{
-  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;
+  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   background:var(--panel);border-top:1px solid var(--linea-fuerte);
   border-radius:22px 22px 0 0;
   padding:30px 28px calc(env(safe-area-inset-bottom) + 30px);
   animation:sube .34s cubic-bezier(.2,.8,.3,1);
 }
 @keyframes sube{from{transform:translateY(26px)}to{transform:none}}
+.hoja-tirador{width:38px;height:4px;border-radius:2px;background:var(--linea-fuerte);margin:-14px auto 18px;opacity:.8}
 .hoja-tit{font-family:var(--serif);font-size:1.5rem;margin:0 0 6px;letter-spacing:-.01em}
 .hoja-sub{font-size:13px;color:var(--tinta-baja);line-height:1.6;margin:0 0 26px}
 .campo{margin-bottom:24px}
@@ -382,6 +386,17 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .salmo-caja{min-height:auto;padding:22px 4px 26px}
 .ancla-txt.salmo{font-size:1.18rem;line-height:1.62;max-width:38ch}
 
+/* ── Editor · Mi contenido ── */
+.ed-lista{display:flex;flex-direction:column;gap:8px;margin-bottom:22px}
+.ed-item{display:flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--linea);border-radius:12px;overflow:hidden}
+.ed-item-t{flex:1;text-align:left;padding:14px 16px;font-size:14px;color:var(--tinta);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ed-item-x{padding:14px 15px;color:var(--tinta-tenue);font-size:13px;flex-shrink:0;transition:color .2s}
+.ed-item-x:hover,.ed-item-x:focus-visible{color:var(--brasa)}
+.ed-vacio{font-size:13.5px;line-height:1.6;color:var(--tinta-tenue);padding:4px 0 22px}
+.ed-form{border-top:1px solid var(--linea);padding-top:22px}
+.ed-form-t{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 14px}
+.ed-in{margin-top:10px}
+
 /* ── Registro (journal + check-ins) ── */
 .campo-area{
   width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:12px;
@@ -392,6 +407,12 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .campo-area::placeholder{color:var(--tinta-tenue)}
 .campo-area.grande{min-height:220px}
 .cad-tabs{margin-bottom:22px}
+#histTabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#histTabs::-webkit-scrollbar{display:none}
+#histTabs .seg{flex:0 0 auto;white-space:nowrap}
+#edTabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#edTabs::-webkit-scrollbar{display:none}
+#edTabs .seg{flex:0 0 auto;white-space:nowrap}
 .cad-fecha{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 18px}
 .reg-guardado{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--tinta-tenue);margin-top:8px;min-height:14px;transition:opacity .3s}
 .hito{display:flex;align-items:center;gap:11px;padding:9px 0}
@@ -416,14 +437,17 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 /* ── Meditación (lista) ── */
 .med-lista{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
 .med-item{
-  display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;
-  background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:20px;
-  text-align:left;transition:transform .2s ease,border-color .2s ease;
+  display:flex;width:100%;align-items:center;gap:10px;
+  background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:14px 16px;
 }
-.med-item:hover,.med-item:focus-visible{transform:translateY(-1px);border-color:var(--linea-fuerte)}
-.med-item:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.med-play{display:flex;flex:1;align-items:center;justify-content:space-between;gap:14px;text-align:left;padding:6px 2px;transition:opacity .2s}
+.med-play:hover,.med-play:focus-visible{opacity:.85}
+.med-play:focus-visible{outline:2px solid var(--llama);outline-offset:3px;border-radius:8px}
 .med-nom{font-family:var(--serif);font-size:1.2rem;color:var(--tinta)}
 .med-dur{font-family:var(--mono);font-size:10.5px;color:var(--tinta-baja);white-space:nowrap}
+.fb-med{display:flex;gap:5px;flex:0 0 auto}
+.fb-med .fb-btn{width:34px;height:34px}
+.fb-med .fb-btn.fb-on{border-color:var(--llama);color:var(--llama)}
 
 /* ── Sonido (hub + pomodoro) ── */
 .son-now{display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--llama) 14%,transparent);border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 15px;margin-bottom:20px;font-size:13.5px;color:var(--tinta)}
@@ -441,6 +465,9 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 #inicio{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
 .panel-titulo{font-family:var(--serif);font-size:1.75rem;color:var(--tinta);margin:8px 0 24px}
 .nav-cards{display:flex;flex-direction:column;gap:10px}
+.biblia-t{font-family:var(--serif);font-size:1.1rem;color:var(--oro);margin:0 0 14px;letter-spacing:.01em}
+.nav-grupo{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-baja);margin:6px 2px 12px}
+.nav-cards + .nav-grupo{margin-top:28px}
 .nav-card{display:flex;width:100%;align-items:center;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;text-align:left;transition:transform .2s ease,border-color .2s ease}
 .nav-card:hover,.nav-card:focus-visible{transform:translateY(-1px);border-color:var(--linea-fuerte)}
 .nav-card:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
@@ -449,6 +476,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.75;transition:opacity .2s}
+.gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
 .tabbar{position:fixed;left:0;right:0;bottom:0;z-index:62;display:flex;justify-content:space-around;align-items:flex-end;
@@ -461,6 +489,143 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .tab-lb{font-size:10.5px;letter-spacing:.02em}
 .tab:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:10px}
 body.encendida .tabbar,body.encendida .gear{display:none}
+
+/* ── Onboarding ── */
+.onb{position:fixed;inset:0;z-index:90;background:var(--noche);display:flex;flex-direction:column;
+  padding:calc(env(safe-area-inset-top) + 40px) 30px calc(env(safe-area-inset-bottom) + 30px)}
+.onb-dots{display:flex;gap:7px;justify-content:center}
+.onb-dot{width:7px;height:7px;border-radius:50%;background:var(--linea-fuerte);transition:background .3s ease}
+.onb-dot.on{background:var(--llama)}
+.onb-cont{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:440px;margin:0 auto;width:100%}
+.onb-cont h1,.onb-cont p{animation:onbIn .35s ease}
+@keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.onb-mark{font-size:2.4rem;color:var(--llama);margin-bottom:18px;line-height:1}
+.onb-t{font-family:var(--serif);font-size:2rem;line-height:1.15;color:var(--tinta);margin:0 0 14px}
+.onb-p{font-size:15px;line-height:1.6;color:var(--tinta-baja);margin:0 0 28px}
+.onb-input{width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:14px;padding:15px 16px;font-family:var(--serif);font-size:1.25rem;color:var(--tinta);outline:none;margin-bottom:28px}
+.onb-input:focus{border-color:var(--llama)}
+.onb-chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:30px}
+.onb-chip{padding:12px 16px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
+.onb-chip.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 16%,transparent)}
+.onb-chip:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.onb-btn{margin-top:16px;padding:16px;border-radius:14px;background:var(--tinta);color:var(--noche);font-size:15px;font-weight:500;transition:opacity .2s ease}
+.onb-btn:active{opacity:.85}
+.onb-btn:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.onb-saltar{align-self:center;padding:10px;font-size:13px;color:var(--tinta-tenue);transition:color .2s ease}
+.onb-saltar:hover,.onb-saltar:focus-visible{color:var(--tinta-baja)}
+.onb-top{display:flex;align-items:center;justify-content:center;position:relative;min-height:24px}
+.onb-back{position:absolute;left:0;top:50%;transform:translateY(-50%);width:34px;height:34px;font-size:20px;color:var(--tinta-baja);display:flex;align-items:center;justify-content:center}
+.onb-back:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
+.onb-opts{display:flex;flex-direction:column;gap:9px;margin-bottom:30px}
+.onb-opt{padding:16px 18px;border:1px solid var(--linea-fuerte);border-radius:14px;font-size:15px;color:var(--tinta-baja);text-align:left;transition:border-color .2s,color .2s,background .2s}
+.onb-opt.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 14%,transparent)}
+.onb-opt:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.onb-saltar-paso{align-self:center;margin-top:12px;padding:8px;font-size:13px;color:var(--tinta-tenue);transition:color .2s ease}
+.onb-saltar-paso:hover,.onb-saltar-paso:focus-visible{color:var(--tinta-baja)}
+.pref-bloque{margin-bottom:26px}
+.pref-t{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 13px}
+.pref-bloque .onb-chips,.pref-bloque .onb-opts{margin-bottom:0}
+
+/* ── Mensaje de hoy + Ahora mismo (inicio) ── */
+.hoy{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.hoy-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
+.hoy-txt{font-family:var(--serif);font-size:1.2rem;line-height:1.4;color:var(--tinta);margin:0}
+.hoy-share{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.hoy-share svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.hoy-share:hover,.hoy-share:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.rito-editar{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:12px;border:1px solid var(--linea);border-radius:12px;font-size:13.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.rito-editar svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rito-editar:hover,.rito-editar:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.rito-editar:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.campo-rec{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.campo-rec .campo-et{margin:0}
+.campo-time{width:auto;flex:0 0 auto;padding:9px 12px;border:1px solid var(--linea-fuerte);border-radius:10px}
+.ahora{display:flex;align-items:center;gap:14px;width:100%;text-align:left;margin:16px 0 22px;padding:15px 18px;border-radius:16px;border:1px solid color-mix(in srgb,var(--llama) 32%,var(--linea-fuerte));background:color-mix(in srgb,var(--llama) 9%,transparent);transition:border-color .2s,background .2s}
+.ahora:hover,.ahora:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 15%,transparent)}
+.ahora:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.ahora-ic{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:radial-gradient(circle at 50% 45%,color-mix(in srgb,var(--llama) 45%,transparent),transparent 70%);border:1px solid color-mix(in srgb,var(--llama) 45%,transparent)}
+.ahora-tx{display:flex;flex-direction:column;gap:2px}
+.ahora-t{font-family:var(--serif);font-size:1.15rem;color:var(--tinta)}
+.ahora-s{font-size:12.5px;color:var(--tinta-baja)}
+
+/* ── SOS · Ahora mismo ── */
+.sos{position:fixed;inset:0;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 30px) 32px calc(env(safe-area-inset-bottom) + 30px);gap:0}
+.sos-respira{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:38px;
+  background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--llama) 22%,transparent), transparent 70%);
+  border:1px solid var(--linea-fuerte);animation:respirar 11s ease-in-out infinite}
+.sos-guia{font-family:var(--serif);font-size:1.15rem;color:var(--tinta-baja);letter-spacing:.02em}
+@keyframes respirar{
+  0%{transform:scale(.72)}
+  36%{transform:scale(1.05)}
+  50%{transform:scale(1.05)}
+  86%{transform:scale(.72)}
+  100%{transform:scale(.72)}
+}
+.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:0 0 34px;min-height:4.5rem;transition:opacity .5s ease}
+.sos-acc{display:flex;gap:12px}
+.sos-btn{padding:13px 26px;border-radius:12px;border:1px solid var(--linea-fuerte);font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.sos-btn:hover,.sos-btn:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.sos-btn:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.sos-salir{border-color:transparent;color:var(--tinta-tenue)}
+
+/* ── Afirmaciones · repetir + Manifestación · 369 (overlays) ── */
+.rep,.m369{position:fixed;inset:0;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top) + 40px) 32px calc(env(safe-area-inset-bottom) + 34px)}
+.rep-txt,.m369-decl{font-family:var(--serif);font-size:1.9rem;line-height:1.4;color:var(--tinta);text-align:center;max-width:26ch;margin:0 0 20px}
+.rep-count,.m369-count{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 28px;min-height:1.2em}
+.m369-count{margin:0 0 26px}
+.rep-decir{padding:15px 34px;border-radius:999px;background:var(--tinta);color:var(--noche);font-size:15px;font-weight:500;transition:transform .12s ease,opacity .2s}
+.rep-decir:active{transform:scale(.96)}
+.rep-decir:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.pulso{animation:pulsoAf .5s ease}
+@keyframes pulsoAf{0%{transform:scale(1)}40%{transform:scale(1.04);opacity:.85}100%{transform:scale(1)}}
+.m369{justify-content:center}
+.m369-x{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:20px;width:38px;height:38px;font-size:17px;color:var(--tinta-tenue);display:flex;align-items:center;justify-content:center}
+.m369-vis{display:flex;flex-direction:column;align-items:center;gap:22px;animation:onbIn .5s ease}
+.m369-vis-t{font-family:var(--serif);font-size:1.3rem;line-height:1.5;color:var(--tinta-baja);text-align:center;max-width:24ch;margin:0}
+.m369-listo{padding:15px 40px;border-radius:12px;background:var(--tinta);color:var(--noche);font-size:15px;font-weight:500}
+.m369-listo:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+
+/* ── Manifestación (superficie) ── */
+.manif-decl{background:var(--panel);border:1px solid var(--linea-fuerte);border-radius:16px;padding:20px;margin-bottom:20px;text-align:center}
+.manif-decl-l{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 10px}
+.manif-decl-x{font-family:var(--serif);font-size:1.3rem;line-height:1.4;color:var(--tinta);margin:0 0 14px}
+.manif-cambiar{font-size:12.5px;color:var(--brasa);padding:5px}
+.manif-ses{display:flex;flex-direction:column;gap:10px;margin-bottom:6px}
+.manif-sesion{display:flex;align-items:center;justify-content:space-between;width:100%;padding:17px 20px;border:1px solid var(--linea-fuerte);border-radius:14px;text-align:left;transition:border-color .2s,background .2s}
+.manif-sesion:hover,.manif-sesion:focus-visible{border-color:var(--llama)}
+.manif-sesion.hecho{border-color:var(--linea);background:color-mix(in srgb,var(--llama) 8%,transparent);opacity:.75}
+.manif-ses-t{font-family:var(--serif);font-size:1.15rem;color:var(--tinta)}
+.manif-ses-r{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--tinta-baja)}
+.manif-opts{display:flex;flex-direction:column;gap:9px}
+.manif-opt{padding:16px 18px;border:1px solid var(--linea-fuerte);border-radius:14px;font-family:var(--serif);font-size:1.08rem;color:var(--tinta);text-align:left;transition:border-color .2s,background .2s}
+.manif-opt:hover,.manif-opt:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
+
+/* ── Feedback (👍/👎) ── */
+.fb{display:flex;justify-content:center;gap:14px;margin:2px 0 20px}
+.fb-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--linea-fuerte);display:flex;align-items:center;justify-content:center;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s,transform .12s}
+.fb-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+.fb-btn:active{transform:scale(.9)}
+.fb-btn:hover,.fb-btn:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.fb-btn:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.fb-abajo svg{transform:rotate(180deg)}
+.fb-abajo:hover,.fb-abajo:focus-visible{border-color:var(--brasa);color:var(--brasa)}
+.pref-reset{display:block;width:100%;text-align:center;padding:12px;margin-top:6px;font-size:13px;color:var(--tinta-tenue);transition:color .2s}
+.pref-reset:hover,.pref-reset:focus-visible{color:var(--tinta-baja)}
+.er-bloque{margin-bottom:22px}
+.er-nom{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 10px}
+.er-linea{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--linea)}
+.er-txt{font-family:var(--serif);font-size:1.02rem;line-height:1.4;color:var(--tinta);flex:1}
+.er-acc{display:flex;gap:6px;flex:0 0 auto}
+.er-b{width:32px;height:32px;border-radius:8px;border:1px solid var(--linea-fuerte);color:var(--tinta-baja);font-size:14px;display:flex;align-items:center;justify-content:center;transition:border-color .2s,color .2s}
+.er-b:hover,.er-b:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.er-x:hover,.er-x:focus-visible{border-color:var(--brasa);color:var(--brasa)}
+.er-add{margin-top:12px;padding:8px 14px;border:1px dashed var(--linea-fuerte);border-radius:10px;font-size:13px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.er-add:hover,.er-add:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.er-addbox{display:flex;gap:8px;margin-top:12px}
+.er-addbox .campo-in{flex:1}
+.er-addok{padding:0 18px;border-radius:10px;background:var(--tinta);color:var(--noche);font-size:14px;font-weight:500;flex:0 0 auto}
 
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
@@ -479,7 +644,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <!-- ══════ INICIO ══════ -->
 <main class="lienzo" id="inicio">
-  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes">⚙</button>
+  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
 
   <div class="panel" id="panelInicio">
     <p class="rubrica" id="rubricaHora">Antes de empezar</p>
@@ -495,14 +660,34 @@ body.encendida .tabbar,body.encendida .gear{display:none}
       </div>
     </div>
 
+    <div class="hoy" id="hoy">
+      <p class="hoy-label">Mensaje de hoy</p>
+      <p class="hoy-txt" id="hoyTxt"></p>
+      <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
+    </div>
+
+    <button class="ahora" id="ahoraBtn">
+      <span class="ahora-ic" aria-hidden="true"></span>
+      <span class="ahora-tx"><span class="ahora-t">Ahora mismo</span><span class="ahora-s">Un momento difícil · respira conmigo</span></span>
+    </button>
+
     <div class="ritos" id="ritos"></div>
+    <button class="rito-editar" data-abrir="rituales"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Personalizar mis rituales</button>
+
     <div class="aviso oculto" id="avisoVision"></div>
   </div>
 
   <div class="panel oculto" id="panelExplorar">
     <h1 class="panel-titulo">Explorar</h1>
+    <p class="nav-grupo">Tu práctica</p>
     <div class="nav-cards">
+      <button class="nav-card" data-abrir="afirmaciones"><span class="nav-card-tx"><span class="nav-card-t">Afirmaciones</span><span class="nav-card-s">Dilo hasta que se sienta verdad</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="manifestacion"><span class="nav-card-tx"><span class="nav-card-t">Manifestación</span><span class="nav-card-s">Método 369 · lo que llamas a tu vida</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="meditacion"><span class="nav-card-tx"><span class="nav-card-t">Meditación</span><span class="nav-card-s">Guiadas, con voz y ambiente</span></span><span class="nav-card-ch">›</span></button>
+    </div>
+    <p class="nav-grupo">Para leer y reflexionar</p>
+    <div class="nav-cards">
+      <button class="nav-card" data-abrir="biblia"><span class="nav-card-tx"><span class="nav-card-t">Historias bíblicas</span><span class="nav-card-s">Relatos breves, uno a la vez</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span><span class="nav-card-s">Estudio, una vez por semana</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span><span class="nav-card-s">Relatos para reflexionar</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="salmos"><span class="nav-card-tx"><span class="nav-card-t">Salmos</span><span class="nav-card-s">Los más importantes, uno a la vez</span></span><span class="nav-card-ch">›</span></button>
@@ -535,6 +720,45 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <button class="tab" data-tab="diario" aria-label="Diario"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></svg></span><span class="tab-lb">Diario</span></button>
 </nav>
 
+<div class="onb oculto" id="onboarding">
+  <div class="onb-top">
+    <button class="onb-back oculto" id="onbAtras" aria-label="Atrás">←</button>
+    <div class="onb-dots" id="onbDots"></div>
+  </div>
+  <div class="onb-cont" id="onbCont"></div>
+  <button class="onb-saltar" id="onbSaltar">Saltar por ahora</button>
+</div>
+
+<div class="sos oculto" id="sos">
+  <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span></div>
+  <p class="sos-linea" id="sosLinea"></p>
+  <div class="sos-acc">
+    <button class="sos-btn" id="sosOtra">Otra</button>
+    <button class="sos-btn" id="sosCompartir">Compartir</button>
+    <button class="sos-btn sos-salir" id="sosSalir">Salir</button>
+  </div>
+</div>
+
+<div class="rep oculto" id="repetir">
+  <p class="rep-txt" id="repTxt"></p>
+  <p class="rep-count" id="repCount"></p>
+  <div class="sos-acc">
+    <button class="rep-decir" id="repDecir">Lo dije</button>
+    <button class="sos-btn sos-salir" id="repListo">Listo</button>
+  </div>
+</div>
+
+<div class="m369 oculto" id="m369">
+  <button class="m369-x" id="m369Salir" aria-label="Salir">✕</button>
+  <p class="m369-count" id="m369Count"></p>
+  <p class="m369-decl" id="m369Decl"></p>
+  <button class="rep-decir" id="m369Decir">Lo dije</button>
+  <div class="m369-vis oculto" id="m369Vis">
+    <p class="m369-vis-t">Ahora ciérralo con gratitud. Siéntelo como si ya fuera tuyo.</p>
+    <button class="m369-listo" id="m369Listo">Listo</button>
+  </div>
+</div>
+
 <!-- ══════ PRÁCTICA ══════ -->
 <section id="practica" class="oculto">
   <div class="p-alto">
@@ -547,8 +771,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <p class="p-linea" id="pLinea" aria-live="polite" aria-atomic="true"></p>
     <p class="p-nota oculto" id="pNota"></p>
     <div class="respiro oculto" id="pRespiro">
-      <div class="respiro-aro" id="respiroAro"><div class="respiro-nucleo"></div></div>
-      <div class="respiro-txt" id="respiroTxt">Inhala</div>
+      <div class="respiro-aro" id="respiroAro"><span class="respiro-txt" id="respiroTxt">Inhala</span></div>
     </div>
   </div>
 
@@ -567,7 +790,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     </div>
     <div class="p-pie">
       <span id="pTiempo" aria-hidden="true">0:00</span>
-      <button class="p-btn acento oculto" id="pDormir" style="padding:8px 11px">Temporizador</button>
+      <button class="p-btn acento oculto" id="pDormir" style="padding:8px 11px;display:none">Temporizador</button>
       <span id="pProgreso" aria-hidden="true">0 %</span>
     </div>
   </div>
@@ -610,21 +833,44 @@ let E = {
   arquitecto:{ semana:null, marcas:[false,false,false,false] },
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{} },
-  ajustes:{ nombre:"Guillermo", tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:20, urlAudio:{}, ritual:{} }
+  contenido:{ ancla:{usuario:[]}, historias:{usuario:[]}, doctrina:{usuario:[]}, salmos:{usuario:[]}, afirmaciones:{usuario:[]}, manifestaciones:{usuario:[]} },
+  perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
+  manifestacion:{ decl:"", fecha:"", m:false, t:false, n:false },
+  feedback:{ pesos:{}, ocultos:[] },
+  ritos:{},
+  v:2,
+  ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:0, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {nombre:"Guillermo",tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:20,urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"Guillermo",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},urlAudio:{},ritual:{}}, g.ajustes||{});
+    if(!E.ajustes.recordatorios || typeof E.ajustes.recordatorios !== "object") E.ajustes.recordatorios = {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
     E.dias = g.dias || {};
     E.registro = Object.assign({journal:{},diario:{},semanal:{},mensual:{}}, g.registro||{});
     ["journal","diario","semanal","mensual"].forEach(k=>{ if(!E.registro[k] || typeof E.registro[k] !== "object") E.registro[k] = {}; });
+    E.contenido = Object.assign({ancla:{usuario:[]},historias:{usuario:[]},doctrina:{usuario:[]},salmos:{usuario:[]},afirmaciones:{usuario:[]},manifestaciones:{usuario:[]}}, g.contenido||{});
+    ["ancla","historias","doctrina","salmos","afirmaciones","manifestaciones"].forEach(k=>{ if(!E.contenido[k] || typeof E.contenido[k] !== "object") E.contenido[k] = {usuario:[]}; if(!Array.isArray(E.contenido[k].usuario)) E.contenido[k].usuario = []; });
+    E.perfil = Object.assign({categorias:[], tono:"mezcla", sub:{}, hecho:false}, g.perfil||{});
+    if(!Array.isArray(E.perfil.categorias)) E.perfil.categorias = [];
+    if(!E.perfil.sub || typeof E.perfil.sub !== "object") E.perfil.sub = {};
+    E.manifestacion = Object.assign({decl:"", fecha:"", m:false, t:false, n:false}, g.manifestacion||{});
+    E.feedback = Object.assign({pesos:{}, ocultos:[]}, g.feedback||{});
+    if(!E.feedback.pesos || typeof E.feedback.pesos !== "object") E.feedback.pesos = {};
+    if(!Array.isArray(E.feedback.ocultos)) E.feedback.ocultos = [];
+    E.ritos = (g.ritos && typeof g.ritos === "object") ? g.ritos : {};
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
+    if(!g.v){
+      const af = E.contenido.afirmaciones.usuario, man = E.contenido.manifestaciones.usuario;
+      (L.identidad||[]).forEach(t=>{ if(!af.some(u=>(u.texto||"")===t)) af.push({ texto:t, id:Date.now()+Math.floor(Math.random()*1e6) }); });
+      (L.permiso||[]).concat(L.recepcion||[]).forEach(t=>{ if(!man.some(u=>(u.texto||"")===t)) man.push({ texto:t, id:Date.now()+Math.floor(Math.random()*1e6) }); });
+    }
+    E.v = 2;
   }
 }
 
@@ -746,72 +992,117 @@ const RITUALES = {
   manana:{
     id:"manana", nombre:"Mañana", sub:"Activación — vaciar, anclar, declarar", dur:"~9 min", tema:"dia",
     bloques:[
-      { num:"·",   nom:"Anclaje",    rub:"Tres respiraciones lentas", lineas:[{respiro:3},{t:"Dios está conmigo.",hold:6000}] },
-      { num:"I",   nom:"Entrega",    rub:"Vaciar antes de llenar",    lineas:L.entrega },
-      { num:"II",  nom:"Palabra",    rub:"Anclaje externo",           lineas:L.palabra },
-      { num:"III", nom:"Permiso",    rub:"La teología del dinero",    lineas:L.permiso },
-      { num:"IV",  nom:"Identidad",  rub:"Yo soy",                    lineas:L.identidad },
-      { num:"V",   nom:"Visión",     rub:"Ser · Hacer · Tener",       dinamico:bloqueVision },
-      { num:"VI",  nom:"Recepción",  rub:"Dejas de emitir y te abres",lineas:L.recepcion },
-      { num:"VII", nom:"Sello",      rub:"Confianza y cierre",        lineas:L.sello }
+      { num:"·",   nom:"Anclaje",     rub:"Tres respiraciones lentas", slot:"anclaje" },
+      { num:"I",   nom:"Entrega",     rub:"Vaciar antes de llenar",    slot:"entrega", n:4 },
+      { num:"II",  nom:"Palabra",     rub:"Anclaje externo",           slot:"palabra", n:2 },
+      { num:"III", nom:"Declaración", rub:"Lo que llamas a tu vida",   slot:"manifestacion", n:3 },
+      { num:"IV",  nom:"Identidad",   rub:"Quién eres",                slot:"afirmacion", n:3 },
+      { num:"V",   nom:"Visión",      rub:"Ser · Hacer · Tener",       slot:"vision" },
+      { num:"VI",  nom:"Recepción",   rub:"Te abres a recibir",        slot:"recepcion", n:3 },
+      { num:"VII", nom:"Sello",       rub:"Confianza y cierre",        slot:"cierre", n:4 }
     ]
   },
   noche:{
     id:"noche", nombre:"Noche", sub:"Rendición — sin declaraciones de logro", dur:"~6 min", tema:"noche",
     bloques:[
-      { num:"·",   nom:"Anclaje",   rub:"El día terminó", lineas:[{respiro:3}] },
-      { num:"I",   nom:"Gratitud",  rub:"En voz alta", lineas:[
-        { t:"Tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }]},
-      { num:"II",  nom:"Entrega",   rub:"Soltar el peso", lineas:[
-        "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
-        "Mi corazón te lo entrego completamente a Ti."]},
-      { num:"III", nom:"Descarga",  rub:"Limpiar la mente", lineas:[
-        "Dios, por favor calma mi mente, sana mi corazón y quita mis preocupaciones.",
-        "Ayúdame a dejar atrás aquello que ya pasó."]},
-      { num:"IV",  nom:"Salmo",     rub:"Salmo 23", lineas:[
-        "El Señor es mi pastor, y nada me faltará.",
-        "Aunque camine por valle de sombra de muerte, no temeré mal alguno, porque Tú, Señor, caminas conmigo."]},
-      { num:"V",   nom:"Reencuadre",rub:"Perspectiva", lineas:[
-        "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
-        "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso."]},
-      { num:"VI",  nom:"Seguridad", rub:"Tres veces. Cada vez más lento.", lineas:[
-        {t:"Todo está bien.",hold:4000},
-        {t:"Todo funciona para mi mayor y más alto bien.",hold:4500},
-        {t:"Estoy a salvo.",hold:4500},
-        {t:"Todo está bien.",hold:6000},
-        {t:"Todo funciona para mi mayor y más alto bien.",hold:6500},
-        {t:"Estoy a salvo.",hold:6500},
-        {t:"Todo está bien.",hold:8500},
-        {t:"Todo funciona para mi mayor y más alto bien.",hold:9000},
-        {t:"Estoy a salvo.",hold:10000}]},
-      { num:"VII", nom:"Cierre",    rub:"Silencio después", lineas:[
-        "Dios, confío en Ti.",
-        "Jesucristo, confío en Ti.",
-        "Espíritu Santo, confío en Ti.",
-        "Yo confío en mí.",
-        {t:"Te amo, Dios.",hold:10000}]}
+      { num:"·",   nom:"Anclaje",    rub:"El día terminó",   slot:"respiro" },
+      { num:"I",   nom:"Gratitud",   rub:"En voz alta",      slot:"gratitud" },
+      { num:"II",  nom:"Entrega",    rub:"Soltar el peso",   slot:"entrega", n:3 },
+      { num:"III", nom:"Palabra",    rub:"Un ancla",         slot:"palabra", n:2 },
+      { num:"IV",  nom:"Reencuadre", rub:"Perspectiva",      slot:"entrega", n:2 },
+      { num:"V",   nom:"Seguridad",  rub:"Tres veces, cada vez más lento", slot:"seguridad" },
+      { num:"VI",  nom:"Cierre",     rub:"Silencio después", slot:"cierre", n:3 }
     ]
   },
   nucleo:{
     id:"nucleo", nombre:"Núcleo", sub:"El innegociable — una línea por movimiento", dur:"3 min", tema:"dia",
     bloques:[
-      { num:"·",   nom:"Anclaje",   rub:"Empieza aquí", lineas:[{t:"Dios está conmigo.",hold:8000}] },
-      { num:"I",   nom:"Entrega",   rub:"", lineas:[{t:"Señor, entrego mi carga. Calma mi mente.",hold:9000}] },
-      { num:"II",  nom:"Palabra",   rub:"", lineas:[{t:"Todo lo puedo en Cristo que me fortalece.",hold:9000}] },
-      { num:"III", nom:"Permiso",   rub:"", lineas:[{t:"El dinero y el poder son parte de mi camino.",hold:9000}] },
-      { num:"IV",  nom:"Identidad", rub:"", lineas:[
-        {t:"Yo soy amor.",hold:7000},
-        {t:"Yo soy mensajero de Dios en el mundo.",hold:8000},
-        {t:"Yo soy el elegido.",hold:8000}]},
-      { num:"V",   nom:"Recepción", rub:"", lineas:[
-        {t:"Todo lo que pasa en mi vida es a mi favor.",hold:8000},
-        {t:"Ahora es mi tiempo.",hold:8000}]},
-      { num:"VI",  nom:"Sello",     rub:"", lineas:[
-        {t:"Gracias, Dios.",hold:6000},
-        {t:"Te amo, Dios.",hold:9000}]}
+      { num:"·",   nom:"Anclaje",     rub:"Empieza aquí", slot:"presencia", n:1, hold:8000 },
+      { num:"I",   nom:"Entrega",     rub:"",             slot:"entrega", n:1, hold:9000 },
+      { num:"II",  nom:"Palabra",     rub:"",             slot:"palabra", n:1, hold:9000 },
+      { num:"III", nom:"Declaración", rub:"",             slot:"manifestacion", n:1, hold:9000 },
+      { num:"IV",  nom:"Identidad",   rub:"",             slot:"afirmacion", n:1, hold:9000 },
+      { num:"V",   nom:"Sello",       rub:"",             slot:"cierre", n:1, hold:9000 }
     ]
   }
 };
+
+// Pools de liturgia por tradición (tono). Oraciones/salmos migrados; versiones universales para tono espiritual.
+const LIT = {
+  presencia:{
+    cristiano:["Dios está conmigo.","El Señor está aquí, en este instante."],
+    universal:["Estoy aquí. Estoy presente.","Este momento es lo único que existe, y estoy en él."]
+  },
+  entrega:{
+    cristiano:["Querido Dios: llévame a mi máximo potencial.","Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, protege el camino en el que estoy y no me dejes renunciar.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a Ti.","Ayúdame a dejar atrás aquello que ya pasó."],
+    universal:["Suelto lo que no puedo cargar.","Dejo ir lo que no depende de mí.","Que se vaya lo que no es para mí; que se revele lo que sí.","Calmo mi mente, sano lo que puedo, suelto lo demás.","Dejo atrás aquello que ya pasó.","Entrego lo que no está en mis manos."]
+  },
+  palabra:{
+    cristiano:["El Señor es mi pastor, y nada me faltará.","Todo lo puedo en Cristo que me fortalece.","Si Dios está conmigo, ¿quién contra mí?","Aunque camine por valle de sombra, no temeré, porque Tú vas conmigo.","Cuando abres tu mano, sacias a todo ser viviente.","El Señor escucha a todos los que lo invocan de verdad."],
+    universal:["Todo lo que necesito ya está en camino.","Tengo la fuerza para lo que este día me pida.","Nada de lo que temo es más grande que lo que me sostiene.","Lo que es para mí, no va a pasar de largo."]
+  },
+  recepcion:{
+    universal:["Me abro a recibir cosas buenas en mi vida.","Recibo más de lo que imaginé.","Todo lo que pasa en mi vida es a mi favor.","Estoy listo para lo que viene.","Ahora es mi tiempo."]
+  },
+  seguridad:{
+    universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo."]
+  },
+  cierre:{
+    cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
+    universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día."]
+  }
+};
+
+function elegirN(lista, n){
+  const l = lista.slice();
+  for(let i=l.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const tmp=l[i]; l[i]=l[j]; l[j]=tmp; }
+  return l.slice(0, Math.min(n, l.length));
+}
+function litPaso(slot, n){
+  const perm = tradPermitidas(), pool = LIT[slot] || {};
+  let cand = [];
+  if(pool.cristiano && perm.cristiano) cand = cand.concat(pool.cristiano);
+  if(pool.universal && perm.universal) cand = cand.concat(pool.universal);
+  if(!cand.length) cand = (pool.cristiano||[]).concat(pool.universal||[]);
+  const v = cand.filter(x=>!fbOculto(x));
+  return elegirN(v.length ? v : cand, n || cand.length);
+}
+function afirmacionesRitual(n){ return afirmacionesActivas().slice(0, n).map(a=>a.x); }
+function manifestacionesRitual(n){ return manifestacionesActivas().slice(0, n).map(m=>m.x); }
+
+function ritSemilla(slot, n){
+  if(slot === "afirmacion") return afirmacionesRitual(n||3);
+  if(slot === "manifestacion") return manifestacionesRitual(n||3);
+  return litPaso(slot, n||3);
+}
+// Devuelve las líneas guardadas del bloque; si no hay, las siembra desde el perfil y las guarda (queda estable).
+function ritLineas(id, b){
+  E.ritos[id] = E.ritos[id] || {};
+  if(Array.isArray(E.ritos[id][b.num])) return E.ritos[id][b.num].slice();
+  let txt = ritSemilla(b.slot, b.n);
+  if(!txt.length) txt = ["…"];
+  E.ritos[id][b.num] = txt.slice();
+  return txt.slice();
+}
+function construirRitual(id){
+  const p = RITUALES[id]; if(!p) return null;
+  const bloques = p.bloques.map(b=>{
+    if(b.slot === "vision") return { num:b.num, nom:b.nom, rub:b.rub, dinamico:bloqueVision };
+    if(b.slot === "respiro") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}] };
+    if(b.slot === "gratitud") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{ t:"Tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }] };
+    if(b.slot === "anclaje"){
+      const pres = ritLineas(id, { num:b.num, slot:"presencia", n:1 });
+      return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}].concat((pres.length?pres:["Estoy aquí."]).map(t=>({t:t, hold:6000}))) };
+    }
+    const txt = ritLineas(id, b);
+    const lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
+    return { num:b.num, nom:b.nom, rub:b.rub, lineas:lineas };
+  });
+  guardar();
+  return { id:p.id, nombre:p.nombre, sub:p.sub, dur:p.dur, tema:p.tema, bloques:bloques };
+}
+// Re-siembra un ritual completo desde el perfil actual (borra lo guardado y vuelve a armar).
+function regenerarRitual(id){ delete E.ritos[id]; construirRitual(id); guardar(); }
 
 const DOCTRINA = [
   { t:"El bloque sobre «Yo Soy» como mandato creador",
@@ -851,6 +1142,177 @@ const MENSUAL_HITOS = [
   "Cuerpo — cuidé sueño, comida y movimiento",
   "Límites — protegí mi energía de lo que no suma"
 ];
+// ── Ola 1 · calma / presencia (el clúster de mayor engagement) ──
+const MENSAJES = [
+  "Hoy no empieza con lo que te falta, sino con lo que ya eres.",
+  "Lo que cuidas en silencio hoy, mañana lo agradeces.",
+  "No tienes que hacerlo todo. Solo lo siguiente.",
+  "Dios está contigo en lo pequeño de este día, no solo en lo grande.",
+  "Una cosa a la vez. Con eso alcanza para hoy.",
+  "Lo que siembras hoy, aunque no lo veas, ya está creciendo.",
+  "Respira antes de empezar. El día te espera contigo, no en tu contra.",
+  "Tu paz no depende de que todo salga bien, sino de a Quién le entregas el día.",
+  "Hay más fuerza dentro de ti de la que tus días fáciles te dejaron ver.",
+  "Empieza por gratitud. Cambia el peso del día entero.",
+  "No corras. Lo importante rara vez tiene prisa.",
+  "Hoy puedes empezar de nuevo. La cuenta se reinicia cada mañana.",
+  "Eres suficiente hoy, antes de lograr nada.",
+  "Lo que entregas deja de pesarte. Suelta lo que no te toca cargar.",
+  "El día es a tu favor. Camínalo despacio.",
+  "Basta con presentarte. Lo demás se va acomodando.",
+  "Lo que agradeces se multiplica. Empieza por ahí.",
+  "Hay suficiente: tiempo, ayuda, oportunidades. No tienes que competir por lo tuyo.",
+  "Recibe hoy con las manos abiertas. Lo que es para ti, llega.",
+  "La abundancia empieza por notar lo que ya tienes.",
+  "No tienes que ganarte tu lugar. Ya lo tienes.",
+  "Eres más que tu peor día y más que tu mejor logro.",
+  "Sé amable contigo hoy. Lo estás haciendo mejor de lo que crees.",
+  "Descansar también es productivo. Tu cuerpo y tu mente lo necesitan.",
+  "Lo que no terminaste hoy, esperará. Date permiso de parar.",
+  "Empieza por lo más difícil. El resto del día se siente ligero.",
+  "No tienes que hacerlo todo hoy. Solo lo siguiente que importa."
+];
+const CALMA = [
+  "Respira. Solo esto: el aire que entra, el aire que sale. Nada más por ahora.",
+  "Estás a salvo en este momento. Es lo único que tienes que sostener.",
+  "No estás solo en esto. Algo más grande te está sosteniendo ahora mismo.",
+  "Esto también va a pasar. No eres lo que sientes hoy.",
+  "No tienes que resolverlo todo esta noche. Solo tienes que respirar.",
+  "«No temas, porque yo estoy contigo.»<span class=\"ancla-ref\">Isaías 41</span>",
+  "Suelta los hombros. Afloja la mandíbula. Estás bien por ahora.",
+  "Un respiro a la vez. Eso es todo lo que se te pide.",
+  "«Dios es nuestro refugio y fortaleza, nuestro pronto auxilio en la angustia.»<span class=\"ancla-ref\">Salmo 46</span>",
+  "Tu mente corre al futuro. Tráela aquí: en este instante, todavía estás bien.",
+  "No tienes que sentirte fuerte. Solo quédate. Respira. Quédate.",
+  "Este miedo no es un hecho. Es una ola, y las olas bajan.",
+  "Pon una mano en el pecho. Siente que sigues aquí. Eso basta.",
+  "«Vengan a mí los que están cansados, y yo los haré descansar.»<span class=\"ancla-ref\">Mateo 11</span>",
+  "Estás a salvo. Estás sostenido. Esto va a pasar.",
+  "Nada tiene que decidirse ahora. Solo respira hasta que la ola baje.",
+  "Es de noche y tu mente corre. No tienes que creerle todo lo que dice a esta hora.",
+  "Nada se arregla a las 3 de la mañana. Descansa; mañana lo ves distinto.",
+  "Suelta el pecho. Afloja. Solo tienes que pasar esta noche, un respiro a la vez.",
+  "Deja el problema para mañana. Ahora solo respira y descansa."
+];
+// ── Afirmaciones (primera persona) — etiquetadas por subtema del perfil ──
+const AFIRMACIONES = [
+  { t:"confianza", x:"Confío en lo que sé y en lo que soy capaz de aprender." },
+  { t:"confianza", x:"Tengo lo que se necesita para lo que tengo enfrente." },
+  { t:"confianza", x:"Hablo y actúo desde mi valor, no desde el miedo." },
+  { t:"confianza", x:"Merezco ocupar espacio y que me escuchen." },
+  { t:"confianza", x:"Cada paso que doy me hace más capaz." },
+  { t:"confianza", x:"No necesito permiso para empezar." },
+  { t:"calma", x:"Estoy a salvo. Puedo soltar la prisa." },
+  { t:"calma", x:"Respiro, y con cada exhalación suelto lo que no controlo." },
+  { t:"calma", x:"Elijo la calma por encima de la preocupación." },
+  { t:"calma", x:"Lo que me inquieta hoy, mañana será más pequeño." },
+  { t:"calma", x:"Estoy en paz con lo que aún no tiene respuesta." },
+  { t:"calma", x:"Mi mente puede descansar. No todo depende de mí." },
+  { t:"disciplina", x:"Hago lo que dije que haría, aunque no tenga ganas." },
+  { t:"disciplina", x:"Soy constante en lo pequeño, y lo pequeño construye lo grande." },
+  { t:"disciplina", x:"Elijo hoy lo que mi yo de mañana me va a agradecer." },
+  { t:"disciplina", x:"No espero motivación; empiezo, y la motivación llega." },
+  { t:"disciplina", x:"Termino lo que empiezo." },
+  { t:"merecer", x:"Soy suficiente hoy, antes de lograr nada." },
+  { t:"merecer", x:"No tengo que ganarme mi valor; ya lo tengo." },
+  { t:"merecer", x:"Merezco descanso, amor y cosas buenas." },
+  { t:"merecer", x:"Me trato con la misma paciencia con la que trato a quien quiero." },
+  { t:"merecer", x:"Me perdono por lo que no supe hacer mejor antes." },
+  { t:"merecer", x:"Soy digno de lo que estoy pidiendo." },
+  { t:"fe", x:"Algo más grande que yo sostiene lo que no puedo cargar." },
+  { t:"fe", x:"Confío en el tiempo de Dios, aunque no lo entienda." },
+  { t:"fe", x:"Todo lo puedo en Aquel que me fortalece." },
+  { t:"fe", x:"Lo que es para mí, no va a pasar de largo." },
+  { t:"fe", x:"Entrego lo que me preocupa y descanso en que está en buenas manos." },
+  { t:"fe", x:"No camino solo." },
+  { t:"confianza", x:"Soy capaz de más de lo que creo." },
+  { t:"merecer", x:"Recibir es tan sagrado como dar." },
+  { t:"merecer", x:"Está bien que las cosas me salgan bien." },
+  { t:"merecer", x:"Me abro a recibir lo bueno que la vida me quiere dar." },
+  { t:"calma", x:"Este momento es suficiente. Yo soy suficiente." },
+  { t:"fe", x:"Suelto el control y confío en el proceso." },
+  { t:"disciplina", x:"Un día a la vez, me convierto en quien quiero ser." },
+  { t:"merecer", x:"Mi valor no cambia con mis errores ni con mis logros." },
+  { t:"merecer", x:"Soy digno de amor incluso en mis peores días." },
+  { t:"merecer", x:"No tengo que ser perfecto para merecer respeto." },
+  { t:"merecer", x:"Me permito descansar sin sentirme culpable." },
+  { t:"merecer", x:"Lo que soy ya es suficiente; lo que hago es extra." },
+  { t:"merecer", x:"Me hablo con amabilidad, como le hablaría a un buen amigo." },
+  { t:"merecer", x:"Suelto la vergüenza por quien fui; hoy elijo quién soy." },
+  { t:"merecer", x:"Merezco los sueños que llevo dentro." },
+  { t:"merecer", x:"Está bien poner límites. Cuidarme no es egoísmo." },
+  { t:"confianza", x:"Confío en mi criterio, aunque otros duden." },
+  { t:"confianza", x:"Mi voz importa y merece ser escuchada." },
+  { t:"confianza", x:"Puedo con lo que venga; siempre he encontrado la forma." },
+  { t:"confianza", x:"No necesito la aprobación de nadie para valer." },
+  { t:"confianza", x:"Cada vez que me atrevo, me hago más fuerte." },
+  { t:"confianza", x:"Soy el tipo de persona que termina lo que se propone." },
+  { t:"confianza", x:"Pertenezco en cualquier lugar donde decida estar." },
+  { t:"calma", x:"Suelto el día. Ya hice suficiente por hoy." },
+  { t:"calma", x:"Mi mente puede descansar; no todo depende de mí." },
+  { t:"calma", x:"Me permito soltar y entregarme al descanso." },
+  { t:"calma", x:"Mañana no está aquí todavía. Solo existe esta noche de paz." },
+  { t:"calma", x:"Mi cuerpo sabe cómo descansar. Se lo permito." },
+  { t:"calma", x:"Dejo las preocupaciones en las manos de Dios y cierro los ojos en paz." },
+  { t:"calma", x:"Cada respiración me hunde más en la calma." },
+  { t:"calma", x:"No tengo que resolver nada a esta hora. Solo descansar." },
+  { t:"calma", x:"Estoy a salvo, y puedo dormir tranquilo." },
+  { t:"calma", x:"Suelto lo de hoy; mañana tendré fuerzas nuevas." },
+  { t:"disciplina", x:"Protejo mi atención como mi recurso más valioso." },
+  { t:"disciplina", x:"Una tarea a la vez. Así se construye lo grande." },
+  { t:"disciplina", x:"Lo difícil primero; el resto se acomoda solo." },
+  { t:"disciplina", x:"No busco perfección, busco progreso." },
+  { t:"disciplina", x:"Puedo enfocarme; solo empiezo por lo siguiente." },
+  { t:"disciplina", x:"Cierro lo que abrí antes de empezar algo nuevo." },
+  { t:"disciplina", x:"Mi energía sigue a mi atención; elijo dónde ponerla." },
+  { t:"disciplina", x:"Los pasos pequeños, repetidos, me llevan lejos." },
+  { t:"disciplina", x:"Descansar a tiempo es parte de trabajar bien." },
+  { t:"disciplina", x:"Hoy avanzo un paso concreto, y con eso basta." }
+];
+// ── Manifestación (declaraciones en presente) — etiquetadas por tema ──
+const MANIFESTACIONES = [
+  { t:"abundancia", x:"El dinero llega a mí con facilidad y desde muchas fuentes." },
+  { t:"abundancia", x:"Vivo en abundancia y comparto desde lo que me sobra." },
+  { t:"abundancia", x:"Soy un imán para las oportunidades que me hacen crecer." },
+  { t:"abundancia", x:"Recibo más de lo que necesito, y sé administrarlo bien." },
+  { t:"abundancia", x:"La prosperidad es mi estado natural." },
+  { t:"abundancia", x:"Cada día se abren caminos nuevos hacia mi abundancia." },
+  { t:"salud", x:"Mi cuerpo está sano, fuerte y lleno de energía." },
+  { t:"salud", x:"Cada día cuido mi cuerpo y él me responde con vitalidad." },
+  { t:"salud", x:"Duermo profundo y despierto renovado." },
+  { t:"salud", x:"La salud fluye por cada parte de mí." },
+  { t:"salud", x:"Elijo lo que me nutre y me da vida." },
+  { t:"relaciones", x:"Atraigo a mi vida personas que me suman y me quieren bien." },
+  { t:"relaciones", x:"Doy y recibo amor con libertad y sin miedo." },
+  { t:"relaciones", x:"Estoy rodeado de relaciones sanas y sinceras." },
+  { t:"relaciones", x:"El amor que doy regresa a mí multiplicado." },
+  { t:"relaciones", x:"Merezco un amor que me elige todos los días." },
+  { t:"proposito", x:"Estoy exactamente donde necesito estar para mi propósito." },
+  { t:"proposito", x:"Mi trabajo tiene sentido y da fruto." },
+  { t:"proposito", x:"Cada día me acerco más a la vida que estoy construyendo." },
+  { t:"proposito", x:"Uso mis dones y el mundo los recibe." },
+  { t:"proposito", x:"Tengo claridad sobre mi siguiente paso, y lo doy." },
+  { t:"abundancia", x:"El dinero fluye hacia mí de formas esperadas e inesperadas." },
+  { t:"abundancia", x:"Todo lo que toco prospera." },
+  { t:"abundancia", x:"Estoy abierto a recibir riqueza en todas sus formas." },
+  { t:"abundancia", x:"Merezco ganar bien haciendo lo que amo." },
+  { t:"abundancia", x:"Mis ingresos crecen mes con mes." },
+  { t:"abundancia", x:"Suelto el miedo a la escasez; hay más que suficiente para mí." },
+  { t:"abundancia", x:"Atraigo clientes, contratos y oportunidades con facilidad." },
+  { t:"abundancia", x:"Uso mi dinero con sabiduría y siempre regresa multiplicado." },
+  { t:"abundancia", x:"Soy próspero en salud, en amor y en recursos." },
+  { t:"abundancia", x:"La riqueza es energía, y yo estoy en sintonía con ella." },
+  { t:"salud", x:"Cada célula de mi cuerpo se renueva y se sana." },
+  { t:"salud", x:"Tengo la energía que necesito para lo que amo hacer." },
+  { t:"salud", x:"Mi cuerpo es fuerte, flexible y está en paz." },
+  { t:"relaciones", x:"Las personas correctas están llegando a mi vida." },
+  { t:"relaciones", x:"Suelto lo que ya no me corresponde para dar lugar a lo nuevo." },
+  { t:"relaciones", x:"Soy amado tal como soy." },
+  { t:"proposito", x:"Mi propósito se revela con claridad, paso a paso." },
+  { t:"proposito", x:"El trabajo que amo me encuentra." },
+  { t:"proposito", x:"Cada 'no' me acerca al 'sí' correcto." },
+  { t:"proposito", x:"Confío en que voy en la dirección correcta." }
+];
 // Audio alojado en el repo (rutas relativas). Un archivo por ritual; se puede dividir por sección después.
 const AUDIO_RITUAL = { manana:"audio/manana-01.mp3", noche:"audio/noche-01.mp3", nucleo:"audio/nucleo-01.mp3" };
 const SALMOS = [
@@ -867,8 +1329,52 @@ const SALMOS = [
   'No te impacientes a causa de los que hacen el mal.<br>Confía en el Señor, y haz el bien; ten tu deleite en el Señor.<br>Encomienda al Señor tu camino, y confía en él; y él hará.<br>Guarda silencio ante el Señor, y espera en él.<span class="ancla-ref">Salmo 37</span>',
   'Bendeciré al Señor en todo tiempo; su alabanza estará de continuo en mi boca.<br>Busqué al Señor, y él me oyó, y me libró de todos mis temores.<br>Gustad, y ved que es bueno el Señor.<br>Cercano está el Señor a los quebrantados de corazón.<span class="ancla-ref">Salmo 34</span>'
 ];
-const HIST_TEMAS = [["amor","Amor"],["abundancia","Abundancia"],["biblia","Bíblicas"],["budismo","Budismo"]];
+
+// Historias bíblicas — relatos breves, uno a la vez (relatos de dominio público, contados de nuevo)
+const BIBLIA = [
+  { t:"David y Goliat", x:"Un gigante llamado Goliat aterrorizaba al ejército de Israel; nadie se atrevía a enfrentarlo. David, un pastor joven, se ofreció. Rechazó la armadura del rey —no sabía moverse con ella— y bajó al valle con su honda y cinco piedras lisas. «Tú vienes con espada y lanza», le dijo al gigante, «pero yo vengo en el nombre del Señor.» Una sola piedra bastó. A veces lo que parece imposible cae por lo que menos esperabas." },
+  { t:"Noé y el arca", x:"Cuando el mundo se había llenado de violencia, Dios le pidió a Noé algo absurdo: construir un barco enorme, tierra adentro, sin señal de lluvia. Noé obedeció durante años entre las burlas de todos. Luego llegó el diluvio, y en el arca se salvaron su familia y una pareja de cada especie. Cuando las aguas bajaron, un arcoíris selló una promesa. Obedecer antes de ver la prueba: eso es la fe." },
+  { t:"Daniel en el foso de los leones", x:"Daniel servía al rey con tal integridad que sus envidiosos no hallaron falta en él, salvo su costumbre de orar. Lograron una ley que lo prohibía. Daniel siguió orando, con las ventanas abiertas, como siempre. Lo echaron al foso de los leones. Al amanecer, el rey corrió a ver: Daniel estaba ileso. «Mi Dios envió a su ángel y cerró la boca de los leones.» La fidelidad no negocia, ni cuando cuesta." },
+  { t:"Jonás y el gran pez", x:"Dios le pidió a Jonás ir a advertir a una ciudad enemiga. Jonás huyó en dirección contraria, en barco. Una tormenta casi los hunde; Jonás terminó en el mar y en el vientre de un gran pez. Tres días en la oscuridad le bastaron para rendirse. El pez lo devolvió a tierra, y esta vez fue. Puedes correr de lo que debes hacer, pero rara vez llegas lejos." },
+  { t:"Moisés y el mar Rojo", x:"Con el ejército del faraón pisándoles los talones y el mar enfrente, el pueblo de Israel se dio por perdido. «No teman», dijo Moisés, «estén quietos y vean.» Extendió su mano, el mar se abrió en dos, y cruzaron por tierra seca. Cuando el enemigo los siguió, las aguas volvieron. A veces el camino no aparece hasta que das el primer paso hacia el mar." },
+  { t:"José y sus hermanos", x:"Sus hermanos, celosos, vendieron a José como esclavo. Pasó por la casa de un extranjero y por la cárcel, hasta llegar a ser la mano derecha del faraón. Años después, ellos llegaron a Egipto muriendo de hambre, sin reconocerlo. José pudo vengarse; en cambio lloró y los abrazó: «Ustedes pensaron hacerme mal, pero Dios lo encaminó a bien.» Lo que te rompió puede ser, con el tiempo, lo que salve a muchos." },
+  { t:"El horno de fuego", x:"El rey ordenó que todos se inclinaran ante una estatua de oro; quien no lo hiciera, al horno. Tres jóvenes se negaron: «Nuestro Dios puede librarnos, y aunque no lo haga, no serviremos a tu estatua.» Los arrojaron al fuego siete veces más caliente. El rey miró adentro y vio no a tres, sino a cuatro, caminando ilesos. Hay convicciones que no se doblan ni ante el fuego." },
+  { t:"El hijo pródigo", x:"Un hijo pidió su herencia por adelantado y la gastó toda lejos de casa. Arruinado, decidió volver dispuesto a ser un sirviente más. Pero el padre lo vio venir de lejos —llevaba tiempo esperándolo— y corrió a abrazarlo, y ordenó una fiesta. La historia no es del hijo que falló, sino del padre que corre. Nunca has caído tan lejos como para no poder volver." },
+  { t:"El buen samaritano", x:"Un hombre quedó tirado y herido al borde del camino. Un sacerdote lo vio y siguió de largo; otro religioso también. El que se detuvo fue un samaritano, un extranjero despreciado: le curó las heridas, lo llevó a una posada y pagó por él. «¿Quién fue el prójimo?», preguntó Jesús. El que tuvo compasión. Amar no se mide en palabras, sino en detenerse." },
+  { t:"Los panes y los peces", x:"Miles de personas habían seguido a Jesús hasta un lugar desierto, y caía la tarde con hambre. Solo había cinco panes y dos peces, de un niño. Jesús dio gracias, partió el pan, y empezaron a repartir, y no se acababa. Comieron todos, y sobraron doce canastas. Lo poco, puesto en las manos correctas y con gratitud, alcanza para más de lo que crees." },
+  { t:"La oveja perdida", x:"Un pastor tenía cien ovejas, y una se perdió. Dejó las noventa y nueve a salvo y fue a buscar la que faltaba, por barrancos y espinas, hasta encontrarla. Volvió con ella sobre los hombros, feliz, y reunió a sus amigos para celebrar. Así, dijo Jesús, hay fiesta en el cielo por uno que regresa. Nadie es un número. A ti te irían a buscar." },
+  { t:"La creación", x:"Al principio no había nada, y sobre el vacío se movía el Espíritu de Dios. «Que haya luz», dijo, y hubo luz. Separó el día de la noche, el mar de la tierra; llenó el cielo de estrellas y la tierra de árboles, aves y animales. Y al final formó al ser humano a su imagen, y le entregó todo. Miró lo hecho y dijo que era bueno. No fuiste un accidente: fuiste la última palabra de algo llamado bueno." }
+];
+const HIST_TEMAS = [["amor","Amor"],["abundancia","Abundancia"],["biblia","Bíblicas"],["budismo","Budismo"],["estoicismo","Estoica"]];
 const HISTORIAS = [
+  { tema:"budismo", titulo:"El segundo dardo", texto:`El Buda preguntó: si te hieren con una flecha, ¿duele? Sí. ¿Y si te hieren con una segunda flecha en el mismo lugar? Duele más.
+La primera flecha es el dolor que la vida trae, y es inevitable: la pérdida, la enfermedad, el golpe que no viste venir. La segunda te la clavas tú: la resistencia, el «por qué a mí», la historia que le agregas al dolor, la pelea con lo que ya pasó.
+El dolor no siempre se elige. El sufrimiento que le sumas encima, casi siempre sí.
+La próxima vez que algo te lastime, mira si estás sacando la segunda flecha. Con soltarla, la mitad del peso se va.`},
+  { tema:"budismo", titulo:"La taza vacía", texto:`Un profesor muy culto fue a visitar a un maestro zen para aprender de él. Mientras hablaba sin parar de todo lo que ya sabía, el maestro le servía té… y siguió sirviendo aunque la taza ya se desbordaba.
+«¡Está llena, no cabe más!», dijo el profesor. «Como esta taza», respondió el maestro, «vienes tan lleno de tus propias ideas que no cabe nada nuevo. Vacíate primero.»
+Para aprender algo de verdad, hay que soltar la certeza de que ya se sabe. La mente que se cree llena no recibe nada; la que se sabe vacía, lo recibe todo.`},
+  { tema:"estoicismo", titulo:"La vista desde arriba", texto:`Marco Aurelio se entrenaba en un ejercicio de la imaginación: verse a sí mismo y a su vida desde muy alto, como desde las estrellas. Desde ahí, los imperios parecen hormigueros, las multitudes un enjambre, y los problemas que lo desvelaban, apenas motas de polvo.
+No lo hacía para despreciar la vida, sino para dimensionarla. Cerca, todo se ve enorme; con distancia, casi todo se ve pequeño.
+Eso que hoy te parece del tamaño del mundo —esa discusión, ese error, ese qué dirán—, visto desde lejos, o dentro de diez años, ¿qué tamaño tiene en realidad?`},
+  { tema:"estoicismo", titulo:"Amar el destino", texto:`Los estoicos tenían una fórmula para la paz: amor fati, amar el destino. No solo aceptar lo que pasa —resignarse con los dientes apretados—, sino recibirlo como si tú mismo lo hubieras pedido.
+No porque todo lo que ocurre sea bueno, sino porque pelear con lo que ya sucedió es pelear con la realidad, y esa pelea siempre se pierde.
+Lo que no puedes cambiar puedes odiarlo y sufrir, o abrazarlo y seguir caminando. Es la misma carga; pero en unas manos pesa el doble, y en otras se vuelve ligera.`},
+  { tema:"estoicismo", titulo:"Lo que depende de ti", texto:`Epicteto nació esclavo y murió siendo uno de los hombres más libres que han existido. Su secreto cabía en una sola distinción: hay cosas que dependen de ti y cosas que no.
+De ti dependen tus juicios, tus decisiones, lo que haces con lo que te pasa. No dependen de ti el clima, el cuerpo que te tocó, lo que otros piensan, el pasado —casi todo lo que te preocupa.
+Sufrimos, decía, porque ponemos nuestra paz en lo que no controlamos. Nos enojamos con el tráfico, con la lluvia, con la opinión ajena, como si gritarle al cielo fuera a mover las nubes.
+La libertad no es que el mundo haga lo que quieres. Es dejar de exigírselo, y volcar toda tu energía en lo único que sí está en tus manos: cómo respondes.
+La próxima vez que algo te saque de quicio, la pregunta es una sola: ¿esto depende de mí? Lo que no, se suelta.`},
+  { tema:"estoicismo", titulo:"El obstáculo es el camino", texto:`Marco Aurelio gobernó el imperio más grande de su tiempo entre guerras, traiciones y una peste que mató a millones. En medio de todo, escribía notas para sí mismo que nunca pensó publicar.
+En una de ellas dejó una idea que lo sostuvo: lo que se interpone en el camino se vuelve el camino. El fuego, escribió, toma todo lo que le arrojas —lo que apagaría a una llama pequeña— y lo convierte en más fuego.
+No decía que el obstáculo no duela. Decía que el obstáculo es material. La injusticia te enseña paciencia; la pérdida, desapego; el que te hace daño, la ocasión de no volverte como él.
+No esperes el día sin obstáculos: no llega. Lo que sí puedes cambiar es qué haces con el que tienes enfrente hoy —rodearlo, o dejar que te forme.
+Eso que hoy se te atraviesa quizá no es lo que te impide avanzar. Bien mirado, puede ser justo por donde tienes que avanzar.`},
+  { tema:"estoicismo", titulo:"Recuerda que vas a morir", texto:`A los generales romanos que volvían victoriosos, en medio del desfile y los aplausos, alguien les repetía al oído: recuerda que vas a morir. No para amargarles el triunfo, sino para que no se les subiera a la cabeza.
+Séneca escribía que no es que tengamos poco tiempo, sino que desperdiciamos mucho. Vivimos como si fuéramos a durar siempre: posponemos, guardamos lo importante para «después», regalamos años a cosas que no elegimos.
+Recordar que vas a morir no es morboso. Es lo que le devuelve peso a hoy. Si esta tarde fuera de las últimas, ¿seguirías enojado por eso? ¿Seguirías posponiendo esa llamada, ese perdón, ese cambio que llevas años aplazando?
+La muerte no es lo contrario de la vida; es lo que la hace valiosa. Lo que no se acaba, no se aprecia.
+Hoy no es un ensayo. Es parte de la cuenta.`},
   { tema:"amor", titulo:"La casa de dos puertas", texto:`Había una casa con dos puertas. La de enfrente vivía cerrada con llave; la de atrás, siempre abierta. Por la de enfrente entraba quien traía algo: un regalo, una buena noticia, una razón. Por la de atrás entraba el resto —el cansado, el que no tenía nada que ofrecer, el que solo quería sentarse un rato.
 Con los años, el dueño notó una cosa. Los de la puerta de enfrente venían y se iban. Los de atrás se quedaban, y con el tiempo se volvían familia.
 El amor que exige una razón para abrirse todavía no es amor; es un trato. El de verdad es una puerta que alguien dejó abierta a propósito, sin preguntar quién llega.
@@ -1006,7 +1512,12 @@ const ANCLAS = [
   '«Bueno es el Señor para los que en él esperan.»<span class="ancla-ref">Lamentaciones 3</span>',
   '«Venid a mí todos los que estáis cansados.»<span class="ancla-ref">Mateo 11</span>',
   '«La paz os dejo, mi paz os doy.»<span class="ancla-ref">Juan 14</span>',
-  '«No temas, porque yo estoy contigo.»<span class="ancla-ref">Isaías 41</span>'
+  '«No temas, porque yo estoy contigo.»<span class="ancla-ref">Isaías 41</span>',
+  'La noche es para soltar, no para resolver.',
+  'Deja el día donde está. Ya cumpliste.',
+  'Respira lento y deja que el cuerpo pese.',
+  'Nada urgente cabe a esta hora. Mañana verás con ojos nuevos.',
+  '«Yo me acosté, y dormí, y desperté; porque el Señor me sostuvo.»<span class="ancla-ref">Salmo 3</span>'
 ];
 
 /* ════════════════ PAD (Web Audio) ════════════════ */
@@ -1036,6 +1547,7 @@ const Pad = (() => {
   // Desbloqueo iOS: resume + un buffer silencioso, dentro de un gesto del usuario.
   function desbloquear(){
     const c = contexto(); if(!c) return;
+    try{ if(navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}
     try{ c.resume(); }catch(e){}
     if(!desbloqueado){
       try{
@@ -1218,7 +1730,7 @@ function duracion(o){
 }
 
 function abrirRitual(id){
-  const r = RITUALES[id]; if(!r) return;
+  const r = construirRitual(id); if(!r) return;
   P.rito = r; P.plan = aplanar(r); P.i = 0; P.modoAudio = false;
   P.inicioSesion = Date.now();
   P.vozOn = vozDe(r.id); P.ambOn = ambDe(r.id);
@@ -1245,6 +1757,7 @@ function mostrar(){
   P.objetivo = 0; P.acumulado = 0;
   const o = P.plan[P.i];
   if(!o){ terminar(); return; }
+  $("#pCentro").classList.remove("respirando");
   $("#pMov").textContent = o.bloque.num + " · " + o.bloque.nom.toUpperCase();
   $("#pBloque").textContent = o.primera && o.bloque.rub ? o.bloque.rub : "";
   const nota = $("#pNota");
@@ -1284,6 +1797,7 @@ function respirar(veces){
   cancelAnimationFrame(P.raf);
   $("#pLinea").classList.add("oculto");
   $("#pRespiro").classList.remove("oculto");
+  $("#pCentro").classList.add("respirando");
   const aro = $("#respiroAro"), txt = $("#respiroTxt");
   const miIndice = P.i;
   let n = 0;
@@ -1519,6 +2033,7 @@ function render(){
   const nom = (E.ajustes.nombre || "").trim();
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
+  const _hoy = $("#hoyTxt"); if(_hoy){ const _m = mensajesActivos(); _hoy.textContent = _m[Math.floor(Date.now()/86400000) % _m.length]; }
   $("#rubricaHora").textContent = h < 12 ? "Activación" : h < 19 ? "En medio del día" : "Rendición";
   $("#fecha").textContent = DIAS_L[ahora.getDay()] + " " + ahora.getDate() + " de " + MESES_L[ahora.getMonth()] + " · " + String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
 
@@ -1558,13 +2073,31 @@ function render(){
 
 /* ════════════════ HOJAS ════════════════ */
 function cerrarHoja(){ $("#hojas").innerHTML = ""; }
+function gestoSwipeCerrar(el, scrollEl, cerrar){
+  if(!el) return;
+  let x0 = 0, y0 = 0, on = false;
+  el.addEventListener("touchstart", e=>{
+    if(e.touches.length !== 1){ on = false; return; }
+    if(e.target.closest && e.target.closest("input, textarea, select, .segmento, #histTabs, #edTabs")){ on = false; return; }
+    x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; on = true;
+  }, {passive:true});
+  el.addEventListener("touchend", e=>{
+    if(!on) return; on = false;
+    const t = e.changedTouches[0], dx = t.clientX - x0, dy = t.clientY - y0;
+    const arriba = !scrollEl || scrollEl.scrollTop <= 3;
+    if(dy > 95 && dy > Math.abs(dx) * 1.3 && arriba) cerrar();
+    else if(dx < -95 && Math.abs(dx) > Math.abs(dy) * 1.3) cerrar();
+  }, {passive:true});
+}
 function hoja(titulo, sub, cuerpoHTML, alMontar){
   $("#hojas").innerHTML =
     '<div class="hoja" id="hojaFondo"><div class="hoja-caja" role="dialog" aria-modal="true">' +
+    '<div class="hoja-tirador" aria-hidden="true"></div>' +
     '<h2 class="hoja-tit">' + titulo + '</h2>' +
     (sub ? '<p class="hoja-sub">' + sub + '</p>' : '') +
     cuerpoHTML + '</div></div>';
   $("#hojaFondo").addEventListener("click", e=>{ if(e.target.id === "hojaFondo") cerrarHoja(); });
+  gestoSwipeCerrar($("#hojaFondo"), $("#hojaFondo").querySelector(".hoja-caja"), cerrarHoja);
   if(alMontar) alMontar();
 }
 
@@ -1719,7 +2252,7 @@ function hojaDoctrina(){
   const s = semanaISO(), leido = E.doctrina.semana === s;
   hoja("Doctrina", "Material de estudio, no de repetición. Se lee — no se graba. Una vez por semana.",
     '<div class="doctrina-lista">' +
-    DOCTRINA.map((t,i)=>
+    doctrinaTodas().map((t,i)=>
       '<div class="doctrina-item">' +
       '<button class="doctrina-cab" data-doc="'+i+'" aria-expanded="false" aria-controls="doc'+i+'"><span>'+esc(t.t)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
       '<div class="doctrina-cuerpo" id="doc'+i+'">'+t.e+'</div>' +
@@ -1819,14 +2352,21 @@ const SONIDOS = [
   { cat:"TDAH · Atención", escenas:[["binaural","Ondas binaurales"],["marron","Ruido marrón"]], nota:"Las ondas binaurales funcionan mejor con audífonos." }
 ];
 const SONIDO_NOMBRE = { vela:"Vela", oceano:"Océano", lluvia:"Lluvia", eter:"Éter", concentracion:"Enfoque", marron:"Ruido marrón", blanco:"Ruido blanco", binaural:"Ondas binaurales" };
-let sonidoManual = null;
-
+let sonidoManual = null, sonDormirId = null;
+function programarDormirSonido(){
+  clearTimeout(sonDormirId); sonDormirId = null;
+  const min = E.ajustes.dormir;
+  if(!min || !sonidoManual) return;
+  sonDormirId = setTimeout(()=>{ Pad.detener(30); sonidoManual = null; padBed = false; sonDormirId = null; try{ refrescarChips(); pintarSonNow(); }catch(e){} }, min*60000);
+}
 function reproducirSonido(escena){
   Pad.iniciar(escena, E.ajustes.padVol);
   sonidoManual = escena; padBed = true;
+  programarDormirSonido();
 }
 function detenerSonido(){
   Pad.detener(1.5); sonidoManual = null; padBed = false;
+  clearTimeout(sonDormirId); sonDormirId = null;
 }
 
 const Pomo = { activo:false, modo:"foco", finMs:0, foco:25, descanso:5, escena:"concentracion", timer:null };
@@ -1884,6 +2424,9 @@ function hojaSonido(){
       c.escenas.map(e=>'<button class="son-chip'+(sonidoManual===e[0]?' on':'')+'" data-esc="'+e[0]+'">'+esc(e[1])+'</button>').join("") +
       '</div>' + (c.nota ? '<p class="campo-ayuda">'+esc(c.nota)+'</p>' : '') + '</div>';
   });
+  cuerpo += '<div class="son-cat"><p class="son-cat-t">Temporizador de sueño</p><div class="segmento" id="sonDormir">' +
+    [[0,"—"],[15,"15"],[30,"30"],[45,"45"],[60,"60"]].map(o=>'<button type="button" class="seg'+(((E.ajustes.dormir||0)===o[0])?' activo':'')+'" data-min="'+o[0]+'">'+o[1]+(o[0]?" min":"")+'</button>').join("") +
+    '</div><p class="campo-ayuda">Reproduce un paisaje y se apaga solo tras ese tiempo. Ideal para dormir: el sonido no se queda toda la noche fragmentando el sueño.</p></div>';
   cuerpo += '<div class="son-pomo"><p class="son-cat-t">Pomodoro · concentración por tiempo</p>' +
     '<div class="pomo-reloj" id="pomoTiempo">' + pomoTexto() + '</div>' +
     '<div class="campo"><label class="campo-et">Ciclo (min)</label><div class="segmento" id="pomoCiclo">' +
@@ -1906,6 +2449,12 @@ function hojaSonido(){
         });
       });
       const s = $("#sonStop"); if(s) s.addEventListener("click", ()=>{ detenerSonido(); refrescarChips(); pintarPomo(); });
+      document.querySelectorAll("#sonDormir .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#sonDormir .seg").forEach(x=>x.classList.remove("activo"));
+        b.classList.add("activo");
+        E.ajustes.dormir = +b.dataset.min; guardar();
+        programarDormirSonido();
+      }));
       document.querySelectorAll("#pomoCiclo .seg").forEach(b=>{
         b.addEventListener("click", ()=>{
           document.querySelectorAll("#pomoCiclo .seg").forEach(x=>x.classList.remove("activo"));
@@ -1919,11 +2468,80 @@ function hojaSonido(){
     });
 }
 
+// Contenido = incluido + tuyo (capa de usuario).
+// ── Motor de filtrado por perfil (tono → tradición) ──
+function tradPermitidas(){
+  const t = (E.perfil && E.perfil.tono) || "mezcla";
+  if(t === "cristiano") return { cristiano:1, universal:1 };
+  if(t === "espiritual") return { universal:1, budista:1 };
+  return { cristiano:1, universal:1, budista:1 };
+}
+function esCristiano(txt){ return /ancla-ref|\bDios\b|\bSe(ñ|n)or\b|Cristo|Esp[ií]ritu Santo|Jes[uú]s/i.test(String(txt)); }
+function filtraTexto(lista){
+  const perm = tradPermitidas();
+  const l = lista.filter(x => perm[esCristiano(x) ? "cristiano" : "universal"]);
+  return l.length ? l : lista;
+}
+function calmaActivas(){ return filtraTexto(CALMA); }
+function mensajesActivos(){ return filtraTexto(MENSAJES); }
+
+// ── Feedback (👍/👎) → pesos por etiqueta + ocultar piezas ──
+function fbPeso(tags){ return (tags||[]).reduce((s,t)=>s + (E.feedback.pesos[t]||0), 0); }
+function fbOculto(id){ return E.feedback.ocultos.indexOf(id) >= 0; }
+function fbGusta(id, tags){ (tags||[]).forEach(t=>{ E.feedback.pesos[t] = Math.min(8, (E.feedback.pesos[t]||0) + 1); }); guardar(); }
+function fbNoGusta(id, tags){ (tags||[]).forEach(t=>{ E.feedback.pesos[t] = Math.max(-8, (E.feedback.pesos[t]||0) - 1); }); if(E.feedback.ocultos.indexOf(id) < 0) E.feedback.ocultos.push(id); guardar(); }
+function fbHTML(){ return '<div class="fb"><button class="fb-btn" data-fb="up" aria-label="Me gusta"><svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg></button><button class="fb-btn fb-abajo" data-fb="down" aria-label="No es para mí"><svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg></button></div>'; }
+
+function anclasTodas(){
+  const l = filtraTexto(ANCLAS).concat((E.contenido.ancla.usuario||[]).map(u=>esc(u.texto||"")));
+  const v = l.filter(a=>!fbOculto(a));
+  return v.length ? v : l;
+}
+function salmosTodos(){
+  const l = SALMOS.concat((E.contenido.salmos.usuario||[]).map(u=>esc(u.texto||"").replace(/\n/g,"<br>") + (u.ref?'<span class="ancla-ref">'+esc(u.ref)+'</span>':'')));
+  const v = l.filter(s=>!fbOculto(s));
+  return v.length ? v : l;
+}
+function historiasTodas(){
+  return HISTORIAS.concat(E.contenido.historias.usuario||[]);
+}
+function doctrinaTodas(){
+  const perm = tradPermitidas();
+  let base = DOCTRINA.filter(d => perm[esCristiano(d.e) ? "cristiano" : "universal"]);
+  if(!base.length) base = DOCTRINA;
+  return base.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
+}
+function histTemasActivos(){
+  const perm = tradPermitidas();
+  const tradDe = { amor:"universal", abundancia:"universal", biblia:"cristiano", budismo:"budista", estoicismo:"universal" };
+  const l = HIST_TEMAS.filter(t => perm[tradDe[t[0]] || "universal"]);
+  return l.length ? l : HIST_TEMAS;
+}
+function afirmacionesActivas(){
+  const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = tradPermitidas();
+  const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>perm[esCristiano(a.x)?"cristiano":"universal"]);
+  const mios = (E.contenido.afirmaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
+  let l = base.concat(mios).filter(a=>!fbOculto(a.x));
+  if(!l.length) l = AFIRMACIONES.concat(mios).filter(a=>!fbOculto(a.x));
+  if(!l.length) l = AFIRMACIONES.slice();
+  return l.sort((a,b)=>(fbPeso([b.t]) + (b.t==="mio"?1.4:0) + Math.random()*0.7) - (fbPeso([a.t]) + (a.t==="mio"?1.4:0) + Math.random()*0.7));
+}
+function manifestacionesActivas(){
+  const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = tradPermitidas();
+  const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>perm[esCristiano(m.x)?"cristiano":"universal"]);
+  const mios = (E.contenido.manifestaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
+  let l = base.concat(mios).filter(m=>!fbOculto(m.x));
+  if(!l.length) l = MANIFESTACIONES.concat(mios).filter(m=>!fbOculto(m.x));
+  if(!l.length) l = MANIFESTACIONES.slice();
+  return l.sort((a,b)=>(fbPeso([b.t]) + (b.t==="mio"?1.4:0) + Math.random()*0.7) - (fbPeso([a.t]) + (a.t==="mio"?1.4:0) + Math.random()*0.7));
+}
+
 function hojaHistorias(){
-  const temaInicial = "amor";
+  const temas = histTemasActivos();
+  const temaInicial = temas[0][0];
   hoja("Historias", "Relatos para reflexionar. Amor, abundancia y tradiciones.",
     '<div class="segmento cad-tabs" id="histTabs">' +
-      HIST_TEMAS.map(t=>'<button type="button" class="seg'+(t[0]===temaInicial?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") +
+      temas.map(t=>'<button type="button" class="seg'+(t[0]===temaInicial?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") +
     '</div>' +
     '<div id="histCont"></div>' +
     '<div class="acciones"><button class="accion" id="histCerrar">Cerrar</button></div>',
@@ -1941,7 +2559,7 @@ function hojaHistorias(){
     });
 }
 function renderHistorias(tema, cont){
-  const lista = HISTORIAS.filter(h=>h.tema===tema);
+  const lista = historiasTodas().filter(h=>h.tema===tema);
   cont.innerHTML = '<div class="doctrina-lista">' +
     lista.map((h,i)=>
       '<div class="doctrina-item">' +
@@ -1960,46 +2578,332 @@ function renderHistorias(tema, cont){
   });
 }
 
+function medsActivas(){ const l = AUDIO_MED.filter(m=>!fbOculto(m.id)); return l.length ? l : AUDIO_MED; }
 function hojaMeditacion(){
+  let lista = medsActivas();
+  const svg = '<svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg>';
+  const fila = m => '<div class="med-item"><button class="med-play" data-med="'+m.id+'"><span class="med-nom">'+esc(m.titulo)+'</span><span class="med-dur">'+esc(m.dur)+'</span></button>' +
+    '<div class="fb-med"><button class="fb-btn" data-medfb="up|'+m.id+'" aria-label="Me gusta">'+svg+'</button><button class="fb-btn fb-abajo" data-medfb="down|'+m.id+'" aria-label="No es para mí">'+svg+'</button></div></div>';
   hoja("Meditación", "Guiadas, con voz. Ponte cómodo y toca una.",
-    '<div class="med-lista">' +
-    AUDIO_MED.map(m=>'<button class="med-item" data-med="'+m.id+'"><span class="med-nom">'+esc(m.titulo)+'</span><span class="med-dur">'+esc(m.dur)+'</span></button>').join("") +
-    '</div>' +
+    '<div class="med-lista" id="medLista">' + lista.map(fila).join("") + '</div>' +
     '<div class="acciones"><button class="accion" id="medCerrar">Cerrar</button></div>',
     ()=>{
-      document.querySelectorAll(".med-item").forEach(b=>{
-        b.addEventListener("click", ()=>{ const m = AUDIO_MED.find(x=>x.id===b.dataset.med); if(m) reproducirMeditacion(m); });
-      });
+      const cablear = ()=>{
+        document.querySelectorAll(".med-play").forEach(b=>b.addEventListener("click", ()=>{ const m = AUDIO_MED.find(x=>x.id===b.dataset.med); if(m) reproducirMeditacion(m); }));
+        document.querySelectorAll("[data-medfb]").forEach(b=>b.addEventListener("click", ()=>{
+          const pr = b.dataset.medfb.split("|"), dir = pr[0], id = pr[1];
+          if(dir === "up"){ fbGusta(id, []); b.classList.add("fb-on"); }
+          else { fbNoGusta(id, []); lista = medsActivas(); const ml = $("#medLista"); if(ml){ ml.innerHTML = lista.map(fila).join(""); cablear(); } }
+        }));
+      };
+      cablear();
       $("#medCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
 function hojaAncla(){
-  if(anclaI === null) anclaI = Math.floor(Date.now()/86400000) % ANCLAS.length;
+  let lista = anclasTodas();
+  if(anclaI === null || anclaI >= lista.length) anclaI = Math.floor(Date.now()/86400000) % lista.length;
   hoja("Ancla", "Una línea para volver al centro.",
-    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + ANCLAS[anclaI] + '</p></div>' +
+    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + lista[anclaI] + '</p></div>' +
+    fbHTML() +
     '<div class="acciones"><button class="accion" id="anclaOtra">Otra</button><button class="accion" id="anclaCerrar">Cerrar</button></div>',
     ()=>{
-      $("#anclaOtra").addEventListener("click", ()=>{
-        anclaI = (anclaI + 1) % ANCLAS.length;
-        $("#anclaTxt").innerHTML = ANCLAS[anclaI];
-      });
+      const mostrar = ()=>{ if(anclaI >= lista.length) anclaI = 0; $("#anclaTxt").innerHTML = lista[anclaI] || ""; };
+      $("#anclaOtra").addEventListener("click", ()=>{ anclaI = (anclaI + 1) % lista.length; mostrar(); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
+        const cur = lista[anclaI]; if(cur === undefined) return;
+        if(b.dataset.fb === "up"){ fbGusta(cur, []); pulso("#anclaTxt"); anclaI = (anclaI + 1) % lista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(cur, []); lista.splice(anclaI, 1); if(!lista.length){ lista = anclasTodas(); anclaI = 0; } mostrar(); }
+      }));
       $("#anclaCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+let afLista = [], afI = 0;
+function hojaAfirmaciones(){
+  afLista = afirmacionesActivas(); afI = 0;
+  hoja("Afirmaciones", "Dilo en voz alta. Repítelo hasta que se sienta verdad.",
+    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(afLista[afI].x) + '</p></div>' +
+    fbHTML() +
+    '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
+    ()=>{
+      const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? afLista[afI].x : ""; };
+      $("#afOtra").addEventListener("click", ()=>{ afI = (afI + 1) % afLista.length; mostrar(); });
+      $("#afRepetir").addEventListener("click", ()=>{ if(afLista[afI]) abrirRepetir(afLista[afI].x); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
+        const it = afLista[afI]; if(!it) return;
+        if(b.dataset.fb === "up"){ fbGusta(it.x, [it.t]); pulso("#afTxt"); afI = (afI + 1) % afLista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(it.x, [it.t]); afLista.splice(afI, 1); if(!afLista.length){ afLista = afirmacionesActivas(); afI = 0; } mostrar(); }
+      }));
+      $("#afCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+function pulso(sel){ const t = $(sel); if(!t) return; t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso"); }
+let repN = 0;
+function abrirRepetir(texto){
+  $("#repTxt").textContent = texto; repN = 0; $("#repCount").textContent = "";
+  $("#repetir").classList.remove("oculto"); document.body.classList.add("encendida");
+}
+function cerrarRepetir(){ $("#repetir").classList.add("oculto"); document.body.classList.remove("encendida"); }
+
+function hojaManifestacion(){
+  const hoy = hoyISO();
+  if(E.manifestacion.fecha !== hoy){ E.manifestacion.fecha = hoy; E.manifestacion.m = false; E.manifestacion.t = false; E.manifestacion.n = false; guardar(); }
+  if(!E.manifestacion.decl){ hojaManifestElegir(); return; }
+  const ses = [["m","Mañana",3],["t","Tarde",6],["n","Noche",9]];
+  hoja("Manifestación", "Método 369. Declara lo que llamas a tu vida: 3 veces en la mañana, 6 en la tarde, 9 en la noche.",
+    '<div class="manif-decl"><p class="manif-decl-l">Tu declaración</p><p class="manif-decl-x">' + esc(E.manifestacion.decl) + '</p><button class="manif-cambiar" id="manifCambiar">Cambiar</button></div>' +
+    '<div class="manif-ses">' + ses.map(s=>'<button class="manif-sesion'+(E.manifestacion[s[0]]?' hecho':'')+'" data-ses="'+s[0]+'" data-reps="'+s[2]+'"><span class="manif-ses-t">'+s[1]+'</span><span class="manif-ses-r">'+(E.manifestacion[s[0]]?"✓ hecho":s[2]+" veces")+'</span></button>').join("") + '</div>' +
+    '<div class="acciones"><button class="accion" id="manifCerrar">Cerrar</button></div>',
+    ()=>{
+      $("#manifCambiar").addEventListener("click", hojaManifestElegir);
+      document.querySelectorAll(".manif-sesion").forEach(b=>b.addEventListener("click", ()=>{ if(!E.manifestacion[b.dataset.ses]) abrir369(b.dataset.ses, +b.dataset.reps); }));
+      $("#manifCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+function hojaManifestElegir(){
+  const lista = manifestacionesActivas();
+  hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
+    '<div class="manif-opts">' + lista.map((m,i)=>'<button class="manif-opt" data-decl="'+i+'">'+esc(m.x)+'</button>').join("") + '</div>' +
+    '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
+    ()=>{
+      const l = manifestacionesActivas();
+      document.querySelectorAll(".manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = l[+b.dataset.decl].x; guardar(); hojaManifestacion(); }));
+      $("#manifElegirCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+let m369 = { ses:"", meta:0, n:0 };
+function abrir369(ses, reps){
+  m369 = { ses:ses, meta:reps, n:0 };
+  $("#m369Decl").textContent = E.manifestacion.decl;
+  $("#m369Count").textContent = "0 / " + reps;
+  $("#m369Vis").classList.add("oculto");
+  $("#m369Decir").classList.remove("oculto");
+  $("#m369").classList.remove("oculto");
+  document.body.classList.add("encendida");
+}
+function cerrar369(marcar){
+  if(marcar){ E.manifestacion[m369.ses] = true; guardar(); }
+  $("#m369").classList.add("oculto"); document.body.classList.remove("encendida");
+  if(!$("#hojaFondo")) return;
+  hojaManifestacion();
+}
+
+let bibliaI = null;
+function bibliaTodas(){ const l = BIBLIA.filter(b=>!fbOculto(b.x)); return l.length ? l : BIBLIA; }
+function hojaBiblia(){
+  let lista = bibliaTodas();
+  if(bibliaI === null || bibliaI >= lista.length) bibliaI = Math.floor(Date.now()/86400000) % lista.length;
+  const render = ()=>{ const b = lista[bibliaI]; return '<p class="biblia-t">' + esc(b.t) + '</p><p class="ancla-txt salmo">' + esc(b.x) + '</p>'; };
+  hoja("Historias bíblicas", "Relatos breves para llevar contigo.",
+    '<div class="ancla-caja salmo-caja" id="bibliaCaja">' + render() + '</div>' + fbHTML() +
+    '<div class="acciones"><button class="accion" id="bibliaOtra">Otra historia</button><button class="accion" id="bibliaCerrar">Cerrar</button></div>',
+    ()=>{
+      const mostrar = ()=>{ if(bibliaI >= lista.length) bibliaI = 0; const c = $("#bibliaCaja"); if(c) c.innerHTML = render(); };
+      $("#bibliaOtra").addEventListener("click", ()=>{ bibliaI = (bibliaI + 1) % lista.length; mostrar(); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(bn=>bn.addEventListener("click", ()=>{
+        const cur = lista[bibliaI]; if(!cur) return;
+        if(bn.dataset.fb === "up"){ fbGusta(cur.x, []); pulso("#bibliaCaja"); bibliaI = (bibliaI + 1) % lista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(cur.x, []); lista.splice(bibliaI, 1); if(!lista.length){ lista = bibliaTodas(); bibliaI = 0; } mostrar(); }
+      }));
+      $("#bibliaCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
 let salmoI = null;
 function hojaSalmos(){
-  if(salmoI === null) salmoI = Math.floor(Date.now()/86400000) % SALMOS.length;
+  let lista = salmosTodos();
+  if(salmoI === null || salmoI >= lista.length) salmoI = Math.floor(Date.now()/86400000) % lista.length;
   hoja("Salmos", "Los salmos que más han sostenido a la gente.",
-    '<div class="ancla-caja salmo-caja"><p class="ancla-txt salmo" id="salmoTxt">' + SALMOS[salmoI] + '</p></div>' +
+    '<div class="ancla-caja salmo-caja"><p class="ancla-txt salmo" id="salmoTxt">' + lista[salmoI] + '</p></div>' +
+    fbHTML() +
     '<div class="acciones"><button class="accion" id="salmoOtro">Otro salmo</button><button class="accion" id="salmoCerrar">Cerrar</button></div>',
     ()=>{
-      $("#salmoOtro").addEventListener("click", ()=>{
-        salmoI = (salmoI + 1) % SALMOS.length;
-        $("#salmoTxt").innerHTML = SALMOS[salmoI];
-      });
+      const mostrar = ()=>{ if(salmoI >= lista.length) salmoI = 0; $("#salmoTxt").innerHTML = lista[salmoI] || ""; };
+      $("#salmoOtro").addEventListener("click", ()=>{ salmoI = (salmoI + 1) % lista.length; mostrar(); });
+      document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
+        const cur = lista[salmoI]; if(cur === undefined) return;
+        if(b.dataset.fb === "up"){ fbGusta(cur, []); pulso("#salmoTxt"); salmoI = (salmoI + 1) % lista.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(cur, []); lista.splice(salmoI, 1); if(!lista.length){ lista = salmosTodos(); salmoI = 0; } mostrar(); }
+      }));
       $("#salmoCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+/* ════════════════ EDITOR · Mi contenido ════════════════ */
+const ED_TIPOS = [["afirmaciones","Afirmaciones"],["manifestaciones","Manifestación"],["ancla","Ancla"],["salmos","Salmos"],["historias","Historias"],["doctrina","Doctrina"]];
+let edTipo = "afirmaciones";
+let edEditando = null;
+function edCampos(tipo, it){
+  it = it || {};
+  if(tipo === "afirmaciones")
+    return '<textarea class="campo-area" id="edTexto" rows="3" placeholder="Tu afirmación, en primera persona (ej. «Yo soy…»)">'+esc(it.texto||"")+'</textarea>';
+  if(tipo === "manifestaciones")
+    return '<textarea class="campo-area" id="edTexto" rows="3" placeholder="Tu declaración, en presente (lo que llamas a tu vida)">'+esc(it.texto||"")+'</textarea>';
+  if(tipo === "ancla")
+    return '<textarea class="campo-area" id="edTexto" rows="3" placeholder="Tu frase para volver al centro…">'+esc(it.texto||"")+'</textarea>';
+  if(tipo === "salmos")
+    return '<textarea class="campo-area" id="edTexto" rows="5" placeholder="El salmo o versículo…">'+esc(it.texto||"")+'</textarea>' +
+      '<input class="campo-in ed-in" id="edRef" placeholder="Referencia (ej. Salmo 23)" value="'+esc(it.ref||"")+'">';
+  if(tipo === "doctrina")
+    return '<input class="campo-in ed-in" id="edTitulo" placeholder="Título" value="'+esc(it.t||"")+'">' +
+      '<textarea class="campo-area" id="edTexto" rows="7" placeholder="El texto. Deja una línea en blanco para separar párrafos.">'+esc(it.texto||"")+'</textarea>';
+  if(tipo === "historias")
+    return '<select class="campo-sel ed-in" id="edTema">'+HIST_TEMAS.map(t=>'<option value="'+t[0]+'"'+((it.tema||"amor")===t[0]?' selected':'')+'>'+t[1]+'</option>').join("")+'</select>' +
+      '<input class="campo-in ed-in" id="edTitulo" placeholder="Título" value="'+esc(it.titulo||"")+'">' +
+      '<textarea class="campo-area" id="edTexto" rows="7" placeholder="La historia…">'+esc(it.texto||"")+'</textarea>';
+  return '';
+}
+function edLeerForm(tipo){
+  const t = (($("#edTexto")||{}).value||"").trim();
+  if(!t) return null;
+  if(tipo === "afirmaciones" || tipo === "manifestaciones") return { texto:t };
+  if(tipo === "ancla") return { texto:t };
+  if(tipo === "salmos") return { texto:t, ref:(($("#edRef")||{}).value||"").trim() };
+  if(tipo === "doctrina") return { t:(($("#edTitulo")||{}).value||"").trim()||"Sin título", texto:t };
+  if(tipo === "historias") return { tema:(($("#edTema")||{}).value)||"amor", titulo:(($("#edTitulo")||{}).value||"").trim()||"Sin título", texto:t };
+  return null;
+}
+function edTituloItem(tipo, it){
+  if(tipo === "ancla" || tipo === "salmos" || tipo === "afirmaciones" || tipo === "manifestaciones"){ const x = (it.texto||"").replace(/\n/g," "); return x.slice(0,64) + (x.length>64?"…":""); }
+  return it.titulo || it.t || "Sin título";
+}
+function renderEditor(){
+  const cont = $("#edCont"); if(!cont) return;
+  const lista = E.contenido[edTipo].usuario || [];
+  let h = "";
+  if(lista.length){
+    h += '<div class="ed-lista">' + lista.map(it=>
+      '<div class="ed-item"><button class="ed-item-t" data-ed-edit="'+it.id+'">'+esc(edTituloItem(edTipo, it))+'</button><button class="ed-item-x" data-ed-del="'+it.id+'" aria-label="Borrar">✕</button></div>'
+    ).join("") + '</div>';
+  } else {
+    h += '<p class="ed-vacio">Todavía no has creado nada aquí. Lo que agregues aparece junto al contenido incluido, en su sección.</p>';
+  }
+  const editItem = edEditando !== null ? lista.find(x=>String(x.id)===String(edEditando)) : null;
+  h += '<div class="ed-form"><p class="ed-form-t">'+(editItem?"Editar":"Añadir nuevo")+'</p>' + edCampos(edTipo, editItem) +
+    '<div class="acciones" style="margin-top:2px"><button class="accion llena" id="edGuardar">'+(editItem?"Guardar cambios":"Añadir")+'</button>' +
+    (editItem?'<button class="accion" id="edCancelar">Cancelar</button>':'') + '</div></div>';
+  cont.innerHTML = h;
+  document.querySelectorAll("#edCont [data-ed-edit]").forEach(b=>b.addEventListener("click", ()=>{ edEditando = b.dataset.edEdit; renderEditor(); }));
+  document.querySelectorAll("#edCont [data-ed-del]").forEach(b=>b.addEventListener("click", ()=>{
+    const id = b.dataset.edDel;
+    E.contenido[edTipo].usuario = (E.contenido[edTipo].usuario||[]).filter(x=>String(x.id)!==String(id));
+    if(String(edEditando)===String(id)) edEditando = null;
+    guardar(); renderEditor();
+  }));
+  $("#edGuardar").addEventListener("click", ()=>{
+    const datos = edLeerForm(edTipo);
+    if(!datos){ const ta = $("#edTexto"); if(ta){ ta.style.borderColor = "var(--brasa)"; ta.focus(); } return; }
+    if(editItem){ Object.assign(editItem, datos); }
+    else { datos.id = Date.now(); (E.contenido[edTipo].usuario = E.contenido[edTipo].usuario||[]).push(datos); }
+    edEditando = null; guardar(); renderEditor();
+  });
+  const c = $("#edCancelar"); if(c) c.addEventListener("click", ()=>{ edEditando = null; renderEditor(); });
+}
+function hojaPreferenciasContenido(){
+  const cuerpo = ()=>{
+    let h = '<div class="pref-bloque"><p class="pref-t">¿Qué te trae aquí?</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-pcat") + '</div>';
+    h += '<div class="pref-bloque"><p class="pref-t">¿Desde dónde lo vives?</p><div class="onb-opts" id="prefTono">' +
+      TONOS.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-ptono="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div></div>';
+    (E.perfil.categorias||[]).forEach(c=>{
+      if(SEGUIMIENTOS[c]){
+        E.perfil.sub[c] = E.perfil.sub[c] || [];
+        const chips = '<div class="onb-chips">' + SEGUIMIENTOS[c].opts.map(o=>'<button type="button" class="onb-chip'+((E.perfil.sub[c].indexOf(o[0])>=0)?" on":"")+'" data-psub="'+c+'|'+o[0]+'">'+esc(o[1])+'</button>').join("") + '</div>';
+        h += '<div class="pref-bloque"><p class="pref-t">'+esc(SEGUIMIENTOS[c].q)+'</p>' + chips + '</div>';
+      }
+    });
+    return h;
+  };
+  hoja("Preferencias de contenido", "Lo que elegiste al empezar. Cámbialo cuando quieras.",
+    '<div id="prefCont">' + cuerpo() + '</div><button class="pref-reset" id="prefReset">Reiniciar mis 👍 / 👎</button><div class="acciones"><button class="accion" id="prefCerrar">Cerrar</button></div>',
+    ()=>{
+      const re = ()=>{ $("#prefCont").innerHTML = cuerpo(); cablear(); };
+      function cablear(){
+        document.querySelectorAll("[data-pcat]").forEach(b=>b.addEventListener("click", ()=>{ toggleArr(E.perfil.categorias, b.dataset.pcat); guardar(); re(); }));
+        document.querySelectorAll("#prefTono .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#prefTono .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.ptono; guardar(); }));
+        document.querySelectorAll("[data-psub]").forEach(b=>b.addEventListener("click", ()=>{ const p = b.dataset.psub.split("|"), c = p[0], tag = p[1]; b.classList.toggle("on"); E.perfil.sub[c] = E.perfil.sub[c] || []; toggleArr(E.perfil.sub[c], tag); guardar(); }));
+      }
+      cablear();
+      const rst = $("#prefReset"); if(rst) rst.addEventListener("click", ()=>{ E.feedback = { pesos:{}, ocultos:[] }; guardar(); rst.textContent = "Listo — se reinició"; });
+      $("#prefCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function ritOtra(id, b, actuales){
+  let pool;
+  if(b.slot === "afirmacion") pool = afirmacionesActivas().map(a=>a.x);
+  else if(b.slot === "manifestacion") pool = manifestacionesActivas().map(m=>m.x);
+  else { const p2 = LIT[b.slot] || {}, perm = tradPermitidas(); pool = []; if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]); }
+  const disp = pool.filter(x=>actuales.indexOf(x) < 0 && !fbOculto(x));
+  return disp.length ? disp[Math.floor(Math.random()*disp.length)] : null;
+}
+let erAddNum = null;
+const ER_EDITABLES = ["presencia","entrega","palabra","afirmacion","manifestacion","recepcion","cierre","seguridad","anclaje"];
+function hojaEditarRitual(id){
+  construirRitual(id);
+  const p = RITUALES[id];
+  const cuerpo = ()=>{
+    return p.bloques.filter(b=>ER_EDITABLES.indexOf(b.slot) >= 0).map(b=>{
+      const lineas = E.ritos[id][b.num] || [];
+      const filas = lineas.map((ln,i)=>'<div class="er-linea"><span class="er-txt">'+esc(ln)+'</span><span class="er-acc"><button class="er-b" data-swap="'+b.num+'|'+i+'" aria-label="Cambiar">⟳</button><button class="er-b er-x" data-del="'+b.num+'|'+i+'" aria-label="Quitar">✕</button></span></div>').join("");
+      const add = (b.num === erAddNum)
+        ? '<div class="er-addbox"><input class="campo-in" id="erAddIn" placeholder="Tu frase para este momento"><button class="er-addok" data-addok="'+b.num+'">Añadir</button></div>'
+        : '<button class="er-add" data-add="'+b.num+'">+ agregar frase</button>';
+      return '<div class="er-bloque"><p class="er-nom">'+esc(b.nom)+'</p>'+filas+add+'</div>';
+    }).join("");
+  };
+  hoja("Personalizar "+p.nombre, "Tu ritual, tuyo. Cambia, quita o agrega frases; se guardan y quedan fijas.",
+    '<div id="erCont">'+cuerpo()+'</div><button class="pref-reset" id="erRegen">Volver a generar desde mi perfil</button><div class="acciones"><button class="accion" id="erCerrar">Cerrar</button></div>',
+    ()=>{
+      const re = ()=>{ $("#erCont").innerHTML = cuerpo(); cablear(); if(erAddNum){ const i=$("#erAddIn"); if(i) try{ i.focus(); }catch(e){} } };
+      function cablear(){
+        document.querySelectorAll("[data-swap]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const pr = bn.dataset.swap.split("|"), num = pr[0], i = +pr[1], b = p.bloques.find(x=>x.num===num);
+          const nueva = ritOtra(id, b, E.ritos[id][num]); if(nueva){ E.ritos[id][num][i] = nueva; guardar(); re(); }
+        }));
+        document.querySelectorAll("[data-del]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const pr = bn.dataset.del.split("|"), num = pr[0], i = +pr[1]; E.ritos[id][num].splice(i,1); if(!E.ritos[id][num].length) E.ritos[id][num].push("…"); guardar(); re();
+        }));
+        document.querySelectorAll("[data-add]").forEach(bn=>bn.addEventListener("click", ()=>{ erAddNum = bn.dataset.add; re(); }));
+        document.querySelectorAll("[data-addok]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const num = bn.dataset.addok, v = (($("#erAddIn")||{}).value||"").trim();
+          if(v){ E.ritos[id][num] = E.ritos[id][num].filter(x=>x!=="…"); E.ritos[id][num].push(v); guardar(); }
+          erAddNum = null; re();
+        }));
+      }
+      cablear();
+      $("#erRegen").addEventListener("click", ()=>{ if(confirm("¿Volver a generar "+p.nombre+" desde tu perfil? Se reemplaza lo que tengas ahora.")){ regenerarRitual(id); re(); } });
+      $("#erCerrar").addEventListener("click", ()=>{ erAddNum = null; cerrarHoja(); });
+    });
+}
+function hojaRitualesElegir(){
+  erAddNum = null;
+  hoja("Personalizar rituales", "Haz tuyo cada ritual. Elige cuál ajustar.",
+    '<div class="nav-cards">' + ["manana","noche","nucleo"].map(id=>{
+      const r = RITUALES[id];
+      return '<button class="nav-card" data-rit="'+id+'"><span class="nav-card-tx"><span class="nav-card-t">'+r.nombre+'</span><span class="nav-card-s">'+esc(r.sub)+'</span></span><span class="nav-card-ch">›</span></button>';
+    }).join("") + '</div><div class="acciones"><button class="accion" id="ritElegirCerrar">Cerrar</button></div>',
+    ()=>{
+      document.querySelectorAll("[data-rit]").forEach(b=>b.addEventListener("click", ()=>hojaEditarRitual(b.dataset.rit)));
+      $("#ritElegirCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function hojaEditor(){
+  edEditando = null;
+  hoja("Mi contenido", "Crea lo tuyo. Aparece junto al contenido incluido en cada sección.",
+    '<div class="segmento" id="edTabs">' + ED_TIPOS.map(t=>'<button type="button" class="seg'+(t[0]===edTipo?' activo':'')+'" data-ed-tipo="'+t[0]+'">'+t[1]+'</button>').join("") + '</div>' +
+    '<div id="edCont"></div>' +
+    '<div class="acciones"><button class="accion" id="edCerrar">Cerrar</button></div>',
+    ()=>{
+      renderEditor();
+      document.querySelectorAll("#edTabs .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#edTabs .seg").forEach(x=>x.classList.remove("activo"));
+        b.classList.add("activo");
+        edTipo = b.dataset.edTipo; edEditando = null; renderEditor();
+      }));
+      $("#edCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
@@ -2009,6 +2913,9 @@ function hojaAjustes(){
   const opcVoz = '<option value="">Automática (mejor disponible)</option>' + voces.map(v=>'<option value="'+esc(v.name)+'"'+(a.vozNombre===v.name?' selected':'')+'>'+esc(v.name)+' · '+v.lang+(Voz.mejor(v)?' · mejorada':'')+'</option>').join("");
   hoja("Ajustes", "",
     '<div class="campo"><label class="campo-et" for="sNombre">Tu nombre</label><input class="campo-in" type="text" id="sNombre" placeholder="¿Cómo te llamas?" value="'+esc(a.nombre||"")+'" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px"><p class="campo-ayuda">Con lo que la app te saluda cada día.</p></div>' +
+    '<div class="fila" data-abrir="rituales" style="cursor:pointer"><div><div class="fila-txt">Personalizar rituales</div><div class="fila-ayuda">Cambia, quita o agrega las frases de Mañana, Noche y Núcleo.</div></div><span class="nav-card-ch">›</span></div>' +
+    '<div class="fila" data-abrir="editor" style="cursor:pointer"><div><div class="fila-txt">Mi contenido</div><div class="fila-ayuda">Crea tus propias frases, historias, doctrina y salmos.</div></div><span class="nav-card-ch">›</span></div>' +
+    '<div class="fila" data-abrir="preferencias" style="cursor:pointer"><div><div class="fila-txt">Preferencias de contenido</div><div class="fila-ayuda">Lo que elegiste al empezar: categorías, tono y temas.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="campo"><label class="campo-et">Tema</label>' +
       '<div class="segmento" id="segTema">' +
       ['sistema','claro','oscuro'].map(v=>'<button type="button" class="seg'+(((a.tema||"sistema")===v)?' activo':'')+'" data-tema="'+v+'">'+({sistema:"Sistema",claro:"Claro",oscuro:"Oscuro"}[v])+'</button>').join("") +
@@ -2024,9 +2931,16 @@ function hojaAjustes(){
     '<div class="fila"><div><div class="fila-txt">Cama sonora</div><div class="fila-ayuda">Pad generado en vivo. Mañana con brillo; noche grave, sin transientes.</div></div><button class="switch'+(a.pad?' on':'')+'" id="sPad" role="switch"></button></div>' +
     '<div class="fila"><div><div class="fila-txt">Ambiente en toda la app</div><div class="fila-ayuda">Un lecho de sonido continuo también fuera de la práctica (inicio, Journal, Doctrina…). Suave, no se corta al cambiar de pantalla.</div></div><button class="switch'+(a.ambienteApp?' on':'')+'" id="sAmbApp" role="switch"></button></div>' +
     '<div class="campo" style="margin-top:20px"><label class="campo-et" for="sPadVol">Volumen del pad</label><input class="campo-in" type="range" id="sPadVol" min="0" max="1" step=".05" value="'+a.padVol+'"></div>' +
-    '<div class="campo"><label class="campo-et" for="sEscena">Escena de sonido</label><select class="campo-sel" id="sEscena">' +
+    '<div class="campo"><label class="campo-et" for="sEscena">Música de fondo de la app</label><select class="campo-sel" id="sEscena">' +
       [["auto","Automática (por ritual)"],["vela","Vela — cálida, tonal"],["noche","Noche — grave, profunda"],["eter","Éter — aérea, luminosa"],["lluvia","Lluvia — textura suave"],["oceano","Océano — olas lentas"]].map(o=>'<option value="'+o[0]+'"'+((a.escena||"auto")===o[0]?' selected':'')+'>'+o[1]+'</option>').join("") + '</select>' +
-      '<p class="campo-ayuda">El paisaje sonoro se genera en vivo y evoluciona solo. «Automática» usa Vela en el día y Noche al dormir. Se escucha en la práctica.</p></div>' +
+      '<p class="campo-ayuda">El paisaje sonoro que se escucha en todas las secciones (inicio, práctica, meditación, «Ahora mismo»…), no solo en Sonido. Se genera en vivo y evoluciona solo. «Automática» usa Vela de día y Noche al dormir.</p></div>' +
+    '<div class="fila" style="margin-top:8px"><div><div class="fila-txt">Recordatorios</div><div class="fila-ayuda">Un aviso para tu práctica de Mañana, Núcleo y Noche.</div></div><button class="switch'+(a.recordatorios&&a.recordatorios.on?' on':'')+'" id="sRecord" role="switch"></button></div>' +
+    '<div id="recordHoras" class="'+(a.recordatorios&&a.recordatorios.on?'':'oculto')+'">' +
+      '<div class="campo campo-rec"><label class="campo-et">Mañana</label><input class="campo-in campo-time" type="time" id="rMan" value="'+((a.recordatorios&&a.recordatorios.manana)||"07:00")+'"></div>' +
+      '<div class="campo campo-rec"><label class="campo-et">Núcleo</label><input class="campo-in campo-time" type="time" id="rNuc" value="'+((a.recordatorios&&a.recordatorios.nucleo)||"13:00")+'"></div>' +
+      '<div class="campo campo-rec"><label class="campo-et">Noche</label><input class="campo-in campo-time" type="time" id="rNoc" value="'+((a.recordatorios&&a.recordatorios.noche)||"21:00")+'"></div>' +
+      '<p class="campo-ayuda">Con la app instalada, te avisa cuando la abres cerca de la hora. Para avisos con la app cerrada hace falta un paso extra (notificaciones push); tu configuración queda guardada y lista para cuando se active.</p>' +
+    '</div>' +
     '<div class="campo"><label class="campo-et" for="sDormir">Temporizador de sueño</label><select class="campo-sel" id="sDormir">' +
       [0,10,20,30].map(m=>'<option value="'+m+'"'+(a.dormir===m?' selected':'')+'>'+(m?m+' minutos':'Sin temporizador')+'</option>').join("") + '</select>' +
       '<p class="campo-ayuda">La ventana hipnagógica son los primeros 10–20 min mientras te duermes. Audio toda la noche fragmenta el sueño; el track termina en silencio, no en loop.</p></div>' +
@@ -2059,6 +2973,15 @@ function hojaAjustes(){
       $("#sPausa").addEventListener("input", e=>{ E.ajustes.pausa = +e.target.value; $("#sPausaV").textContent = (+e.target.value/1000).toFixed(1)+" s"; guardar(); });
       $("#sPadVol").addEventListener("input", e=>{ E.ajustes.padVol = +e.target.value; Pad.volumen(+e.target.value); guardar(); });
       const se = $("#sEscena"); if(se) se.addEventListener("change", ()=>{ E.ajustes.escena = se.value; guardar(); });
+      const sr = $("#sRecord"); if(sr) sr.addEventListener("click", ()=>{
+        const on = !sr.classList.contains("on"); sr.classList.toggle("on", on);
+        E.ajustes.recordatorios = E.ajustes.recordatorios || {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
+        E.ajustes.recordatorios.on = on;
+        const rh = $("#recordHoras"); if(rh) rh.classList.toggle("oculto", !on);
+        if(on && "Notification" in window && Notification.permission === "default"){ try{ Notification.requestPermission(); }catch(e){} }
+        guardar();
+      });
+      [["rMan","manana"],["rNuc","nucleo"],["rNoc","noche"]].forEach(p=>{ const el = $("#"+p[0]); if(el) el.addEventListener("change", ()=>{ E.ajustes.recordatorios = E.ajustes.recordatorios||{on:true,manana:"07:00",nucleo:"13:00",noche:"21:00"}; E.ajustes.recordatorios[p[1]] = el.value; guardar(); }); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
       $("#sExportar").addEventListener("click", exportarDatos);
       const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
@@ -2082,6 +3005,8 @@ document.addEventListener("click", e=>{
   if(!b) return;
   const k = b.dataset.abrir;
   if(k === "vision") hojaVision();
+  else if(k === "afirmaciones") hojaAfirmaciones();
+  else if(k === "manifestacion") hojaManifestacion();
   else if(k === "arquitecto") hojaArquitecto();
   else if(k === "journal") hojaJournal();
   else if(k === "meditacion") hojaMeditacion();
@@ -2089,8 +3014,12 @@ document.addEventListener("click", e=>{
   else if(k === "doctrina") hojaDoctrina();
   else if(k === "historias") hojaHistorias();
   else if(k === "salmos") hojaSalmos();
+  else if(k === "biblia") hojaBiblia();
   else if(k === "ancla") hojaAncla();
   else if(k === "ajustes") hojaAjustes();
+  else if(k === "editor") hojaEditor();
+  else if(k === "rituales") hojaRitualesElegir();
+  else if(k === "preferencias") hojaPreferenciasContenido();
 });
 function mostrarTab(tab){
   ["inicio","explorar","sonido","diario"].forEach(t=>{
@@ -2181,11 +3110,211 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
 }
 
 /* ════════════════ ARRANQUE ════════════════ */
+const CATEGORIAS = [
+  ["oracion","Oración diaria"],["manifestacion","Manifestación"],["afirmaciones","Afirmaciones"],
+  ["meditacion","Meditaciones"],["journal","Journal"],["concentracion","Concentración"],["estudio","Estudio y reflexión"]
+];
+const TONOS = [["cristiano","Cristiano y bíblico"],["espiritual","Espiritual, sin religión específica"],["mezcla","Una mezcla"]];
+const SEGUIMIENTOS = {
+  oracion:      { q:"¿En qué momentos rezas?", opts:[["manana","Mañana"],["noche","Noche"],["dia","A lo largo del día"]] },
+  manifestacion:{ q:"¿Qué quieres llamar a tu vida?", opts:[["abundancia","Abundancia"],["salud","Salud"],["relaciones","Relaciones"],["proposito","Propósito y carrera"]] },
+  afirmaciones: { q:"¿Qué quieres reforzar en ti?", opts:[["confianza","Confianza"],["calma","Calma"],["disciplina","Disciplina"],["merecer","Merecerlo"],["fe","Fe"]] },
+  meditacion:   { q:"¿Para qué las buscas?", opts:[["ansiedad","Calmar ansiedad"],["enfoque","Enfocarme"],["dormir","Dormir"],["gratitud","Gratitud"]] },
+  journal:      { q:"¿Qué te ayuda a escribir?", opts:[["guiadas","Preguntas guiadas"],["libre","Página libre"],["gratitud","Gratitud"],["revisar","Revisar mi día"]] },
+  concentracion:{ q:"¿Qué sonido te centra?", opts:[["marron","Ruido marrón"],["blanco","Blanco"],["binaural","Binaural"],["naturaleza","Naturaleza"]] },
+  estudio:      { q:"¿Qué te gusta leer?", opts:[["escritura","Salmos y Escritura"],["parabola","Parábolas e historias"],["ensayo","Ensayos y doctrina"],["tradiciones","Otras tradiciones"]] }
+};
+function toggleArr(arr, k){ const i = arr.indexOf(k); if(i>=0) arr.splice(i,1); else arr.push(k); }
+function onbChips(opts, sel, attr){
+  return '<div class="onb-chips">' + opts.map(o=>'<button type="button" class="onb-chip'+(sel.indexOf(o[0])>=0?" on":"")+'" '+attr+'="'+o[0]+'">'+esc(o[1])+'</button>').join("") + '</div>';
+}
+function onbBtn(label, fin){ return '<button class="onb-btn" id="onbNext" data-fin="'+(fin?"1":"")+'">'+label+'</button>'; }
+
+let onbSeq = [], onbIdx = 0;
+function onbConstruirSeq(){
+  const seq = ["bienvenida","nombre","categorias","tono"];
+  (E.perfil.categorias||[]).forEach(c=>{ if(SEGUIMIENTOS[c]) seq.push("seg:"+c); });
+  seq.push("preferencias","listo");
+  return seq;
+}
+function onbPantalla(tipo){
+  const nom = (E.ajustes.nombre||"").trim();
+  if(tipo === "bienvenida") return { html:'<div class="onb-mark" aria-hidden="true">◦</div><h1 class="onb-t">Práctica</h1><p class="onb-p">Un lugar para tu oración, tu silencio y tu día. En un minuto lo ajustamos a ti.</p>' + onbBtn("Empezar") };
+  if(tipo === "nombre") return {
+    html:'<h1 class="onb-t">¿Cómo te llamas?</h1><p class="onb-p">Para saludarte cada día.</p><input class="onb-input" id="onbNombre" type="text" placeholder="Tu nombre" value="'+esc(E.ajustes.nombre||"")+'" autocomplete="given-name">' + onbBtn("Continuar"),
+    wire:()=>{ const i=$("#onbNombre"); if(i){ i.addEventListener("input", e=>{ E.ajustes.nombre = e.target.value; }); try{ i.focus(); }catch(e){} } } };
+  if(tipo === "categorias") return {
+    html:'<h1 class="onb-t">¿Qué te trae aquí?</h1><p class="onb-p">Elige lo que te importa. Puedes cambiarlo después.</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-cat") + onbBtn("Continuar"),
+    wire:()=>{ document.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.categorias, b.dataset.cat); })); } };
+  if(tipo === "tono") return {
+    html:'<h1 class="onb-t">¿Desde dónde lo vives?</h1><p class="onb-p">Para que el contenido te quede a la medida.</p><div class="onb-opts" id="onbTono">' + TONOS.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-tono="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div>' + onbBtn("Continuar"),
+    wire:()=>{ document.querySelectorAll("#onbTono .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbTono .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.tono; })); } };
+  if(tipo.indexOf("seg:") === 0){
+    const c = tipo.slice(4), s = SEGUIMIENTOS[c];
+    E.perfil.sub[c] = E.perfil.sub[c] || [];
+    return {
+      html:'<h1 class="onb-t">'+esc(s.q)+'</h1><p class="onb-p">Elige una o varias. O afínalo después.</p>' + onbChips(s.opts, E.perfil.sub[c], "data-sub") + onbBtn("Continuar") + '<button class="onb-saltar-paso" id="onbSaltarPaso">Después lo afino</button>',
+      wire:()=>{ document.querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.sub[c], b.dataset.sub); })); const sp=$("#onbSaltarPaso"); if(sp) sp.addEventListener("click", onbSig); } };
+  }
+  if(tipo === "preferencias") return {
+    html:'<h1 class="onb-t">Tu ambiente</h1><p class="onb-p">Cómo se ve y se siente. Todo se puede cambiar luego en Ajustes.</p>' +
+      '<div class="campo"><label class="campo-et">Tema</label><div class="segmento" id="onbTema">' + [["sistema","Sistema"],["claro","Claro"],["oscuro","Oscuro"]].map(t=>'<button type="button" class="seg'+((E.ajustes.tema||"sistema")===t[0]?" activo":"")+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") + '</div></div>' +
+      '<div class="fila" style="margin-top:6px"><div><div class="fila-txt">Sonido de ambiente</div><div class="fila-ayuda">Un lecho suave mientras usas la app.</div></div><button class="switch'+(E.ajustes.ambienteApp!==false?" on":"")+'" id="onbAmb" role="switch"></button></div>' + onbBtn("Continuar"),
+    wire:()=>{
+      document.querySelectorAll("#onbTema .seg").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbTema .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo"); E.ajustes.tema=b.dataset.tema; aplicarTema(); }));
+      const amb=$("#onbAmb"); if(amb) amb.addEventListener("click", ()=>{ const on=!amb.classList.contains("on"); amb.classList.toggle("on",on); E.ajustes.ambienteApp=on; }); } };
+  if(tipo === "listo") return { html:'<h1 class="onb-t">'+(nom?"Listo, "+esc(nom)+".":"Todo listo.")+'</h1><p class="onb-p">Práctica viene con oraciones, meditaciones e historias listas, afinadas a lo que elegiste. Úsalas tal cual, y con el tiempo hazlas tuyas en «Mi contenido».</p>' + onbBtn("Comenzar", true) };
+  return { html:"" };
+}
+function onbRender(){
+  const p = onbPantalla(onbSeq[onbIdx]);
+  const cont = $("#onbCont"); cont.innerHTML = p.html; cont.scrollTop = 0;
+  $("#onbDots").innerHTML = onbSeq.map((_,i)=>'<span class="onb-dot'+(i<=onbIdx?" on":"")+'"></span>').join("");
+  const at = $("#onbAtras"); if(at) at.classList.toggle("oculto", onbIdx === 0);
+  if(p.wire) p.wire();
+  const nx = $("#onbNext"); if(nx) nx.addEventListener("click", ()=>{ if(nx.dataset.fin) terminarOnb(); else onbSig(); });
+}
+function onbSig(){
+  if(onbSeq[onbIdx] === "categorias"){ const pos = onbIdx; onbSeq = onbConstruirSeq(); onbIdx = pos; }
+  onbIdx++;
+  if(onbIdx >= onbSeq.length){ terminarOnb(); return; }
+  onbRender();
+}
+function onbAtras(){ if(onbIdx > 0){ onbIdx--; onbRender(); } }
+function terminarOnb(){
+  E.ajustes.onboarded = true; E.perfil.hecho = true; guardar();
+  $("#onboarding").classList.add("oculto");
+  render();
+}
+function mostrarOnboarding(){
+  onbSeq = onbConstruirSeq(); onbIdx = 0;
+  $("#onboarding").classList.remove("oculto");
+  onbRender();
+  const at = $("#onbAtras"); if(at) at.addEventListener("click", onbAtras);
+  const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
+}
+let sosTimer = null, sosT0 = 0;
+const APP_NOMBRE = "Práctica", APP_URL = "https://memochavmend-blip.github.io/Journey-App/";
+function envolverTexto(ctx, texto, maxW){
+  const palabras = texto.split(" "), lineas = []; let linea = "";
+  palabras.forEach(p=>{ const t = linea ? linea + " " + p : p; if(ctx.measureText(t).width > maxW && linea){ lineas.push(linea); linea = p; } else linea = t; });
+  if(linea) lineas.push(linea); return lineas;
+}
+function dibujarTarjeta(texto, cb){
+  try{
+    const W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    const g = x.createLinearGradient(0,0,0,H); g.addColorStop(0,"#F7F3EA"); g.addColorStop(1,"#EFE8DB");
+    x.fillStyle = g; x.fillRect(0,0,W,H);
+    const rg = x.createRadialGradient(W*0.5,H*0.13,0,W*0.5,H*0.13,W*0.62);
+    rg.addColorStop(0,"rgba(224,168,74,0.20)"); rg.addColorStop(1,"rgba(224,168,74,0)");
+    x.fillStyle = rg; x.fillRect(0,0,W,H);
+    x.fillStyle = "#E0A84A"; x.beginPath(); x.arc(W/2, H*0.145, 9, 0, Math.PI*2); x.fill();
+    x.fillStyle = "#2B2620"; x.textAlign = "center"; x.textBaseline = "middle";
+    const fs = texto.length > 95 ? 52 : texto.length > 60 ? 60 : 70;
+    x.font = "italic " + fs + "px Georgia, 'Times New Roman', serif";
+    const lineas = envolverTexto(x, texto, W*0.78), lh = fs*1.42, tot = lineas.length*lh;
+    let y = H/2 - tot/2 + lh/2; lineas.forEach(l=>{ x.fillText(l, W/2, y); y += lh; });
+    x.font = "600 30px Georgia, serif"; x.fillStyle = "#7C7161";
+    x.fillText("Práctica", W/2, H*0.885);
+    x.font = "22px Georgia, serif"; x.fillStyle = "#A79C88";
+    x.fillText("tu oración, tu silencio, tu día", W/2, H*0.885 + 40);
+    c.toBlob(b=>cb(b), "image/png");
+  }catch(e){ cb(null); }
+}
+function compartirTexto(txt){
+  const mensaje = "«" + txt + "»\n\n— vía " + APP_NOMBRE;
+  if(navigator.share){ navigator.share({ title: APP_NOMBRE, text: mensaje, url: APP_URL }).catch(()=>{}); }
+  else { try{ navigator.clipboard.writeText(mensaje + "\n" + APP_URL); const b = $("#hoyShare"); if(b){ const o = b.innerHTML; b.textContent = "Copiado"; setTimeout(()=>{ b.innerHTML = o; }, 1600); } }catch(e){} }
+}
+function compartirHoy(){
+  const txt = ($("#hoyTxt").textContent || "").trim(); if(!txt) return;
+  dibujarTarjeta(txt, (blob)=>{
+    const archivo = blob ? new File([blob], "practica.png", { type:"image/png" }) : null;
+    if(archivo && navigator.canShare && navigator.canShare({ files:[archivo] })){
+      navigator.share({ files:[archivo], title: APP_NOMBRE }).catch(()=>compartirTexto(txt));
+    } else { compartirTexto(txt); }
+  });
+}
+let recNotif = {};
+function chequearRecordatorios(){
+  const r = E.ajustes.recordatorios;
+  if(!r || !r.on) return;
+  if(!("Notification" in window) || Notification.permission !== "granted") return;
+  const d = new Date(), hhmm = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"), hoy = hoyISO();
+  [["manana","Mañana","Es momento de tu práctica de la mañana."],["nucleo","Núcleo","Un momento para tu Núcleo."],["noche","Noche","Es momento de tu práctica de la noche."]].forEach(s=>{
+    const key = hoy + s[0];
+    if(r[s[0]] === hhmm && recNotif[key] !== 1){ recNotif[key] = 1; try{ new Notification(APP_NOMBRE + " · " + s[1], { body: s[2] }); }catch(e){} }
+  });
+}
+function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
+function abrirSOS(){
+  $("#sosLinea").innerHTML = fraseCalma();
+  $("#sosLinea").style.opacity = "1";
+  $("#sos").classList.remove("oculto");
+  document.body.classList.add("encendida");
+  sosT0 = Date.now();
+  const guia = $("#sosGuia");
+  const actualizar = ()=>{
+    const t = (Date.now() - sosT0) % 11000;
+    const txt = t < 4000 ? "Inhala" : t < 5500 ? "Sostén" : t < 9500 ? "Exhala" : "Sostén";
+    if(guia.textContent !== txt) guia.textContent = txt;
+  };
+  actualizar();
+  clearInterval(sosTimer); sosTimer = setInterval(actualizar, 350);
+  padBed = false;
+  try{ Pad.desbloquear(); const esc = (E.ajustes.escena && E.ajustes.escena !== "auto") ? E.ajustes.escena : "oceano"; Pad.iniciar(esc, E.ajustes.padVol); }catch(e){}
+}
+function cerrarSOS(){
+  clearInterval(sosTimer); sosTimer = null;
+  $("#sos").classList.add("oculto");
+  document.body.classList.remove("encendida");
+  padBed = false;
+  try{ Pad.detener(1.5); }catch(e){}
+  ambienteBed();
+}
+(function cablearSOS(){
+  const ab = $("#ahoraBtn"); if(ab) ab.addEventListener("click", abrirSOS);
+  const sc = $("#sosCompartir"); if(sc) sc.addEventListener("click", ()=>{
+    const txt = ($("#sosLinea").textContent || "").trim(); if(!txt) return;
+    dibujarTarjeta(txt, (blob)=>{
+      const archivo = blob ? new File([blob], "practica.png", { type:"image/png" }) : null;
+      if(archivo && navigator.canShare && navigator.canShare({ files:[archivo] })){ navigator.share({ files:[archivo], title: APP_NOMBRE }).catch(()=>compartirTexto(txt)); }
+      else { compartirTexto(txt); }
+    });
+  });
+  const hs = $("#hoyShare"); if(hs) hs.addEventListener("click", compartirHoy);
+  setInterval(chequearRecordatorios, 30000);
+  const sa = $("#sosSalir"); if(sa) sa.addEventListener("click", cerrarSOS);
+  const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
+    const l = $("#sosLinea"); l.style.opacity = "0";
+    setTimeout(()=>{ l.innerHTML = fraseCalma(); l.style.opacity = "1"; }, 320);
+  });
+  // Afirmaciones · repetir
+  const rd = $("#repDecir"); if(rd) rd.addEventListener("click", ()=>{
+    repN++; $("#repCount").textContent = repN + (repN === 1 ? " vez" : " veces");
+    const t = $("#repTxt"); t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso");
+  });
+  const rl = $("#repListo"); if(rl) rl.addEventListener("click", cerrarRepetir);
+  // Manifestación · 369
+  const md = $("#m369Decir"); if(md) md.addEventListener("click", ()=>{
+    m369.n++; $("#m369Count").textContent = m369.n + " / " + m369.meta;
+    const t = $("#m369Decl"); t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso");
+    if(m369.n >= m369.meta){ $("#m369Decir").classList.add("oculto"); $("#m369Vis").classList.remove("oculto"); }
+  });
+  const ml = $("#m369Listo"); if(ml) ml.addEventListener("click", ()=>cerrar369(true));
+  const mx = $("#m369Salir"); if(mx) mx.addEventListener("click", ()=>cerrar369(false));
+  gestoSwipeCerrar($("#sos"), null, cerrarSOS);
+  gestoSwipeCerrar($("#repetir"), null, cerrarRepetir);
+  gestoSwipeCerrar($("#m369"), null, ()=>cerrar369(false));
+})();
+
 (async function(){
   nodos();
   await cargar();
   aplicarTema();
   render();
+  if(!E.perfil.hecho){ mostrarOnboarding(); }
   setInterval(()=>{ if(!$("#inicio").classList.contains("oculto")) render(); }, 60000);
 })();
 </script>
