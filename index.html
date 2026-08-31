@@ -130,7 +130,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 
 /* ─── ESTRUCTURA ─── */
 .lienzo{
-  position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);
+  position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;
   width:100%;max-width:640px;overflow-y:auto;overflow-x:hidden;
   overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   padding:calc(env(safe-area-inset-top) + 44px) 26px calc(env(safe-area-inset-bottom) + 56px) 52px;
@@ -1805,26 +1805,22 @@ function mostrar(){
   el.classList.remove("oculto");
   clearInterval(P.karTick); P.karTick = null;
   if(!P.corriendo){ el.textContent = o.t; el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; pintar(); return; }
-  if(P.vozOn && Voz.soporte){
-    const k = prepararKaraoke(el, o.t);
-    const est = Math.max(1500, k.n * 360 / (E.ajustes.velocidad||1)), paso = est / Math.max(1, k.n);
-    let ti = 0;
-    P.karTick = setInterval(()=>{ k.revelarUno(ti); ti++; if(ti >= k.n) { clearInterval(P.karTick); P.karTick = null; } }, paso);
-    pintar();
+  const conVoz = P.vozOn && Voz.soporte;
+  const k = prepararKaraoke(el, o.t);
+  const est = conVoz ? Math.max(1500, k.n * 360 / (E.ajustes.velocidad||1)) : Math.max(1400, duracion(o) - E.ajustes.pausa);
+  const paso = est / Math.max(1, k.n);
+  let ti = 0;
+  P.karTick = setInterval(()=>{ k.revelarUno(ti); ti++; if(ti >= k.n){ clearInterval(P.karTick); P.karTick = null; } }, paso);
+  pintar();
+  if(conVoz){
     Voz.hablar(o.t, ()=>{
       clearInterval(P.karTick); P.karTick = null; k.todas();
       if(!P.corriendo) return;
       esperar(o.hold ? Math.max(o.hold, E.ajustes.pausa) : E.ajustes.pausa);
     }, (ci)=>k.hasta(ci));
   } else {
-    el.textContent = o.t;
-    el.style.animation = "none"; void el.offsetWidth; el.style.animation = "";
-    pintar();
-    Voz.hablar(o.t, ()=>{
-      if(!P.corriendo) return;
-      const base = duracion(o);
-      esperar(o.hold ? Math.max(o.hold, base) : base);
-    });
+    const base = duracion(o);
+    esperar(o.hold ? Math.max(o.hold, base) : base);
   }
 }
 function prepararKaraoke(el, texto){
