@@ -217,6 +217,20 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 
 .p-centro{flex:1;display:flex;flex-direction:column;justify-content:center;padding:22px 0}
 .p-centro.respirando{align-items:center;text-align:center}
+/* Vela ceremonial (encender / apagar) */
+.vela-rito{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px}
+.vela-obj{position:relative;width:70px;height:172px;cursor:pointer}
+.vela-cuerpo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:52px;height:120px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#F3E7CE,#E6D3A8);box-shadow:inset 0 -8px 16px rgba(150,110,50,.18),0 2px 10px rgba(0,0,0,.08)}
+.vela-cuerpo::after{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:#5a4a34;border-radius:1px}
+.vela-flama{position:absolute;bottom:116px;left:50%;width:20px;height:34px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
+  background:radial-gradient(ellipse at 50% 72%, #FFF3C4 0%, #FCC64B 42%, #E0942A 80%, transparent 100%);
+  opacity:0;transform:translateX(-50%) scale(.15);transform-origin:50% 100%;transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.3,1);filter:blur(.4px)}
+.vela-obj.viva .vela-flama{opacity:1;transform:translateX(-50%) scale(1);animation:llamita 2.6s ease-in-out infinite}
+.vela-flama::before{content:"";position:absolute;top:-58px;left:50%;transform:translateX(-50%);width:160px;height:170px;border-radius:50%;
+  background:radial-gradient(circle, rgba(224,148,42,.30) 0%, rgba(224,148,42,0) 66%);opacity:0;transition:opacity 1.1s ease;pointer-events:none}
+.vela-obj.viva .vela-flama::before{opacity:1}
+@keyframes llamita{0%,100%{transform:translateX(-50%) scale(1) rotate(-1.5deg)}50%{transform:translateX(-50%) scale(1.07) rotate(1.5deg)}}
+.vela-instr{font-family:var(--serif);font-size:1.15rem;color:var(--tinta-baja);text-align:center;transition:opacity .4s ease;min-height:1.5rem}
 .p-bloque{
   font-family:var(--serif);font-size:.95rem;letter-spacing:.02em;color:var(--oro);
   margin:0 0 6px;font-style:italic;
@@ -565,6 +579,24 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   100%{transform:scale(.72)}
 }
 .sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:0 0 34px;min-height:4.5rem;transition:opacity .5s ease}
+.sos-paso{display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px}
+.sos-intro{font-family:var(--serif);font-size:1.4rem;color:var(--tinta);text-align:center;margin:0 0 30px;line-height:1.4}
+.sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
+.sos-slider-wrap{width:100%;margin-bottom:32px}
+.sos-slider{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--linea-fuerte);outline:none}
+.sos-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:var(--llama);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+.sos-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--llama);cursor:pointer;border:none}
+.sos-slider:focus-visible{outline:2px solid var(--llama);outline-offset:6px}
+.sos-escala-num{display:flex;justify-content:space-between;align-items:center;margin-top:14px;font-size:11px;color:var(--tinta-tenue);letter-spacing:.04em;text-transform:uppercase}
+.sos-val{font-family:var(--mono);font-size:20px;color:var(--llama)}
+.sos-skip{margin-top:16px;padding:8px;font-size:13px;color:var(--tinta-tenue);transition:color .2s}
+.sos-skip:hover,.sos-skip:focus-visible{color:var(--tinta-baja)}
+.sos-espacio{font-family:var(--serif);font-size:1.45rem;color:var(--tinta);text-align:center;margin:0 0 26px;line-height:1.4}
+.sos-comparo{font-family:var(--mono);font-size:15px;color:var(--oro);text-align:center;margin:16px 0 0;letter-spacing:.03em}
+.sos-preg-sug{margin-top:32px}
+.sos-sug{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:2px}
+.sos-sug-i{padding:9px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:13px;color:var(--tinta-baja)}
+.sos-acc-cierre{margin-top:30px}
 .sos-acc{display:flex;gap:12px}
 .sos-btn{padding:13px 26px;border-radius:12px;border:1px solid var(--linea-fuerte);font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
 .sos-btn:hover,.sos-btn:focus-visible{border-color:var(--llama);color:var(--tinta)}
@@ -680,7 +712,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
     <button class="ahora" id="ahoraBtn">
       <span class="ahora-ic" aria-hidden="true"></span>
-      <span class="ahora-tx"><span class="ahora-t">Ahora mismo</span><span class="ahora-s">Un momento difícil · respira conmigo</span></span>
+      <span class="ahora-tx"><span class="ahora-t">Ahora mismo</span><span class="ahora-s">Un momento difícil o un impulso · haz una pausa</span></span>
     </button>
 
     <div class="ritos" id="ritos"></div>
@@ -742,12 +774,46 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 </div>
 
 <div class="sos oculto" id="sos">
-  <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span></div>
-  <p class="sos-linea" id="sosLinea"></p>
-  <div class="sos-acc">
-    <button class="sos-btn" id="sosOtra">Otra</button>
-    <button class="sos-btn" id="sosCompartir">Compartir</button>
-    <button class="sos-btn sos-salir" id="sosSalir">Salir</button>
+  <div class="sos-paso" id="sosP1">
+    <p class="sos-intro">Vamos a crear un poco de espacio.</p>
+    <p class="sos-preg">¿Qué tan fuerte se siente ahora?</p>
+    <div class="sos-slider-wrap">
+      <input type="range" min="1" max="10" value="5" class="sos-slider" id="sosSlA" aria-label="Intensidad">
+      <div class="sos-escala-num"><span>Suave</span><span class="sos-val" id="sosValA">—</span><span>Fuerte</span></div>
+    </div>
+    <button class="m369-listo" id="sosRespirar">Respira conmigo</button>
+    <button class="sos-skip" id="sosSaltarInt">Prefiero no decir</button>
+  </div>
+  <div class="sos-paso oculto" id="sosP2">
+    <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span></div>
+    <p class="sos-linea" id="sosLinea"></p>
+    <div class="sos-acc">
+      <button class="sos-btn" id="sosOtra">Otra</button>
+      <button class="sos-btn" id="sosCompartir">Compartir</button>
+      <button class="sos-btn" id="sosListo">Terminar</button>
+    </div>
+  </div>
+  <div class="sos-paso oculto" id="sosP3">
+    <p class="sos-espacio">Creaste un poco de espacio.</p>
+    <div id="sosDespuesInt">
+      <p class="sos-preg">¿Cómo se siente ahora?</p>
+      <div class="sos-slider-wrap">
+        <input type="range" min="1" max="10" value="5" class="sos-slider" id="sosSlB" aria-label="Intensidad ahora">
+        <div class="sos-escala-num"><span>Suave</span><span class="sos-val" id="sosValB">—</span><span>Fuerte</span></div>
+      </div>
+      <p class="sos-comparo oculto" id="sosComparo"></p>
+    </div>
+    <p class="sos-preg sos-preg-sug">¿Quieres hacer algo estos minutos?</p>
+    <div class="sos-sug">
+      <span class="sos-sug-i">Camina un poco</span>
+      <span class="sos-sug-i">Toma agua</span>
+      <span class="sos-sug-i">Cambia de espacio</span>
+      <span class="sos-sug-i">Espera unos minutos</span>
+    </div>
+    <div class="sos-acc sos-acc-cierre">
+      <button class="sos-btn" id="sosOtraPractica">Otra práctica</button>
+      <button class="sos-btn sos-salir" id="sosCerrar">Cerrar</button>
+    </div>
   </div>
 </div>
 
@@ -793,6 +859,14 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <div class="respiro oculto" id="pRespiro">
       <div class="respiro-aro" id="respiroAro"><span class="respiro-txt" id="respiroTxt">Inhala</span></div>
     </div>
+  </div>
+
+  <div class="vela-rito oculto" id="pVela">
+    <button class="vela-obj" id="velaObj" aria-label="Encender o apagar la vela">
+      <span class="vela-flama"></span>
+      <span class="vela-cuerpo"></span>
+    </button>
+    <p class="vela-instr" id="velaInstr">Toca la vela para comenzar</p>
   </div>
 
   <div class="audio-lista oculto" id="pAudioLista"></div>
@@ -1783,9 +1857,42 @@ function abrirRitual(id){
   padBed = false;
   pedirPantalla();
   if(r.tema === "noche" && E.ajustes.dormir) programarDormir();
+  pintarControles();
+  velaRito("encender");
+}
+let velaAccion = null;
+function iniciarMovimientos(){
+  $("#pVela").classList.add("oculto");
+  $("#pCentro").classList.remove("oculto");
+  $("#pBajo").classList.remove("oculto");
   P.corriendo = true;
   pintarControles();
   mostrar();
+}
+function velaRito(modo){
+  const obj = $("#velaObj"), instr = $("#velaInstr");
+  $("#pCentro").classList.add("oculto");
+  $("#pBajo").classList.add("oculto");
+  $("#pVela").classList.remove("oculto");
+  if(modo === "encender"){
+    obj.classList.remove("viva");
+    instr.textContent = "Toca la vela para comenzar";
+    velaAccion = ()=>{
+      velaAccion = null;
+      obj.classList.add("viva");
+      instr.textContent = "";
+      setTimeout(iniciarMovimientos, 1300);
+    };
+  } else {
+    obj.classList.add("viva");
+    instr.textContent = P.rito && P.rito.tema === "noche" ? "Toca la vela para descansar" : "Toca la vela para cerrar";
+    velaAccion = ()=>{
+      velaAccion = null;
+      obj.classList.remove("viva");
+      instr.textContent = "Que la lleves contigo.";
+      setTimeout(cerrarPractica, 1400);
+    };
+  }
 }
 
 function mostrar(){
@@ -1943,6 +2050,10 @@ function terminar(){
   $("#pNota").classList.add("oculto");
   $("#pPlay").textContent = "Terminar";
   P.corriendo = false;
+  if(!P.med && P.rito){
+    setTimeout(()=>{ if(!P.corriendo && !$("#practica").classList.contains("oculto")) velaRito("apagar"); }, 2800);
+    return;
+  }
   if(P.rito && P.rito.tema === "noche" && Pad.activo()){
     $("#pPlay").textContent = "Silencio";
   } else {
@@ -1954,6 +2065,10 @@ function cerrarPractica(){
   P.corriendo = false; P.modoAudio = false; P.med = null;
   cancelAnimationFrame(P.raf); Voz.callar(); Pad.detener(2.5); clearInterval(P.karTick); P.karTick = null;
   clearTimeout(P.dormirId);
+  velaAccion = null;
+  const pv = $("#pVela"); if(pv) pv.classList.add("oculto");
+  $("#pCentro").classList.remove("oculto");
+  $("#pBajo").classList.remove("oculto");
   const a = $("#reproductor"); try{ a.pause(); a.removeAttribute("src"); a.load(); }catch(e){}
   soltarPantalla();
   document.body.classList.remove("encendida","tema-noche");
@@ -3296,7 +3411,44 @@ function mostrarOnboarding(){
   const at = $("#onbAtras"); if(at) at.addEventListener("click", onbAtras);
   const sk = $("#onbSaltar"); if(sk) sk.addEventListener("click", terminarOnb);
 }
-let sosTimer = null, sosT0 = 0;
+let sosTimer = null, sosT0 = 0, pausaAntes = null, pausaDespues = null;
+function sosPaso(n){ ["sosP1","sosP2","sosP3"].forEach((id,i)=>{ const el = $("#"+id); if(el) el.classList.toggle("oculto", i !== n-1); }); }
+function abrirSOS(){
+  pausaAntes = null; pausaDespues = null;
+  const sa = $("#sosSlA"); if(sa) sa.value = 5;
+  const sb = $("#sosSlB"); if(sb) sb.value = 5;
+  if($("#sosValA")) $("#sosValA").textContent = "—";
+  if($("#sosValB")) $("#sosValB").textContent = "—";
+  const cmp = $("#sosComparo"); if(cmp){ cmp.classList.add("oculto"); cmp.textContent = ""; }
+  sosPaso(1);
+  $("#sos").classList.remove("oculto");
+  document.body.classList.add("encendida");
+  padBed = false;
+  try{ Pad.desbloquear(); const esc = (E.ajustes.escena && E.ajustes.escena !== "auto") ? E.ajustes.escena : "oceano"; Pad.iniciar(esc, E.ajustes.padVol); }catch(e){}
+}
+function sosBreath(){
+  sosPaso(2);
+  $("#sosLinea").innerHTML = fraseCalma();
+  $("#sosLinea").style.opacity = "1";
+  sosT0 = Date.now();
+  const guia = $("#sosGuia");
+  const actualizar = ()=>{ const t = (Date.now() - sosT0) % 11000; const txt = t < 4000 ? "Inhala" : t < 5500 ? "Sostén" : t < 9500 ? "Exhala" : "Sostén"; if(guia.textContent !== txt) guia.textContent = txt; };
+  actualizar();
+  clearInterval(sosTimer); sosTimer = setInterval(actualizar, 350);
+}
+function sosIrDespues(){
+  clearInterval(sosTimer); sosTimer = null;
+  sosPaso(3);
+  const di = $("#sosDespuesInt"); if(di) di.classList.toggle("oculto", pausaAntes === null);
+}
+function cerrarSOS(){
+  clearInterval(sosTimer); sosTimer = null;
+  $("#sos").classList.add("oculto");
+  document.body.classList.remove("encendida");
+  padBed = false;
+  try{ Pad.detener(1.5); }catch(e){}
+  ambienteBed();
+}
 const APP_NOMBRE = "Práctica", APP_URL = "https://memochavmend-blip.github.io/Journey-App/";
 function envolverTexto(ctx, texto, maxW){
   const palabras = texto.split(" "), lineas = []; let linea = "";
@@ -3387,33 +3539,16 @@ function chequearRecordatorios(){
   });
 }
 function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
-function abrirSOS(){
-  $("#sosLinea").innerHTML = fraseCalma();
-  $("#sosLinea").style.opacity = "1";
-  $("#sos").classList.remove("oculto");
-  document.body.classList.add("encendida");
-  sosT0 = Date.now();
-  const guia = $("#sosGuia");
-  const actualizar = ()=>{
-    const t = (Date.now() - sosT0) % 11000;
-    const txt = t < 4000 ? "Inhala" : t < 5500 ? "Sostén" : t < 9500 ? "Exhala" : "Sostén";
-    if(guia.textContent !== txt) guia.textContent = txt;
-  };
-  actualizar();
-  clearInterval(sosTimer); sosTimer = setInterval(actualizar, 350);
-  padBed = false;
-  try{ Pad.desbloquear(); const esc = (E.ajustes.escena && E.ajustes.escena !== "auto") ? E.ajustes.escena : "oceano"; Pad.iniciar(esc, E.ajustes.padVol); }catch(e){}
-}
-function cerrarSOS(){
-  clearInterval(sosTimer); sosTimer = null;
-  $("#sos").classList.add("oculto");
-  document.body.classList.remove("encendida");
-  padBed = false;
-  try{ Pad.detener(1.5); }catch(e){}
-  ambienteBed();
-}
 (function cablearSOS(){
   const ab = $("#ahoraBtn"); if(ab) ab.addEventListener("click", abrirSOS);
+  const vo = $("#velaObj"); if(vo) vo.addEventListener("click", ()=>{ if(velaAccion) velaAccion(); });
+  const slA = $("#sosSlA"); if(slA) slA.addEventListener("input", ()=>{ pausaAntes = +slA.value; $("#sosValA").textContent = slA.value; });
+  const rp = $("#sosRespirar"); if(rp) rp.addEventListener("click", sosBreath);
+  const si = $("#sosSaltarInt"); if(si) si.addEventListener("click", ()=>{ pausaAntes = null; sosBreath(); });
+  const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
+    const l = $("#sosLinea"); l.style.opacity = "0";
+    setTimeout(()=>{ l.innerHTML = fraseCalma(); l.style.opacity = "1"; }, 320);
+  });
   const sc = $("#sosCompartir"); if(sc) sc.addEventListener("click", ()=>{
     const txt = ($("#sosLinea").textContent || "").trim(); if(!txt) return;
     dibujarTarjeta(txt, (blob)=>{
@@ -3422,20 +3557,21 @@ function cerrarSOS(){
       else { compartirTexto(txt); }
     });
   });
+  const li = $("#sosListo"); if(li) li.addEventListener("click", sosIrDespues);
+  const slB = $("#sosSlB"); if(slB) slB.addEventListener("input", ()=>{
+    pausaDespues = +slB.value; $("#sosValB").textContent = slB.value;
+    const cmp = $("#sosComparo");
+    if(pausaAntes !== null && cmp){ cmp.textContent = "Antes " + pausaAntes + "  →  ahora " + pausaDespues; cmp.classList.remove("oculto"); }
+  });
+  const gp = $("#sosOtraPractica"); if(gp) gp.addEventListener("click", ()=>{ cerrarSOS(); mostrarTab("explorar"); });
+  const cc = $("#sosCerrar"); if(cc) cc.addEventListener("click", cerrarSOS);
   const hs = $("#hoyShare"); if(hs) hs.addEventListener("click", compartirHoy);
   setInterval(chequearRecordatorios, 30000);
-  const sa = $("#sosSalir"); if(sa) sa.addEventListener("click", cerrarSOS);
-  const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
-    const l = $("#sosLinea"); l.style.opacity = "0";
-    setTimeout(()=>{ l.innerHTML = fraseCalma(); l.style.opacity = "1"; }, 320);
-  });
-  // Afirmaciones · repetir
   const rd = $("#repDecir"); if(rd) rd.addEventListener("click", ()=>{
     repN++; $("#repCount").textContent = repN + (repN === 1 ? " vez" : " veces");
     const t = $("#repTxt"); t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso");
   });
   const rl = $("#repListo"); if(rl) rl.addEventListener("click", cerrarRepetir);
-  // Manifestación · 369
   const md = $("#m369Decir"); if(md) md.addEventListener("click", ()=>{
     m369.n++; $("#m369Count").textContent = m369.n + " / " + m369.meta;
     const t = $("#m369Decl"); t.classList.remove("pulso"); void t.offsetWidth; t.classList.add("pulso");
