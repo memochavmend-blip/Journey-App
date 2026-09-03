@@ -670,6 +670,12 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .er-bfr:hover,.er-bfr:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
 .er-addcancel{display:block;margin:14px auto 2px;padding:7px 14px;font-size:13px;color:var(--tinta-tenue)}
 .er-addcancel:hover,.er-addcancel:focus-visible{color:var(--tinta-baja)}
+.er-lineas{display:flex;flex-direction:column}
+.er-drag{flex:0 0 auto;align-self:center;cursor:grab;color:var(--tinta-tenue);font-size:15px;line-height:1;padding:4px 3px 4px 0;touch-action:none;user-select:none;-webkit-user-select:none}
+.er-drag:active{cursor:grabbing}
+.er-mv{font-size:15px}
+.er-b[disabled]{opacity:.28;pointer-events:none}
+.er-linea.er-arrastrando{background:color-mix(in srgb,var(--llama) 8%,transparent);border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,.14);border-bottom-color:transparent;position:relative;z-index:2}
 
 @media (prefers-reduced-motion:reduce){
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
@@ -1129,7 +1135,7 @@ const LIT = {
     universal:["Estoy aquí. Estoy presente.","Este momento es lo único que existe, y estoy en él."]
   },
   entrega:{
-    cristiano:["Querido Dios: llévame a mi máximo potencial.","Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, protege el camino en el que estoy y no me dejes renunciar.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a Ti.","Ayúdame a dejar atrás aquello que ya pasó."],
+    cristiano:["Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, lo que no puedo cargar lo dejo en tus manos.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a Ti.","Ayúdame a dejar atrás aquello que ya pasó."],
     universal:["Suelto lo que no puedo cargar.","Dejo ir lo que no depende de mí.","Que se vaya lo que no es para mí; que se revele lo que sí.","Calmo mi mente, sano lo que puedo, suelto lo demás.","Dejo atrás aquello que ya pasó.","Entrego lo que no está en mis manos."]
   },
   palabra:{
@@ -1137,7 +1143,8 @@ const LIT = {
     universal:["Todo lo que necesito ya está en camino.","Tengo la fuerza para lo que este día me pida.","Nada de lo que temo es más grande que lo que me sostiene.","Lo que es para mí, no va a pasar de largo."]
   },
   recepcion:{
-    universal:["Me abro a recibir cosas buenas en mi vida.","Recibo más de lo que imaginé.","Todo lo que pasa en mi vida es a mi favor.","Estoy listo para lo que viene.","Ahora es mi tiempo."]
+    cristiano:["Recibo con gratitud lo que Dios pone en mi camino.","Abro las manos a lo que Dios quiera darme hoy.","Recibo su paz, su fuerza y su provisión."],
+    universal:["Me abro a recibir cosas buenas en mi vida.","Recibo más de lo que imaginé.","Todo lo que pasa en mi vida es a mi favor.","Estoy listo para lo que viene.","Lo bueno también es para mí."]
   },
   seguridad:{
     universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo."]
@@ -1876,15 +1883,22 @@ function velaRito(modo){
   $("#pVela").classList.remove("oculto");
   if(modo === "encender"){
     obj.classList.remove("viva");
+    instr.style.opacity = "1";
     instr.textContent = "Toca la vela para comenzar";
     velaAccion = ()=>{
       velaAccion = null;
-      obj.classList.add("viva");
-      instr.textContent = "";
-      setTimeout(iniciarMovimientos, 1300);
+      obj.classList.add("viva");                 // la llama y el resplandor crecen (CSS .viva)
+      instr.style.opacity = "0";                 // se desvanece la instrucción
+      setTimeout(()=>{                            // con la llama ya viva, se abre el umbral
+        instr.textContent = "Este momento es tuyo.";
+        instr.style.opacity = "1";
+      }, 560);
+      setTimeout(()=>{ instr.style.opacity = "0"; }, 2060);  // el momento respira ~1.5 s y se disuelve
+      setTimeout(iniciarMovimientos, 2440);
     };
   } else {
     obj.classList.add("viva");
+    instr.style.opacity = "1";
     instr.textContent = P.rito && P.rito.tema === "noche" ? "Toca la vela para descansar" : "Toca la vela para cerrar";
     velaAccion = ()=>{
       velaAccion = null;
@@ -3046,20 +3060,72 @@ function ritBanco(id, b){
   let pool;
   if(b.slot === "afirmacion") pool = afirmacionesActivas().map(a=>a.x);
   else if(b.slot === "manifestacion") pool = manifestacionesActivas().map(m=>m.x);
-  else { const p2 = LIT[b.slot] || {}, perm = tradPermitidas(); pool = []; if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]); }
+  else { const slotK = b.slot === "anclaje" ? "presencia" : b.slot; const p2 = LIT[slotK] || {}, perm = tradPermitidas(); pool = []; if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]); }
   const usadas = (E.ritos[id] && E.ritos[id][b.num]) || [];
   return pool.filter(x=>usadas.indexOf(x) < 0 && !fbOculto(x));
 }
 function ritOtra(id, b){ const disp = ritBanco(id, b); return disp.length ? disp[Math.floor(Math.random()*disp.length)] : null; }
 let erAddNum = null;
 const ER_EDITABLES = ["presencia","entrega","palabra","afirmacion","manifestacion","recepcion","cierre","seguridad","anclaje"];
+// Arrastre por puntero para reordenar frases. Mueve solo el DOM durante el gesto;
+// al soltar, reconstruye el arreglo remapeando los índices originales (data-i) en el nuevo orden visual.
+function erArrastre(id, re){
+  document.querySelectorAll(".er-lineas .er-drag").forEach(handle=>{
+    handle.addEventListener("pointerdown", ev=>{
+      const row = handle.closest(".er-linea"), cont = handle.closest(".er-lineas");
+      if(!row || !cont) return;
+      ev.preventDefault();
+      const num = cont.dataset.num;
+      let movido = false;
+      row.classList.add("er-arrastrando");
+      try{ handle.setPointerCapture(ev.pointerId); }catch(e){}
+      const onMove = e=>{
+        const y = e.clientY;
+        let ref = null;
+        cont.querySelectorAll(".er-linea").forEach(f=>{
+          if(ref || f === row) return;
+          const r = f.getBoundingClientRect();
+          if(y < r.top + r.height/2) ref = f;
+        });
+        if(ref){ if(ref !== row){ cont.insertBefore(row, ref); movido = true; } }
+        else if(row !== cont.lastElementChild){ cont.appendChild(row); movido = true; }
+      };
+      const fin = ()=>{
+        handle.removeEventListener("pointermove", onMove);
+        handle.removeEventListener("pointerup", fin);
+        handle.removeEventListener("pointercancel", fin);
+        try{ handle.releasePointerCapture(ev.pointerId); }catch(e){}
+        row.classList.remove("er-arrastrando");
+        if(movido){
+          const viejo = (E.ritos[id][num]||[]).slice();
+          const seq = Array.prototype.map.call(cont.querySelectorAll(".er-linea"), el=>+el.dataset.i);
+          E.ritos[id][num] = seq.map(k=>viejo[k]);
+          guardar(); re();
+        }
+      };
+      handle.addEventListener("pointermove", onMove);
+      handle.addEventListener("pointerup", fin);
+      handle.addEventListener("pointercancel", fin);
+    });
+  });
+}
 function hojaEditarRitual(id){
   construirRitual(id);
   const p = RITUALES[id];
   const cuerpo = ()=>{
     return p.bloques.filter(b=>ER_EDITABLES.indexOf(b.slot) >= 0).map(b=>{
       const lineas = E.ritos[id][b.num] || [];
-      const filas = lineas.map((ln,i)=>'<div class="er-linea"><span class="er-txt">'+esc(ln)+'</span><span class="er-acc"><button class="er-b" data-swap="'+b.num+'|'+i+'" aria-label="Cambiar">⟳</button><button class="er-b er-x" data-del="'+b.num+'|'+i+'" aria-label="Quitar">✕</button></span></div>').join("");
+      const canOrder = lineas.length > 1;
+      const filas = '<div class="er-lineas" data-num="'+b.num+'">' + lineas.map((ln,i)=>
+        '<div class="er-linea" data-num="'+b.num+'" data-i="'+i+'">' +
+          (canOrder ? '<span class="er-drag" aria-hidden="true" title="Arrastra para reordenar">⠿</span>' : '') +
+          '<span class="er-txt">'+esc(ln)+'</span>' +
+          '<span class="er-acc">' +
+            (canOrder ? ('<button class="er-b er-mv" data-mv="'+b.num+'|'+i+'|-1" aria-label="Subir esta frase"'+(i===0?' disabled':'')+'>↑</button><button class="er-b er-mv" data-mv="'+b.num+'|'+i+'|1" aria-label="Bajar esta frase"'+(i===lineas.length-1?' disabled':'')+'>↓</button>') : '') +
+            '<button class="er-b" data-swap="'+b.num+'|'+i+'" aria-label="Cambiar">⟳</button>' +
+            '<button class="er-b er-x" data-del="'+b.num+'|'+i+'" aria-label="Quitar">✕</button>' +
+          '</span>' +
+        '</div>').join("") + '</div>';
       const add = (b.num === erAddNum)
         ? (()=>{ const banco = ritBanco(id, b);
             return '<div class="er-addpanel"><div class="er-addbox"><input class="campo-in" id="erAddIn" placeholder="Escribe tu frase…"><button class="er-addok" data-addok="'+b.num+'">Añadir</button></div>' +
@@ -3082,6 +3148,18 @@ function hojaEditarRitual(id){
         document.querySelectorAll("[data-del]").forEach(bn=>bn.addEventListener("click", ()=>{
           const pr = bn.dataset.del.split("|"), num = pr[0], i = +pr[1]; E.ritos[id][num].splice(i,1); if(!E.ritos[id][num].length) E.ritos[id][num].push("…"); guardar(); re();
         }));
+        // Reordenar con teclado / toque: botones ↑ ↓ (accesibles; mantienen el foco en la frase movida)
+        document.querySelectorAll("[data-mv]").forEach(bn=>bn.addEventListener("click", ()=>{
+          const pr = bn.dataset.mv.split("|"), num = pr[0], i = +pr[1], dir = +pr[2];
+          const a = E.ritos[id][num]; const j = i + dir;
+          if(j < 0 || j >= a.length) return;
+          const t = a[i]; a[i] = a[j]; a[j] = t; guardar(); re();
+          const same = document.querySelector('[data-mv="'+num+'|'+j+'|'+dir+'"]');
+          if(same && !same.disabled) same.focus();
+          else { const opp = document.querySelector('[data-mv="'+num+'|'+j+'|'+(-dir)+'"]'); if(opp) opp.focus(); }
+        }));
+        // Reordenar arrastrando (Pointer Events: mouse + touch). El teclado usa los botones de arriba.
+        erArrastre(id, re);
         document.querySelectorAll("[data-add]").forEach(bn=>bn.addEventListener("click", ()=>{ erAddNum = bn.dataset.add; re(); }));
         document.querySelectorAll("[data-addcancel]").forEach(bn=>bn.addEventListener("click", ()=>{ erAddNum = null; re(); }));
         document.querySelectorAll("[data-addok]").forEach(bn=>bn.addEventListener("click", ()=>{
