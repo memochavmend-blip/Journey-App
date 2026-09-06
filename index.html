@@ -99,6 +99,7 @@ input,select{font:inherit;color:inherit}
 #vela{
   position:fixed;left:var(--vela-x);top:0;bottom:0;width:3px;z-index:60;pointer-events:none;
   padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  transform:translateZ(0);will-change:transform;
 }
 .vela-tubo{position:relative;height:100%;width:3px}
 .vela-cera{
@@ -132,7 +133,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .lienzo{
   position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;
   width:100%;max-width:640px;overflow-y:auto;overflow-x:hidden;
-  overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
   padding:calc(env(safe-area-inset-top) + 44px) 26px calc(env(safe-area-inset-bottom) + 56px) 52px;
 }
 .oculto{display:none !important}
@@ -294,7 +295,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 @keyframes vela-in{from{opacity:0}to{opacity:1}}
 .hoja-caja{
-  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+  width:100%;max-width:640px;max-height:90vh;overflow-y:auto;overscroll-behavior:contain;
   background:var(--panel);border-top:1px solid var(--linea-fuerte);
   border-radius:22px 22px 0 0;
   padding:30px 28px calc(env(safe-area-inset-bottom) + 30px);
@@ -432,10 +433,10 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .campo-area::placeholder{color:var(--tinta-tenue)}
 .campo-area.grande{min-height:220px}
 .cad-tabs{margin-bottom:22px}
-#histTabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#histTabs{overflow-x:auto;scrollbar-width:none}
 #histTabs::-webkit-scrollbar{display:none}
 #histTabs .seg{flex:0 0 auto;white-space:nowrap}
-#edTabs{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+#edTabs{overflow-x:auto;scrollbar-width:none}
 #edTabs::-webkit-scrollbar{display:none}
 #edTabs .seg{flex:0 0 auto;white-space:nowrap}
 .cad-fecha{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 18px}
@@ -1042,7 +1043,7 @@ const L = {
     "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
     "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso.",
     "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
-    "Mi corazón te lo entrego completamente a Ti."
+    "Mi corazón te lo entrego completamente a ti."
   ],
   palabra:[
     "El Señor es mi pastor, y nada me faltará.",
@@ -1083,9 +1084,9 @@ const L = {
     "Ahora es mi tiempo."
   ],
   sello:[
-    "Dios, confío en Ti.",
-    "Jesucristo, confío en Ti.",
-    "Espíritu Santo, confío en Ti.",
+    "Dios, confío en ti.",
+    "Jesucristo, confío en ti.",
+    "Espíritu Santo, confío en ti.",
     "Yo confío en mí.",
     "Todo está bien.",
     "Todo en el universo funciona para mi mayor y más alto bien.",
@@ -1154,7 +1155,7 @@ const LIT = {
     universal:["Estoy aquí. Estoy presente.","Este momento es lo único que existe, y estoy en él."]
   },
   entrega:{
-    cristiano:["Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, lo que no puedo cargar lo dejo en tus manos.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a Ti.","Ayúdame a dejar atrás aquello que ya pasó."],
+    cristiano:["Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, lo que no puedo cargar lo dejo en tus manos.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a ti.","Ayúdame a dejar atrás aquello que ya pasó."],
     universal:["Suelto lo que no puedo cargar.","Dejo ir lo que no depende de mí.","Que se vaya lo que no es para mí; que se revele lo que sí.","Calmo mi mente, sano lo que puedo, suelto lo demás.","Dejo atrás aquello que ya pasó.","Entrego lo que no está en mis manos."]
   },
   palabra:{
@@ -1169,7 +1170,7 @@ const LIT = {
     universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo."]
   },
   cierre:{
-    cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
+    cristiano:["Dios, confío en ti.","Jesucristo, confío en ti.","Espíritu Santo, confío en ti.","Gracias, Dios.","Te amo, Dios."],
     universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día."]
   }
 };
@@ -1272,7 +1273,7 @@ const MENSAJES = [
   "Una cosa a la vez. Con eso alcanza para hoy.",
   "Lo que siembras hoy, aunque no lo veas, ya está creciendo.",
   "Respira antes de empezar. El día te espera contigo, no en tu contra.",
-  "Tu paz no depende de que todo salga bien, sino de a Quién le entregas el día.",
+  "Tu paz no depende de que todo salga bien, sino de a quién le entregas el día.",
   "Hay más fuerza dentro de ti de la que tus días fáciles te dejaron ver.",
   "Empieza por gratitud. Cambia el peso del día entero.",
   "No corras. Lo importante rara vez tiene prisa.",
@@ -1355,7 +1356,7 @@ const AFIRMACIONES = [
   { t:"merecer", x:"Soy digno de lo que estoy pidiendo." },
   { t:"fe", x:"Algo más grande que yo sostiene lo que no puedo cargar." },
   { t:"fe", x:"Confío en el tiempo de Dios, aunque no lo entienda." },
-  { t:"fe", x:"Todo lo puedo en Aquel que me fortalece." },
+  { t:"fe", x:"Todo lo puedo en aquel que me fortalece." },
   { t:"fe", x:"Lo que es para mí, no va a pasar de largo." },
   { t:"fe", x:"Entrego lo que me preocupa y descanso en que está en buenas manos." },
   { t:"fe", x:"No camino solo." },
