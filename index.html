@@ -530,6 +530,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-p{font-size:15px;line-height:1.6;color:var(--tinta-baja);margin:0 0 28px}
 .onb-input{width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:14px;padding:15px 16px;font-family:var(--serif);font-size:1.25rem;color:var(--tinta);outline:none;margin-bottom:28px}
 .onb-input:focus{border-color:var(--llama)}
+.onb-area{width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:14px;padding:15px 16px;font-family:var(--serif);font-size:1.15rem;line-height:1.5;color:var(--tinta);outline:none;margin-bottom:22px;resize:none;min-height:96px}
+.onb-area:focus{border-color:var(--llama)}
 .onb-chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:30px}
 .onb-chip{padding:12px 16px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
 .onb-chip.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 16%,transparent)}
@@ -953,7 +955,7 @@ let E = {
   doctrina:{ semana:null },
   registro:{ journal:{}, diario:{}, semanal:{}, mensual:{}, reflexiones:[] },
   contenido:{ ancla:{usuario:[]}, historias:{usuario:[]}, doctrina:{usuario:[]}, salmos:{usuario:[]}, afirmaciones:{usuario:[]}, manifestaciones:{usuario:[]} },
-  perfil:{ categorias:[], tono:"mezcla", sub:{}, hecho:false },
+  perfil:{ categorias:[], tono:"mezcla", dirige:"", intencion:"", sub:{}, hecho:false },
   manifestacion:{ decl:"", fecha:"", m:false, t:false, n:false },
   feedback:{ pesos:{}, ocultos:[] },
   ritos:{},
@@ -975,9 +977,11 @@ async function cargar(){
     ["journal","diario","semanal","mensual"].forEach(k=>{ if(!E.registro[k] || typeof E.registro[k] !== "object") E.registro[k] = {}; });
     E.contenido = Object.assign({ancla:{usuario:[]},historias:{usuario:[]},doctrina:{usuario:[]},salmos:{usuario:[]},afirmaciones:{usuario:[]},manifestaciones:{usuario:[]}}, g.contenido||{});
     ["ancla","historias","doctrina","salmos","afirmaciones","manifestaciones"].forEach(k=>{ if(!E.contenido[k] || typeof E.contenido[k] !== "object") E.contenido[k] = {usuario:[]}; if(!Array.isArray(E.contenido[k].usuario)) E.contenido[k].usuario = []; });
-    E.perfil = Object.assign({categorias:[], tono:"mezcla", sub:{}, hecho:false}, g.perfil||{});
+    E.perfil = Object.assign({categorias:[], tono:"mezcla", dirige:"", intencion:"", sub:{}, hecho:false}, g.perfil||{});
     if(!Array.isArray(E.perfil.categorias)) E.perfil.categorias = [];
     if(!E.perfil.sub || typeof E.perfil.sub !== "object") E.perfil.sub = {};
+    if(typeof E.perfil.dirige !== "string") E.perfil.dirige = "";
+    if(typeof E.perfil.intencion !== "string") E.perfil.intencion = "";
     E.manifestacion = Object.assign({decl:"", fecha:"", m:false, t:false, n:false}, g.manifestacion||{});
     E.feedback = Object.assign({pesos:{}, ocultos:[]}, g.feedback||{});
     if(!E.feedback.pesos || typeof E.feedback.pesos !== "object") E.feedback.pesos = {};
@@ -1043,7 +1047,7 @@ const L = {
     "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
     "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso.",
     "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
-    "Mi corazón te lo entrego completamente a ti."
+    "Mi corazón te lo entrego completamente a Ti."
   ],
   palabra:[
     "El Señor es mi pastor, y nada me faltará.",
@@ -1084,9 +1088,9 @@ const L = {
     "Ahora es mi tiempo."
   ],
   sello:[
-    "Dios, confío en ti.",
-    "Jesucristo, confío en ti.",
-    "Espíritu Santo, confío en ti.",
+    "Dios, confío en Ti.",
+    "Jesucristo, confío en Ti.",
+    "Espíritu Santo, confío en Ti.",
     "Yo confío en mí.",
     "Todo está bien.",
     "Todo en el universo funciona para mi mayor y más alto bien.",
@@ -1155,7 +1159,7 @@ const LIT = {
     universal:["Estoy aquí. Estoy presente.","Este momento es lo único que existe, y estoy en él."]
   },
   entrega:{
-    cristiano:["Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, lo que no puedo cargar lo dejo en tus manos.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a ti.","Ayúdame a dejar atrás aquello que ya pasó."],
+    cristiano:["Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.","Si no es para mí, quítalo; si es para mí, revélalo.","Señor, lo que no puedo cargar lo dejo en tus manos.","Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.","Gracias, Señor, por cargar en tus hombros mi carga.","Mi corazón te lo entrego completamente a Ti.","Ayúdame a dejar atrás aquello que ya pasó."],
     universal:["Suelto lo que no puedo cargar.","Dejo ir lo que no depende de mí.","Que se vaya lo que no es para mí; que se revele lo que sí.","Calmo mi mente, sano lo que puedo, suelto lo demás.","Dejo atrás aquello que ya pasó.","Entrego lo que no está en mis manos."]
   },
   palabra:{
@@ -1170,7 +1174,7 @@ const LIT = {
     universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo."]
   },
   cierre:{
-    cristiano:["Dios, confío en ti.","Jesucristo, confío en ti.","Espíritu Santo, confío en ti.","Gracias, Dios.","Te amo, Dios."],
+    cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
     universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día."]
   }
 };
@@ -1189,8 +1193,8 @@ function litPaso(slot, n){
   const v = cand.filter(x=>!fbOculto(x));
   return elegirN(v.length ? v : cand, n || cand.length);
 }
-function afirmacionesRitual(n){ return afirmacionesActivas().slice(0, n).map(a=>a.x); }
-function manifestacionesRitual(n){ return manifestacionesActivas().slice(0, n).map(m=>m.x); }
+function afirmacionesRitual(n){ return afirmacionesActivas().slice(0, n).map(vozAfirmacion); }
+function manifestacionesRitual(n){ return manifestacionesActivas().slice(0, n).map(vozManifestacion); }
 
 function ritSemilla(slot, n){
   if(slot === "afirmacion") return afirmacionesRitual(n||3);
@@ -1337,23 +1341,23 @@ const AFIRMACIONES = [
   { t:"confianza", x:"Merezco ocupar espacio y que me escuchen." },
   { t:"confianza", x:"Cada paso que doy me hace más capaz." },
   { t:"confianza", x:"No necesito permiso para empezar." },
-  { t:"calma", x:"Estoy a salvo. Puedo soltar la prisa." },
-  { t:"calma", x:"Respiro, y con cada exhalación suelto lo que no controlo." },
-  { t:"calma", x:"Elijo la calma por encima de la preocupación." },
-  { t:"calma", x:"Lo que me inquieta hoy, mañana será más pequeño." },
-  { t:"calma", x:"Estoy en paz con lo que aún no tiene respuesta." },
-  { t:"calma", x:"Mi mente puede descansar. No todo depende de mí." },
+  { t:"calma", x:"Estoy a salvo. Puedo soltar la prisa.", tuC:"Estás a salvo. Yo llevo tu día; puedes soltar la prisa.", tuU:"Estás a salvo. Puedes soltar la prisa; nada urgente te persigue." },
+  { t:"calma", x:"Respiro, y con cada exhalación suelto lo que no controlo.", tuC:"Respira. Con cada exhalación, deja en mis manos lo que no controlas.", tuU:"Respira. Con cada exhalación, suelta un poco de lo que no controlas." },
+  { t:"calma", x:"Elijo la calma por encima de la preocupación.", tuC:"Elige la calma; yo me ocupo de lo que te preocupa.", tuU:"Puedes elegir la calma por encima de la preocupación." },
+  { t:"calma", x:"Lo que me inquieta hoy, mañana será más pequeño.", tuC:"Lo que hoy te inquieta, mañana lo verás más pequeño. Confía en mí.", tuU:"Lo que hoy te inquieta, mañana lo verás más pequeño." },
+  { t:"calma", x:"Estoy en paz con lo que aún no tiene respuesta.", tuC:"Descansa en la espera; yo tengo la respuesta que aún no ves.", tuU:"Puedes estar en paz con lo que aún no tiene respuesta." },
+  { t:"calma", x:"Mi mente puede descansar. No todo depende de mí.", tuC:"Descansa tu mente. No todo depende de ti; yo sostengo el resto.", tuU:"Tu mente puede descansar. No todo depende de ti." },
   { t:"disciplina", x:"Hago lo que dije que haría, aunque no tenga ganas." },
   { t:"disciplina", x:"Soy constante en lo pequeño, y lo pequeño construye lo grande." },
   { t:"disciplina", x:"Elijo hoy lo que mi yo de mañana me va a agradecer." },
   { t:"disciplina", x:"No espero motivación; empiezo, y la motivación llega." },
   { t:"disciplina", x:"Termino lo que empiezo." },
-  { t:"merecer", x:"Soy suficiente hoy, antes de lograr nada." },
-  { t:"merecer", x:"No tengo que ganarme mi valor; ya lo tengo." },
-  { t:"merecer", x:"Merezco descanso, amor y cosas buenas." },
-  { t:"merecer", x:"Me trato con la misma paciencia con la que trato a quien quiero." },
-  { t:"merecer", x:"Me perdono por lo que no supe hacer mejor antes." },
-  { t:"merecer", x:"Soy digno de lo que estoy pidiendo." },
+  { t:"merecer", x:"Soy suficiente hoy, antes de lograr nada.", tuC:"Eres suficiente hoy, antes de lograr nada. Te hice a mi imagen.", tuU:"Eres suficiente hoy, antes de lograr nada." },
+  { t:"merecer", x:"No tengo que ganarme mi valor; ya lo tengo.", tuC:"No tienes que ganarte tu valor; yo ya te lo di.", tuU:"No tienes que ganarte tu valor; ya lo tienes." },
+  { t:"merecer", x:"Merezco descanso, amor y cosas buenas.", tuC:"Mereces descanso, amor y cosas buenas; son mi regalo para ti.", tuU:"Mereces descanso, amor y cosas buenas." },
+  { t:"merecer", x:"Me trato con la misma paciencia con la que trato a quien quiero.", tuC:"Trátate con la ternura con que yo te trato a ti.", tuU:"Trátate con la misma paciencia con la que tratas a quien quieres." },
+  { t:"merecer", x:"Me perdono por lo que no supe hacer mejor antes.", tuC:"Te perdono. Lo que quedó atrás, déjalo en mis manos.", tuU:"Perdónate. Hiciste lo que pudiste con lo que sabías entonces." },
+  { t:"merecer", x:"Soy digno de lo que estoy pidiendo.", tuC:"Eres digno de lo que pides; pídelo con confianza.", tuU:"Eres digno de lo que estás pidiendo." },
   { t:"fe", x:"Algo más grande que yo sostiene lo que no puedo cargar." },
   { t:"fe", x:"Confío en el tiempo de Dios, aunque no lo entienda." },
   { t:"fe", x:"Todo lo puedo en aquel que me fortalece." },
@@ -1361,21 +1365,21 @@ const AFIRMACIONES = [
   { t:"fe", x:"Entrego lo que me preocupa y descanso en que está en buenas manos." },
   { t:"fe", x:"No camino solo." },
   { t:"confianza", x:"Soy capaz de más de lo que creo." },
-  { t:"merecer", x:"Recibir es tan sagrado como dar." },
-  { t:"merecer", x:"Está bien que las cosas me salgan bien." },
-  { t:"merecer", x:"Me abro a recibir lo bueno que la vida me quiere dar." },
-  { t:"calma", x:"Este momento es suficiente. Yo soy suficiente." },
+  { t:"merecer", x:"Recibir es tan sagrado como dar.", tuC:"Recibir de mí es tan sagrado como dar. Abre las manos.", tuU:"Recibir es tan sagrado como dar." },
+  { t:"merecer", x:"Está bien que las cosas me salgan bien.", tuC:"Está bien que te vaya bien; me alegra tu bien.", tuU:"Está bien que las cosas te salgan bien." },
+  { t:"merecer", x:"Me abro a recibir lo bueno que la vida me quiere dar.", tuC:"Ábrete a recibir lo bueno que tengo preparado para ti.", tuU:"Ábrete a recibir lo bueno que la vida te quiere dar." },
+  { t:"calma", x:"Este momento es suficiente. Yo soy suficiente.", tuC:"Este momento basta. Y tú eres suficiente, tal como te hice.", tuU:"Este momento es suficiente. Y tú también lo eres." },
   { t:"fe", x:"Suelto el control y confío en el proceso." },
   { t:"disciplina", x:"Un día a la vez, me convierto en quien quiero ser." },
-  { t:"merecer", x:"Mi valor no cambia con mis errores ni con mis logros." },
-  { t:"merecer", x:"Soy digno de amor incluso en mis peores días." },
-  { t:"merecer", x:"No tengo que ser perfecto para merecer respeto." },
-  { t:"merecer", x:"Me permito descansar sin sentirme culpable." },
-  { t:"merecer", x:"Lo que soy ya es suficiente; lo que hago es extra." },
-  { t:"merecer", x:"Me hablo con amabilidad, como le hablaría a un buen amigo." },
-  { t:"merecer", x:"Suelto la vergüenza por quien fui; hoy elijo quién soy." },
-  { t:"merecer", x:"Merezco los sueños que llevo dentro." },
-  { t:"merecer", x:"Está bien poner límites. Cuidarme no es egoísmo." },
+  { t:"merecer", x:"Mi valor no cambia con mis errores ni con mis logros.", tuC:"Tu valor no cambia con tus errores ni con tus logros. Yo no te mido así.", tuU:"Tu valor no cambia con tus errores ni con tus logros." },
+  { t:"merecer", x:"Soy digno de amor incluso en mis peores días.", tuC:"Eres digno de amor incluso en tus peores días. Yo no me aparto.", tuU:"Eres digno de amor incluso en tus peores días." },
+  { t:"merecer", x:"No tengo que ser perfecto para merecer respeto.", tuC:"No tienes que ser perfecto para que yo te ame.", tuU:"No tienes que ser perfecto para merecer respeto." },
+  { t:"merecer", x:"Me permito descansar sin sentirme culpable.", tuC:"Descansa sin culpa; también yo descansé, y lo llamé bueno.", tuU:"Permítete descansar sin sentirte culpable." },
+  { t:"merecer", x:"Lo que soy ya es suficiente; lo que hago es extra.", tuC:"Lo que eres ya me basta; lo que haces es extra.", tuU:"Lo que eres ya es suficiente; lo que haces es extra." },
+  { t:"merecer", x:"Me hablo con amabilidad, como le hablaría a un buen amigo.", tuC:"Háblate con la amabilidad con que yo te hablo.", tuU:"Háblate con amabilidad, como le hablarías a un buen amigo." },
+  { t:"merecer", x:"Suelto la vergüenza por quien fui; hoy elijo quién soy.", tuC:"Suelta la vergüenza por quien fuiste; hoy te hago nuevo.", tuU:"Suelta la vergüenza por quien fuiste; hoy eliges quién eres." },
+  { t:"merecer", x:"Merezco los sueños que llevo dentro.", tuC:"Los sueños que llevas dentro los puse yo; son para ti.", tuU:"Mereces los sueños que llevas dentro." },
+  { t:"merecer", x:"Está bien poner límites. Cuidarme no es egoísmo.", tuC:"Está bien poner límites. Cuidarte no es egoísmo; te hice valioso.", tuU:"Está bien poner límites. Cuidarte no es egoísmo." },
   { t:"confianza", x:"Confío en mi criterio, aunque otros duden." },
   { t:"confianza", x:"Mi voz importa y merece ser escuchada." },
   { t:"confianza", x:"Puedo con lo que venga; siempre he encontrado la forma." },
@@ -1383,16 +1387,16 @@ const AFIRMACIONES = [
   { t:"confianza", x:"Cada vez que me atrevo, me hago más fuerte." },
   { t:"confianza", x:"Soy el tipo de persona que termina lo que se propone." },
   { t:"confianza", x:"Pertenezco en cualquier lugar donde decida estar." },
-  { t:"calma", x:"Suelto el día. Ya hice suficiente por hoy." },
-  { t:"calma", x:"Mi mente puede descansar; no todo depende de mí." },
-  { t:"calma", x:"Me permito soltar y entregarme al descanso." },
-  { t:"calma", x:"Mañana no está aquí todavía. Solo existe esta noche de paz." },
-  { t:"calma", x:"Mi cuerpo sabe cómo descansar. Se lo permito." },
-  { t:"calma", x:"Dejo las preocupaciones en las manos de Dios y cierro los ojos en paz." },
-  { t:"calma", x:"Cada respiración me hunde más en la calma." },
-  { t:"calma", x:"No tengo que resolver nada a esta hora. Solo descansar." },
-  { t:"calma", x:"Estoy a salvo, y puedo dormir tranquilo." },
-  { t:"calma", x:"Suelto lo de hoy; mañana tendré fuerzas nuevas." },
+  { t:"calma", x:"Suelto el día. Ya hice suficiente por hoy.", tuC:"Suelta el día en mis manos. Hiciste suficiente; descansa.", tuU:"Suelta el día. Hiciste suficiente por hoy." },
+  { t:"calma", x:"Mi mente puede descansar; no todo depende de mí.", tuC:"Puedes descansar; no cargas el mundo tú solo.", tuU:"Tu mente puede descansar; no todo recae en ti." },
+  { t:"calma", x:"Me permito soltar y entregarme al descanso.", tuC:"Entrégate al descanso; yo velo mientras duermes.", tuU:"Permítete soltar y entregarte al descanso." },
+  { t:"calma", x:"Mañana no está aquí todavía. Solo existe esta noche de paz.", tuC:"Mañana aún no llega. Descansa en la paz de esta noche; yo te guardo.", tuU:"Mañana no está aquí todavía. Solo existe esta noche de paz." },
+  { t:"calma", x:"Mi cuerpo sabe cómo descansar. Se lo permito.", tuC:"Tu cuerpo sabe descansar. Déjalo, y yo te sostengo.", tuU:"Tu cuerpo sabe cómo descansar. Permíteselo." },
+  { t:"calma", x:"Dejo las preocupaciones en las manos de Dios y cierro los ojos en paz.", tuC:"Deja tus preocupaciones en mis manos y cierra los ojos en paz.", tuU:"Deja las preocupaciones a un lado y cierra los ojos en paz." },
+  { t:"calma", x:"Cada respiración me hunde más en la calma.", tuC:"Con cada respiración, húndete más en mi paz.", tuU:"Con cada respiración, húndete un poco más en la calma." },
+  { t:"calma", x:"No tengo que resolver nada a esta hora. Solo descansar.", tuC:"Nada tienes que resolver a esta hora. Solo descansa en mí.", tuU:"No tienes que resolver nada a esta hora. Solo descansar." },
+  { t:"calma", x:"Estoy a salvo, y puedo dormir tranquilo.", tuC:"Estás a salvo. Duerme tranquilo; yo cuido tu descanso.", tuU:"Estás a salvo. Puedes dormir tranquilo." },
+  { t:"calma", x:"Suelto lo de hoy; mañana tendré fuerzas nuevas.", tuC:"Suelta lo de hoy; mañana te daré fuerzas nuevas.", tuU:"Suelta lo de hoy; mañana tendrás fuerzas nuevas." },
   { t:"disciplina", x:"Protejo mi atención como mi recurso más valioso." },
   { t:"disciplina", x:"Una tarea a la vez. Así se construye lo grande." },
   { t:"disciplina", x:"Lo difícil primero; el resto se acomoda solo." },
@@ -1406,12 +1410,12 @@ const AFIRMACIONES = [
 ];
 // ── Manifestación (declaraciones en presente) — etiquetadas por tema ──
 const MANIFESTACIONES = [
-  { t:"abundancia", x:"El dinero llega a mí con facilidad y desde muchas fuentes." },
-  { t:"abundancia", x:"Vivo en abundancia y comparto desde lo que me sobra." },
-  { t:"abundancia", x:"Soy un imán para las oportunidades que me hacen crecer." },
-  { t:"abundancia", x:"Recibo más de lo que necesito, y sé administrarlo bien." },
-  { t:"abundancia", x:"La prosperidad es mi estado natural." },
-  { t:"abundancia", x:"Cada día se abren caminos nuevos hacia mi abundancia." },
+  { t:"abundancia", x:"El dinero llega a mí con facilidad y desde muchas fuentes.", tuC:"Confío en que proveerás para mí, con abundancia y por caminos que no espero.", tuU:"Recibo con facilidad, y la abundancia me llega por muchos caminos." },
+  { t:"abundancia", x:"Vivo en abundancia y comparto desde lo que me sobra.", tuC:"Gracias por la abundancia con que me llenas; desde ella comparto.", tuU:"Vivo en abundancia, y desde lo que me sobra, comparto." },
+  { t:"abundancia", x:"Soy un imán para las oportunidades que me hacen crecer.", tuC:"Abre ante mí las puertas que me hacen crecer; las cruzaré.", tuU:"Las oportunidades que me hacen crecer se acercan a mí." },
+  { t:"abundancia", x:"Recibo más de lo que necesito, y sé administrarlo bien.", tuC:"Dame más de lo que necesito, y sabiduría para administrarlo bien.", tuU:"Recibo más de lo que necesito, y lo administro con sabiduría." },
+  { t:"abundancia", x:"La prosperidad es mi estado natural.", tuC:"En Ti, la prosperidad es mi estado natural.", tuU:"La prosperidad es mi estado natural." },
+  { t:"abundancia", x:"Cada día se abren caminos nuevos hacia mi abundancia.", tuC:"Cada día abres caminos nuevos hacia mi abundancia; los camino contigo.", tuU:"Cada día se abren caminos nuevos hacia mi abundancia." },
   { t:"salud", x:"Mi cuerpo está sano, fuerte y lleno de energía." },
   { t:"salud", x:"Cada día cuido mi cuerpo y él me responde con vitalidad." },
   { t:"salud", x:"Duermo profundo y despierto renovado." },
@@ -1427,16 +1431,16 @@ const MANIFESTACIONES = [
   { t:"proposito", x:"Cada día me acerco más a la vida que estoy construyendo." },
   { t:"proposito", x:"Uso mis dones y el mundo los recibe." },
   { t:"proposito", x:"Tengo claridad sobre mi siguiente paso, y lo doy." },
-  { t:"abundancia", x:"El dinero fluye hacia mí de formas esperadas e inesperadas." },
-  { t:"abundancia", x:"Todo lo que toco prospera." },
-  { t:"abundancia", x:"Estoy abierto a recibir riqueza en todas sus formas." },
-  { t:"abundancia", x:"Merezco ganar bien haciendo lo que amo." },
-  { t:"abundancia", x:"Mis ingresos crecen mes con mes." },
-  { t:"abundancia", x:"Suelto el miedo a la escasez; hay más que suficiente para mí." },
-  { t:"abundancia", x:"Atraigo clientes, contratos y oportunidades con facilidad." },
-  { t:"abundancia", x:"Uso mi dinero con sabiduría y siempre regresa multiplicado." },
-  { t:"abundancia", x:"Soy próspero en salud, en amor y en recursos." },
-  { t:"abundancia", x:"La riqueza es energía, y yo estoy en sintonía con ella." },
+  { t:"abundancia", x:"El dinero fluye hacia mí de formas esperadas e inesperadas.", tuC:"Confío en que provees para mí de formas esperadas e inesperadas.", tuU:"Lo que necesito fluye hacia mí, esperado e inesperado." },
+  { t:"abundancia", x:"Todo lo que toco prospera.", tuC:"Bendice la obra de mis manos; que todo lo que toco prospere.", tuU:"La obra de mis manos prospera." },
+  { t:"abundancia", x:"Estoy abierto a recibir riqueza en todas sus formas.", tuC:"Abro mis manos para recibir lo bueno que tienes en todas sus formas.", tuU:"Me abro a recibir abundancia en todas sus formas." },
+  { t:"abundancia", x:"Merezco ganar bien haciendo lo que amo.", tuC:"Merezco vivir bien haciendo lo que pusiste en mi corazón.", tuU:"Merezco ganar bien haciendo lo que amo." },
+  { t:"abundancia", x:"Mis ingresos crecen mes con mes.", tuC:"Haz crecer el fruto de mi trabajo, mes con mes.", tuU:"El fruto de mi trabajo crece, mes con mes." },
+  { t:"abundancia", x:"Suelto el miedo a la escasez; hay más que suficiente para mí.", tuC:"Suelto el miedo a la escasez; en Ti hay más que suficiente para mí.", tuU:"Suelto el miedo a la escasez; hay más que suficiente para mí." },
+  { t:"abundancia", x:"Atraigo clientes, contratos y oportunidades con facilidad.", tuC:"Trae a mi camino las personas y oportunidades correctas.", tuU:"Las personas y oportunidades correctas llegan a mí con facilidad." },
+  { t:"abundancia", x:"Uso mi dinero con sabiduría y siempre regresa multiplicado.", tuC:"Dame sabiduría para usar lo que me das, y multiplícalo.", tuU:"Uso lo que tengo con sabiduría, y regresa multiplicado." },
+  { t:"abundancia", x:"Soy próspero en salud, en amor y en recursos.", tuC:"Prospérame en salud, en amor y en recursos.", tuU:"Prospero en salud, en amor y en recursos." },
+  { t:"abundancia", x:"La riqueza es energía, y yo estoy en sintonía con ella.", tuC:"Me pongo en sintonía con la abundancia que fluye de Ti.", tuU:"La abundancia es energía, y estoy en sintonía con ella." },
   { t:"salud", x:"Cada célula de mi cuerpo se renueva y se sana." },
   { t:"salud", x:"Tengo la energía que necesito para lo que amo hacer." },
   { t:"salud", x:"Mi cuerpo es fuerte, flexible y está en paz." },
@@ -2779,9 +2783,77 @@ function histTemasActivos(){
   const l = HIST_TEMAS.filter(t => perm[tradDe[t[0]] || "universal"]);
   return l.length ? l : HIST_TEMAS;
 }
+// Voz "hacia ti": lo divino te habla en 2ª persona. c = cristiano (tú-divino directo), u = universal.
+const DIALOGO = {
+  // ── Autoestima / merecer ──
+  "Soy suficiente hoy, antes de lograr nada.": { c:"Eres suficiente hoy, antes de lograr nada; te hice a mi imagen.", u:"Eres suficiente hoy, antes de lograr nada." },
+  "No tengo que ganarme mi valor; ya lo tengo.": { c:"No tienes que ganarte tu valor: yo ya te lo di.", u:"No tienes que ganarte tu valor; ya lo tienes." },
+  "Merezco descanso, amor y cosas buenas.": { c:"Mereces descanso, amor y cosas buenas; las tengo preparadas para ti.", u:"Mereces descanso, amor y cosas buenas." },
+  "Me trato con la misma paciencia con la que trato a quien quiero.": { c:"Trátate con la ternura con la que yo te trato.", u:"Trátate con la misma paciencia con la que tratas a quien quieres." },
+  "Me perdono por lo que no supe hacer mejor antes.": { c:"Te perdono. Lo que quedó atrás, déjalo en mis manos.", u:"Te perdonas por lo que no supiste hacer mejor antes." },
+  "Soy digno de lo que estoy pidiendo.": { c:"Eres digno de lo que estás pidiendo.", u:"Eres digno de lo que estás pidiendo." },
+  "Recibir es tan sagrado como dar.": { c:"Recibir de mí es tan sagrado como dar.", u:"Recibir es tan sagrado como dar." },
+  "Está bien que las cosas me salgan bien.": { c:"Está bien que las cosas te salgan bien; me alegro contigo.", u:"Está bien que las cosas te salgan bien." },
+  "Me abro a recibir lo bueno que la vida me quiere dar.": { c:"Ábrete a recibir lo bueno que tengo para ti.", u:"Ábrete a recibir lo bueno que la vida tiene para ti." },
+  "Mi valor no cambia con mis errores ni con mis logros.": { c:"Tu valor ante mí no cambia con tus errores ni con tus logros.", u:"Tu valor no cambia con tus errores ni con tus logros." },
+  "Soy digno de amor incluso en mis peores días.": { c:"Eres digno de mi amor incluso en tus peores días.", u:"Eres digno de amor incluso en tus peores días." },
+  "No tengo que ser perfecto para merecer respeto.": { c:"No tienes que ser perfecto para que yo te ame.", u:"No tienes que ser perfecto para merecer respeto." },
+  "Me permito descansar sin sentirme culpable.": { c:"Descansa sin culpa; yo sostengo lo que sueltas.", u:"Permítete descansar sin sentirte culpable." },
+  "Lo que soy ya es suficiente; lo que hago es extra.": { c:"Lo que eres ya me basta; lo que haces es extra.", u:"Lo que eres ya es suficiente; lo que haces es extra." },
+  "Me hablo con amabilidad, como le hablaría a un buen amigo.": { c:"Escucha cómo te hablo: con la voz de quien te ama.", u:"Háblate con amabilidad, como le hablarías a un buen amigo." },
+  "Suelto la vergüenza por quien fui; hoy elijo quién soy.": { c:"Suelta la vergüenza por quien fuiste; ante mí, hoy eres nuevo.", u:"Suelta la vergüenza por quien fuiste; hoy eliges quién eres." },
+  "Merezco los sueños que llevo dentro.": { c:"Los sueños que llevas dentro los puse yo ahí; mereces buscarlos.", u:"Mereces los sueños que llevas dentro." },
+  "Está bien poner límites. Cuidarme no es egoísmo.": { c:"Está bien poner límites; cuidar lo que te confié no es egoísmo.", u:"Está bien poner límites. Cuidarte no es egoísmo." },
+  // ── Calma ──
+  "Estoy a salvo. Puedo soltar la prisa.": { c:"Estás a salvo. Yo sostengo tu día; puedes soltar la prisa.", u:"Estás a salvo. Puedes soltar la prisa." },
+  "Respiro, y con cada exhalación suelto lo que no controlo.": { c:"Respira, y con cada exhalación déjame lo que no controlas.", u:"Respira, y con cada exhalación suelta lo que no controlas." },
+  "Elijo la calma por encima de la preocupación.": { c:"Elige mi paz por encima de la preocupación.", u:"Elige la calma por encima de la preocupación." },
+  "Lo que me inquieta hoy, mañana será más pequeño.": { c:"Lo que hoy te inquieta, en mis manos se hace pequeño.", u:"Lo que hoy te inquieta, mañana será más pequeño." },
+  "Estoy en paz con lo que aún no tiene respuesta.": { c:"Descansa en paz con lo que aún no tiene respuesta; yo la conozco.", u:"Estás en paz con lo que aún no tiene respuesta." },
+  "Mi mente puede descansar. No todo depende de mí.": { c:"Tu mente puede descansar: no todo depende de ti.", u:"Tu mente puede descansar. No todo depende de ti." },
+  "Mi mente puede descansar; no todo depende de mí.": { c:"Tu mente puede descansar; no todo depende de ti.", u:"Tu mente puede descansar; no todo depende de ti." },
+  "Suelto el día. Ya hice suficiente por hoy.": { c:"Suelta el día; ya hiciste suficiente. Déjame el resto.", u:"Suelta el día. Ya hiciste suficiente por hoy." },
+  "Me permito soltar y entregarme al descanso.": { c:"Suéltate y entrégate al descanso; yo velo tu noche.", u:"Permítete soltar y entregarte al descanso." },
+  "Mañana no está aquí todavía. Solo existe esta noche de paz.": { c:"Mañana aún no llega; solo esta noche, y yo estoy en ella.", u:"Mañana no está aquí todavía. Solo existe esta noche de paz." },
+  "Mi cuerpo sabe cómo descansar. Se lo permito.": { c:"Tu cuerpo sabe descansar; permíteselo, yo te guardo.", u:"Tu cuerpo sabe cómo descansar. Permíteselo." },
+  "Dejo las preocupaciones en las manos de Dios y cierro los ojos en paz.": { c:"Deja tus preocupaciones en mis manos y cierra los ojos en paz.", u:"Deja las preocupaciones a un lado y cierra los ojos en paz." },
+  "Cada respiración me hunde más en la calma.": { c:"Cada respiración te hunde más en mi calma.", u:"Cada respiración te hunde más en la calma." },
+  "No tengo que resolver nada a esta hora. Solo descansar.": { c:"No tienes que resolver nada a esta hora; solo descansar en mí.", u:"No tienes que resolver nada a esta hora. Solo descansar." },
+  "Estoy a salvo, y puedo dormir tranquilo.": { c:"Estás a salvo; duerme tranquilo, yo cuido tu sueño.", u:"Estás a salvo, y puedes dormir tranquilo." },
+  "Suelto lo de hoy; mañana tendré fuerzas nuevas.": { c:"Suelta lo de hoy; mañana te daré fuerzas nuevas.", u:"Suelta lo de hoy; mañana tendrás fuerzas nuevas." },
+  "Este momento es suficiente. Yo soy suficiente.": { c:"Este momento basta, y tú también bastas ante mí.", u:"Este momento es suficiente. Y tú también." },
+  // ── Abundancia (manifestación) ──
+  "El dinero llega a mí con facilidad y desde muchas fuentes.": { c:"La provisión llega a ti con facilidad; yo abro las fuentes.", u:"El dinero llega a ti con facilidad, desde muchas fuentes." },
+  "Vivo en abundancia y comparto desde lo que me sobra.": { c:"Vivirás en abundancia y compartirás desde lo que te sobre.", u:"Vives en abundancia y compartes desde lo que te sobra." },
+  "Soy un imán para las oportunidades que me hacen crecer.": { c:"Traigo hacia ti las oportunidades que te hacen crecer.", u:"Atraes las oportunidades que te hacen crecer." },
+  "Recibo más de lo que necesito, y sé administrarlo bien.": { c:"Recibirás más de lo que necesitas; te daré sabiduría para cuidarlo.", u:"Recibes más de lo que necesitas, y sabes administrarlo bien." },
+  "La prosperidad es mi estado natural.": { c:"La prosperidad es el lugar donde te quiero.", u:"La prosperidad es tu estado natural." },
+  "Cada día se abren caminos nuevos hacia mi abundancia.": { c:"Cada día abro caminos nuevos hacia tu abundancia.", u:"Cada día se abren caminos nuevos hacia tu abundancia." },
+  "El dinero fluye hacia mí de formas esperadas e inesperadas.": { c:"La provisión fluye hacia ti de formas que no imaginas.", u:"El dinero fluye hacia ti de formas esperadas e inesperadas." },
+  "Todo lo que toco prospera.": { c:"Bendigo la obra de tus manos; lo que tocas prospera.", u:"Lo que tocas prospera." },
+  "Estoy abierto a recibir riqueza en todas sus formas.": { c:"Ábrete a recibir lo que tengo para ti, en todas sus formas.", u:"Estás abierto a recibir riqueza en todas sus formas." },
+  "Merezco ganar bien haciendo lo que amo.": { c:"Mereces ganar bien haciendo lo que amas; para eso te di ese don.", u:"Mereces ganar bien haciendo lo que amas." },
+  "Mis ingresos crecen mes con mes.": { c:"Haré crecer el fruto de tu trabajo, mes con mes.", u:"Tus ingresos crecen mes con mes." },
+  "Suelto el miedo a la escasez; hay más que suficiente para mí.": { c:"Suelta el miedo a la escasez: en mí hay más que suficiente.", u:"Suelta el miedo a la escasez; hay más que suficiente para ti." },
+  "Atraigo clientes, contratos y oportunidades con facilidad.": { c:"Pondré ante ti clientes, contratos y oportunidades.", u:"Atraes clientes, contratos y oportunidades con facilidad." },
+  "Uso mi dinero con sabiduría y siempre regresa multiplicado.": { c:"Usa lo que te doy con sabiduría, y yo lo multiplicaré.", u:"Usas tu dinero con sabiduría, y regresa multiplicado." },
+  "Soy próspero en salud, en amor y en recursos.": { c:"Te quiero próspero en salud, en amor y en recursos.", u:"Eres próspero en salud, en amor y en recursos." },
+  "La riqueza es energía, y yo estoy en sintonía con ella.": { c:"La abundancia es mía, y la comparto contigo.", u:"La riqueza es energía, y estás en sintonía con ella." }
+};
+function vozLinea(x){
+  const p = (typeof E!=="undefined" && E.perfil) ? E.perfil : {};
+  const d = p.dirige || (p.tono==="cristiano"?"dios":p.tono==="espiritual"?"universo":"abierto");
+  if(d === "yo") return x;
+  const dlg = DIALOGO[x];
+  if(dlg) return (d==="dios" ? dlg.c : dlg.u) || dlg.u || x;
+  return x;
+}
+function vozAfirmacion(a){ return vozLinea(a.x); }
+function vozManifestacion(m){ return vozLinea(m.x); }
+
 function afirmacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = tradPermitidas();
-  const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>perm[esCristiano(a.x)?"cristiano":"universal"]);
+  const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>DIALOGO[a.x] || perm[esCristiano(a.x)?"cristiano":"universal"]);
   const mios = (E.contenido.afirmaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(mios).filter(a=>!fbOculto(a.x));
   if(!l.length) l = AFIRMACIONES.concat(mios).filter(a=>!fbOculto(a.x));
@@ -2790,7 +2862,7 @@ function afirmacionesActivas(){
 }
 function manifestacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = tradPermitidas();
-  const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>perm[esCristiano(m.x)?"cristiano":"universal"]);
+  const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>DIALOGO[m.x] || perm[esCristiano(m.x)?"cristiano":"universal"]);
   const mios = (E.contenido.manifestaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(mios).filter(m=>!fbOculto(m.x));
   if(!l.length) l = MANIFESTACIONES.concat(mios).filter(m=>!fbOculto(m.x));
@@ -2886,13 +2958,13 @@ let afLista = [], afI = 0;
 function hojaAfirmaciones(){
   afLista = afirmacionesActivas(); afI = 0;
   hoja("Afirmaciones", "Dilo en voz alta. Repítelo hasta que se sienta verdad.",
-    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(afLista[afI].x) + '</p></div>' +
+    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(vozAfirmacion(afLista[afI])) + '</p></div>' +
     fbHTML() +
     '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
     ()=>{
-      const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? afLista[afI].x : ""; };
+      const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? vozAfirmacion(afLista[afI]) : ""; };
       $("#afOtra").addEventListener("click", ()=>{ afI = (afI + 1) % afLista.length; mostrar(); });
-      $("#afRepetir").addEventListener("click", ()=>{ if(afLista[afI]) abrirRepetir(afLista[afI].x); });
+      $("#afRepetir").addEventListener("click", ()=>{ if(afLista[afI]) abrirRepetir(vozAfirmacion(afLista[afI])); });
       document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
         const it = afLista[afI]; if(!it) return;
         if(b.dataset.fb === "up"){ fbGusta(it.x, [it.t]); pulso("#afTxt"); afI = (afI + 1) % afLista.length; setTimeout(mostrar, 260); }
@@ -2927,11 +2999,11 @@ function hojaManifestacion(){
 function hojaManifestElegir(){
   const lista = manifestacionesActivas();
   hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
-    '<div class="manif-opts">' + lista.map((m,i)=>'<button class="manif-opt" data-decl="'+i+'">'+esc(m.x)+'</button>').join("") + '</div>' +
+    '<div class="manif-opts">' + lista.map((m,i)=>'<button class="manif-opt" data-decl="'+i+'">'+esc(vozManifestacion(m))+'</button>').join("") + '</div>' +
     '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
     ()=>{
       const l = manifestacionesActivas();
-      document.querySelectorAll(".manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = l[+b.dataset.decl].x; guardar(); hojaManifestacion(); }));
+      document.querySelectorAll(".manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = vozManifestacion(l[+b.dataset.decl]); guardar(); hojaManifestacion(); }));
       $("#manifElegirCerrar").addEventListener("click", cerrarHoja);
     });
 }
@@ -3065,9 +3137,10 @@ function renderEditor(){
 }
 function hojaPreferenciasContenido(){
   const cuerpo = ()=>{
-    let h = '<div class="pref-bloque"><p class="pref-t">¿Qué te trae aquí?</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-pcat") + '</div>';
-    h += '<div class="pref-bloque"><p class="pref-t">¿Desde dónde lo vives?</p><div class="onb-opts" id="prefTono">' +
-      TONOS.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-ptono="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div></div>';
+    let h = '<div class="pref-bloque"><p class="pref-t">¿A quién le hablas?</p><div class="onb-opts" id="prefDirige">' +
+      DIRIGE.map(t=>'<button type="button" class="onb-opt'+(E.perfil.dirige===t[0]?" on":"")+'" data-pdirige="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div></div>';
+    h += '<div class="pref-bloque"><p class="pref-t">¿Qué te trae aquí?</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-pcat") + '</div>';
+    h += '<div class="pref-bloque"><p class="pref-t">¿Qué quieres llamar a tu vida?</p><textarea class="onb-area" id="prefIntencion" rows="2" placeholder="Opcional — una frase, o déjalo vacío">'+esc(E.perfil.intencion||"")+'</textarea></div>';
     (E.perfil.categorias||[]).forEach(c=>{
       if(SEGUIMIENTOS[c]){
         E.perfil.sub[c] = E.perfil.sub[c] || [];
@@ -3083,7 +3156,8 @@ function hojaPreferenciasContenido(){
       const re = ()=>{ $("#prefCont").innerHTML = cuerpo(); cablear(); };
       function cablear(){
         document.querySelectorAll("[data-pcat]").forEach(b=>b.addEventListener("click", ()=>{ toggleArr(E.perfil.categorias, b.dataset.pcat); guardar(); re(); }));
-        document.querySelectorAll("#prefTono .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#prefTono .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.ptono; guardar(); }));
+        document.querySelectorAll("#prefDirige .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#prefDirige .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); aplicarDirige(b.dataset.pdirige); guardar(); }));
+        const pin = $("#prefIntencion"); if(pin) pin.addEventListener("input", ()=>{ E.perfil.intencion = pin.value; guardar(); });
         document.querySelectorAll("[data-psub]").forEach(b=>b.addEventListener("click", ()=>{ const p = b.dataset.psub.split("|"), c = p[0], tag = p[1]; b.classList.toggle("on"); E.perfil.sub[c] = E.perfil.sub[c] || []; toggleArr(E.perfil.sub[c], tag); guardar(); }));
       }
       cablear();
@@ -3094,8 +3168,8 @@ function hojaPreferenciasContenido(){
 
 function ritBanco(id, b){
   let pool;
-  if(b.slot === "afirmacion") pool = afirmacionesActivas().map(a=>a.x);
-  else if(b.slot === "manifestacion") pool = manifestacionesActivas().map(m=>m.x);
+  if(b.slot === "afirmacion") pool = afirmacionesActivas().map(vozAfirmacion);
+  else if(b.slot === "manifestacion") pool = manifestacionesActivas().map(vozManifestacion);
   else { const slotK = b.slot === "anclaje" ? "presencia" : b.slot; const p2 = LIT[slotK] || {}, perm = tradPermitidas(); pool = []; if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]); }
   const usadas = (E.ritos[id] && E.ritos[id][b.num]) || [];
   return pool.filter(x=>usadas.indexOf(x) < 0 && !fbOculto(x));
@@ -3439,6 +3513,9 @@ const CATEGORIAS = [
   ["meditacion","Meditaciones"],["journal","Journal"],["concentracion","Concentración"],["estudio","Estudio y reflexión"]
 ];
 const TONOS = [["cristiano","Cristiano y bíblico"],["espiritual","Espiritual, sin religión específica"],["mezcla","Una mezcla"]];
+const DIRIGE = [["dios","A Dios"],["universo","A algo más grande — la vida, el universo"],["yo","A mi yo más profundo"],["abierto","Aún lo estoy descubriendo"]];
+const DIRIGE_TONO = { dios:"cristiano", universo:"espiritual", yo:"espiritual", abierto:"mezcla" };
+function aplicarDirige(d){ E.perfil.dirige = d; E.perfil.tono = DIRIGE_TONO[d] || "mezcla"; }
 const SEGUIMIENTOS = {
   oracion:      { q:"¿En qué momentos rezas?", opts:[["manana","Mañana"],["noche","Noche"],["dia","A lo largo del día"]] },
   manifestacion:{ q:"¿Qué quieres llamar a tu vida?", opts:[["abundancia","Abundancia"],["salud","Salud"],["relaciones","Relaciones"],["proposito","Propósito y carrera"]] },
@@ -3456,7 +3533,7 @@ function onbBtn(label, fin){ return '<button class="onb-btn" id="onbNext" data-f
 
 let onbSeq = [], onbIdx = 0;
 function onbConstruirSeq(){
-  const seq = ["bienvenida","nombre","categorias","tono"];
+  const seq = ["bienvenida","nombre","dirige","categorias","intencion"];
   (E.perfil.categorias||[]).forEach(c=>{ if(SEGUIMIENTOS[c]) seq.push("seg:"+c); });
   seq.push("preferencias","listo");
   return seq;
@@ -3470,9 +3547,12 @@ function onbPantalla(tipo){
   if(tipo === "categorias") return {
     html:'<h1 class="onb-t">¿Qué te trae aquí?</h1><p class="onb-p">Elige lo que te importa. Puedes cambiarlo después.</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-cat") + onbBtn("Continuar"),
     wire:()=>{ document.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.categorias, b.dataset.cat); })); } };
-  if(tipo === "tono") return {
-    html:'<h1 class="onb-t">¿Desde dónde lo vives?</h1><p class="onb-p">Para que el contenido te quede a la medida.</p><div class="onb-opts" id="onbTono">' + TONOS.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-tono="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div>' + onbBtn("Continuar"),
-    wire:()=>{ document.querySelectorAll("#onbTono .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbTono .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.tono; })); } };
+  if(tipo === "dirige") return {
+    html:'<h1 class="onb-t">¿A quién le hablas cuando te detienes?</h1><p class="onb-p">Esto le da voz a tu práctica. Puedes cambiarlo después.</p><div class="onb-opts" id="onbDirige">' + DIRIGE.map(t=>'<button type="button" class="onb-opt'+(E.perfil.dirige===t[0]?" on":"")+'" data-dirige="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div>' + onbBtn("Continuar"),
+    wire:()=>{ document.querySelectorAll("#onbDirige .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbDirige .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); aplicarDirige(b.dataset.dirige); })); } };
+  if(tipo === "intencion") return {
+    html:'<h1 class="onb-t">¿Hay algo que quieras llamar a tu vida ahora?</h1><p class="onb-p">Opcional. Una frase, una intención — o sáltalo.</p><textarea class="onb-area" id="onbIntencion" rows="3" placeholder="Ej. paz en mi casa, claridad en mi camino, salud…">'+esc(E.perfil.intencion||"")+'</textarea>' + onbBtn("Continuar") + '<button class="onb-saltar-paso" id="onbSaltarPaso">Saltar por ahora</button>',
+    wire:()=>{ const i=$("#onbIntencion"); if(i) i.addEventListener("input", e=>{ E.perfil.intencion = e.target.value; }); const sp=$("#onbSaltarPaso"); if(sp) sp.addEventListener("click", onbSig); } };
   if(tipo.indexOf("seg:") === 0){
     const c = tipo.slice(4), s = SEGUIMIENTOS[c];
     E.perfil.sub[c] = E.perfil.sub[c] || [];
