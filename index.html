@@ -241,6 +241,17 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .refl-guardar:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
 .refl-luego{padding:12px;font-size:13.5px;color:var(--tinta-tenue);transition:color .2s}
 .refl-luego:hover,.refl-luego:focus-visible{color:var(--tinta-baja)}
+.necesitas{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;max-width:400px;margin:0 auto;width:100%;animation:onbIn .5s ease}
+.nec-preg{font-family:var(--serif);font-size:1.75rem;line-height:1.3;color:var(--tinta);text-align:center;margin:0}
+.nec-opts{display:flex;flex-direction:column;gap:11px;width:100%}
+.nec-opt{width:100%;padding:16px 18px;border:1px solid var(--linea-fuerte);border-radius:14px;font-family:var(--serif);font-size:1.2rem;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
+.nec-opt:hover,.nec-opt:focus-visible{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 8%,transparent)}
+.nec-opt:focus-visible{outline:2px solid var(--llama);outline-offset:2px}
+.nec-siempre{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 10%,transparent)}
+.onb-candado{margin-bottom:26px}
+.onb-candado svg{width:40px;height:40px;fill:none;stroke:var(--llama);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.diario-privado{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tinta-baja);margin:-14px 0 24px}
+.diario-privado svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .p-bloque{
   font-family:var(--serif);font-size:.95rem;letter-spacing:.02em;color:var(--oro);
   margin:0 0 6px;font-style:italic;
@@ -556,6 +567,9 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 /* ── Mensaje de hoy + Ahora mismo (inicio) ── */
 .hoy{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.continua{border-left:2px solid var(--llama);padding:4px 0 4px 16px;margin-bottom:20px}
+.continua-label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
+.continua-txt{font-family:var(--serif);font-size:1.15rem;line-height:1.45;color:var(--tinta);margin:0;font-style:italic}
 .hoy-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
 .hoy-txt{font-family:var(--serif);font-size:1.2rem;line-height:1.4;color:var(--tinta);margin:0}
 .hoy-share{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
@@ -722,6 +736,11 @@ body.encendida .tabbar,body.encendida .gear{display:none}
       </div>
     </div>
 
+    <div class="continua oculto" id="continua">
+      <p class="continua-label">La última vez dejaste esto aquí</p>
+      <p class="continua-txt" id="continuaTxt"></p>
+    </div>
+
     <div class="hoy" id="hoy">
       <p class="hoy-label">Mensaje de hoy</p>
       <p class="hoy-txt" id="hoyTxt"></p>
@@ -767,6 +786,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
   <div class="panel oculto" id="panelDiario">
     <h1 class="panel-titulo">Diario</h1>
+    <p class="diario-privado"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>Tu espacio privado. Todo se guarda solo en tu teléfono.</p>
     <div class="nav-cards">
       <button class="nav-card" data-abrir="journal"><span class="nav-card-tx"><span class="nav-card-t">Journal</span><span class="nav-card-s">Escritura libre diaria</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="arquitecto"><span class="nav-card-tx"><span class="nav-card-t">Arquitecto</span><span class="nav-card-s">Check-in diario, semanal, mensual</span></span><span class="nav-card-ch">›</span></button>
@@ -894,6 +914,11 @@ body.encendida .tabbar,body.encendida .gear{display:none}
       <button class="refl-guardar" id="reflGuardar">Guardar en mi diario</button>
       <button class="refl-luego" id="reflLuego">Dejar para después</button>
     </div>
+  </div>
+
+  <div class="necesitas oculto" id="pNecesitas">
+    <p class="nec-preg">¿Qué necesitas hoy?</p>
+    <div class="nec-opts" id="necesitasOpts"></div>
   </div>
 
   <div class="audio-lista oculto" id="pAudioLista"></div>
@@ -1193,16 +1218,39 @@ function litPaso(slot, n){
   const v = cand.filter(x=>!fbOculto(x));
   return elegirN(v.length ? v : cand, n || cand.length);
 }
-function afirmacionesRitual(n){ return afirmacionesActivas().slice(0, n).map(vozAfirmacion); }
-function manifestacionesRitual(n){ return manifestacionesActivas().slice(0, n).map(vozManifestacion); }
+function afirmacionesRitual(n, temas){
+  if(temas && temas.length){
+    let l = AFIRMACIONES.filter(a=>temas.indexOf(a.t)>=0 && !fbOculto(a.x));
+    if(!l.length) l = AFIRMACIONES.filter(a=>temas.indexOf(a.t)>=0);
+    l = l.slice().sort(()=>Math.random()-0.5);
+    return l.slice(0, n).map(vozAfirmacion);
+  }
+  return afirmacionesActivas().slice(0, n).map(vozAfirmacion);
+}
+function manifestacionesRitual(n, temas){
+  if(temas && temas.length){
+    let l = MANIFESTACIONES.filter(m=>temas.indexOf(m.t)>=0 && !fbOculto(m.x));
+    if(!l.length) l = MANIFESTACIONES.filter(m=>temas.indexOf(m.t)>=0);
+    l = l.slice().sort(()=>Math.random()-0.5);
+    return l.slice(0, n).map(vozManifestacion);
+  }
+  return manifestacionesActivas().slice(0, n).map(vozManifestacion);
+}
 
-function ritSemilla(slot, n){
-  if(slot === "afirmacion") return afirmacionesRitual(n||3);
-  if(slot === "manifestacion") return manifestacionesRitual(n||3);
+function ritSemilla(slot, n, temas){
+  if(slot === "afirmacion") return afirmacionesRitual(n||3, temas);
+  if(slot === "manifestacion") return manifestacionesRitual(n||3, temas);
   return litPaso(slot, n||3);
 }
 // Devuelve las líneas guardadas del bloque; si no hay, las siembra desde el perfil y las guarda (queda estable).
-function ritLineas(id, b){
+// Con un sesgo del día, los espacios de afirmación/manifestación se siembran frescos, sin persistir (es la sesión de hoy).
+function ritLineas(id, b, sesgo){
+  if(sesgo && (b.slot === "afirmacion" || b.slot === "manifestacion")){
+    const temas = b.slot === "afirmacion" ? sesgo.af : sesgo.man;
+    let txt = ritSemilla(b.slot, b.n, (temas && temas.length) ? temas : null);
+    if(!txt.length) txt = ["…"];
+    return txt;
+  }
   E.ritos[id] = E.ritos[id] || {};
   if(Array.isArray(E.ritos[id][b.num])) return E.ritos[id][b.num].slice();
   let txt = ritSemilla(b.slot, b.n);
@@ -1210,7 +1258,7 @@ function ritLineas(id, b){
   E.ritos[id][b.num] = txt.slice();
   return txt.slice();
 }
-function construirRitual(id){
+function construirRitual(id, sesgo){
   const p = RITUALES[id]; if(!p) return null;
   const bloques = p.bloques.map(b=>{
     if(b.slot === "vision") return { num:b.num, nom:b.nom, rub:b.rub, dinamico:bloqueVision };
@@ -1220,7 +1268,7 @@ function construirRitual(id){
       const pres = ritLineas(id, { num:b.num, slot:"presencia", n:1 });
       return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}].concat((pres.length?pres:["Estoy aquí."]).map(t=>({t:t, hold:6000}))) };
     }
-    const txt = ritLineas(id, b);
+    const txt = ritLineas(id, b, sesgo);
     const lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
     return { num:b.num, nom:b.nom, rub:b.rub, lineas:lineas };
   });
@@ -1869,19 +1917,47 @@ function duracion(o){
   return Math.max(2600, n*430) + E.ajustes.pausa;
 }
 
+const NECESITAS = [
+  ["siempre","Lo de siempre", null],
+  ["calma","Calma", { af:["calma"], man:["salud"] }],
+  ["animo","Ánimo", { af:["disciplina"], man:["proposito"] }],
+  ["fuerza","Fuerza", { af:["confianza","merecer"], man:["proposito"] }],
+  ["fe","Fe", { af:["fe"], man:[] }]
+];
 function abrirRitual(id){
-  const r = construirRitual(id); if(!r) return;
-  P.rito = r; P.plan = aplanar(r); P.i = 0; P.modoAudio = false;
-  P.inicioSesion = Date.now();
-  P.vozOn = vozDe(r.id); P.ambOn = ambDe(r.id);
-  document.body.classList.toggle("tema-noche", r.tema === "noche");
+  const p = RITUALES[id]; if(!p) return;
+  P.pendId = id;
+  P.vozOn = vozDe(id); P.ambOn = ambDe(id);
+  document.body.classList.toggle("tema-noche", p.tema === "noche");
   document.body.classList.add("encendida");
   $("#inicio").classList.add("oculto");
   $("#practica").classList.remove("oculto");
-  $("#pDormir").classList.toggle("oculto", r.tema !== "noche");
+  $("#pDormir").classList.toggle("oculto", p.tema !== "noche");
   $("#pAudioLista").classList.add("oculto");
-  $("#pCentro").classList.remove("oculto");
   const url = (E.ajustes.urlAudio||{})[id] || "";
+  if(url){ arrancarRitual(id, null, url); return; }
+  mostrarNecesitas(id);
+}
+function mostrarNecesitas(id){
+  $("#pCentro").classList.add("oculto");
+  $("#pVela").classList.add("oculto");
+  $("#pReflexion").classList.add("oculto");
+  $("#pBajo").classList.add("oculto");
+  const cont = $("#necesitasOpts");
+  if(cont) cont.innerHTML = NECESITAS.map(o=>'<button class="nec-opt'+(o[0]==="siempre"?" nec-siempre":"")+'" data-nec="'+o[0]+'">'+esc(o[1])+'</button>').join("");
+  $("#pNecesitas").classList.remove("oculto");
+  document.querySelectorAll("#necesitasOpts .nec-opt").forEach(b=>b.addEventListener("click", ()=>{
+    const nec = NECESITAS.find(o=>o[0]===b.dataset.nec);
+    $("#pNecesitas").classList.add("oculto");
+    $("#pCentro").classList.remove("oculto");
+    arrancarRitual(id, nec ? nec[2] : null, null);
+  }));
+}
+function arrancarRitual(id, sesgo, url){
+  const r = construirRitual(id, sesgo); if(!r) return;
+  P.rito = r; P.plan = aplanar(r); P.i = 0; P.modoAudio = false;
+  P.inicioSesion = Date.now();
+  $("#pCentro").classList.remove("oculto");
   if(url){ pintarControles(); modoGrabacion(url); return; }
   if(P.ambOn) Pad.iniciar(escenaActiva(r.tema), E.ajustes.padVol);
   else Pad.detener(1.5);
@@ -2121,6 +2197,7 @@ function cerrarPractica(){
   velaAccion = null;
   const pv = $("#pVela"); if(pv) pv.classList.add("oculto");
   const pr = $("#pReflexion"); if(pr) pr.classList.add("oculto");
+  const pn = $("#pNecesitas"); if(pn) pn.classList.add("oculto");
   $("#pCentro").classList.remove("oculto");
   $("#pBajo").classList.remove("oculto");
   const a = $("#reproductor"); try{ a.pause(); a.removeAttribute("src"); a.load(); }catch(e){}
@@ -2260,6 +2337,12 @@ function render(){
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
   const _hoy = $("#hoyTxt"); if(_hoy){ const _m = mensajesActivos(); _hoy.textContent = _m[Math.floor(Date.now()/86400000) % _m.length]; }
+  const _cont = $("#continua");
+  if(_cont){
+    const _r = (E.registro.reflexiones || []), _u = _r.length ? _r[_r.length-1] : null;
+    if(_u && _u.texto && _u.fecha !== hoyISO()){ $("#continuaTxt").textContent = _u.texto; _cont.classList.remove("oculto"); }
+    else _cont.classList.add("oculto");
+  }
   $("#rubricaHora").textContent = h < 12 ? "Activación" : h < 19 ? "En medio del día" : "Rendición";
   $("#fecha").textContent = DIAS_L[ahora.getDay()] + " " + ahora.getDate() + " de " + MESES_L[ahora.getMonth()] + " · " + String(ahora.getHours()).padStart(2,"0")+":"+String(ahora.getMinutes()).padStart(2,"0");
 
@@ -3533,7 +3616,7 @@ function onbBtn(label, fin){ return '<button class="onb-btn" id="onbNext" data-f
 
 let onbSeq = [], onbIdx = 0;
 function onbConstruirSeq(){
-  const seq = ["bienvenida","nombre","dirige","categorias","intencion"];
+  const seq = ["bienvenida","privacidad","nombre","dirige","categorias","intencion"];
   (E.perfil.categorias||[]).forEach(c=>{ if(SEGUIMIENTOS[c]) seq.push("seg:"+c); });
   seq.push("preferencias","listo");
   return seq;
@@ -3541,6 +3624,7 @@ function onbConstruirSeq(){
 function onbPantalla(tipo){
   const nom = (E.ajustes.nombre||"").trim();
   if(tipo === "bienvenida") return { html:'<div class="onb-mark" aria-hidden="true">◦</div><h1 class="onb-t">Práctica</h1><p class="onb-p">Un lugar para tu oración, tu silencio y tu día. En un minuto lo ajustamos a ti.</p>' + onbBtn("Empezar") };
+  if(tipo === "privacidad") return { html:'<div class="onb-candado" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><h1 class="onb-t">Esto es solo tuyo.</h1><p class="onb-p">Lo que escribas y practiques vive solo en tu teléfono. Nadie más lo ve —ni nosotros—. Tú decides si algún día lo exportas.</p>' + onbBtn("Entendido") };
   if(tipo === "nombre") return {
     html:'<h1 class="onb-t">¿Cómo te llamas?</h1><p class="onb-p">Para saludarte cada día.</p><input class="onb-input" id="onbNombre" type="text" placeholder="Tu nombre" value="'+esc(E.ajustes.nombre||"")+'" autocomplete="given-name">' + onbBtn("Continuar"),
     wire:()=>{ const i=$("#onbNombre"); if(i){ i.addEventListener("input", e=>{ E.ajustes.nombre = e.target.value; }); try{ i.focus(); }catch(e){} } } };
