@@ -130,11 +130,11 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 
 /* ─── ESTRUCTURA ─── */
+#appShell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
 .lienzo{
-  position:fixed;top:0;bottom:0;left:0;right:0;margin:0 auto;
-  width:100%;max-width:640px;overflow-y:auto;overflow-x:hidden;
-  overscroll-behavior:contain;
-  padding:calc(env(safe-area-inset-top) + 44px) 26px calc(env(safe-area-inset-bottom) + 56px) 52px;
+  flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
+  width:100%;max-width:640px;margin:0 auto;
+  padding:calc(env(safe-area-inset-top) + 44px) 26px 40px 52px;
 }
 .oculto{display:none !important}
 
@@ -252,6 +252,9 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .onb-candado svg{width:40px;height:40px;fill:none;stroke:var(--llama);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .diario-privado{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--tinta-baja);margin:-14px 0 24px}
 .diario-privado svg{width:15px;height:15px;flex-shrink:0;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.leer-btn{display:inline-flex;align-items:center;gap:7px;margin:2px 0 16px;padding:8px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.leer-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.leer-btn:hover,.leer-btn:focus-visible{border-color:var(--llama);color:var(--tinta)}
 .p-bloque{
   font-family:var(--serif);font-size:.95rem;letter-spacing:.02em;color:var(--oro);
   margin:0 0 6px;font-style:italic;
@@ -499,7 +502,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .pomo-reloj{font-family:var(--mono);font-size:1.5rem;letter-spacing:.02em;color:var(--tinta);text-align:center;padding:14px 0 20px}
 
 /* ── Navegación inferior (tabs) ── */
-#inicio{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
+#inicio{padding-bottom:40px}
 .panel-titulo{font-family:var(--serif);font-size:1.75rem;color:var(--tinta);margin:8px 0 24px}
 .nav-cards{display:flex;flex-direction:column;gap:10px}
 .biblia-t{font-family:var(--serif);font-size:1.1rem;color:var(--oro);margin:0 0 14px;letter-spacing:.01em}
@@ -516,7 +519,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:62;display:flex;justify-content:space-around;align-items:flex-end;
+.tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:flex-end;
   padding:9px 4px calc(env(safe-area-inset-bottom) + 9px);
   background:var(--panel);border-top:1px solid var(--linea-fuerte)}
 .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;color:var(--tinta-tenue);transition:color .2s ease}
@@ -719,6 +722,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 </div></div>
 
 <!-- ══════ INICIO ══════ -->
+<div id="appShell">
 <main class="lienzo" id="inicio">
   <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
 
@@ -801,6 +805,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <button class="tab" data-tab="sonido" aria-label="Sonido"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-15 3 18 2-9h3"/></svg></span><span class="tab-lb">Sonido</span></button>
   <button class="tab" data-tab="diario" aria-label="Diario"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></svg></span><span class="tab-lb">Diario</span></button>
 </nav>
+</div>
 
 <div class="onb oculto" id="onboarding">
   <div class="onb-top">
@@ -985,14 +990,14 @@ let E = {
   feedback:{ pesos:{}, ocultos:[] },
   ritos:{},
   v:2,
-  ajustes:{ nombre:"Guillermo", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:0, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, alarma:{ on:false, hora:"07:00", escena:"eter" }, urlAudio:{}, ritual:{} }
+  ajustes:{ nombre:"", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:0, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, alarma:{ on:false, hora:"07:00", escena:"eter" }, urlAudio:{}, ritual:{} }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {nombre:"Guillermo",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{}}, g.ajustes||{});
     if(!E.ajustes.recordatorios || typeof E.ajustes.recordatorios !== "object") E.ajustes.recordatorios = {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
     if(!E.ajustes.alarma || typeof E.ajustes.alarma !== "object") E.ajustes.alarma = {on:false,hora:"07:00",escena:"eter"};
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
@@ -2175,7 +2180,8 @@ function terminar(){
   $("#pBloque").textContent = "";
   $("#pRespiro").classList.add("oculto");
   const el = $("#pLinea"); el.classList.remove("oculto");
-  el.textContent = P.med ? "…" : (P.rito && P.rito.tema === "noche" ? "Buenas noches." : "Amén.");
+  const cierreDia = (E.perfil.tono === "cristiano" || E.perfil.dirige === "dios") ? "Amén." : "Que así sea.";
+  el.textContent = P.med ? "…" : (P.rito && P.rito.tema === "noche" ? "Buenas noches." : cierreDia);
   $("#pNota").classList.add("oculto");
   $("#pPlay").textContent = "Terminar";
   P.corriendo = false;
@@ -2381,7 +2387,26 @@ function render(){
 }
 
 /* ════════════════ HOJAS ════════════════ */
-function cerrarHoja(){ $("#hojas").innerHTML = ""; }
+let lectorU = null;
+function textoPlano(html){ const d = document.createElement("div"); d.innerHTML = html; return (d.textContent||"").replace(/\s+/g," ").trim(); }
+function detenerLector(){ try{ speechSynthesis.cancel(); }catch(e){} lectorU = null; document.querySelectorAll(".leer-btn").forEach(b=>b.textContent = b.dataset.lbl || "Escuchar"); }
+function leerAlto(texto, btn){
+  if(!("speechSynthesis" in window)) return;
+  if(lectorU || speechSynthesis.speaking){ detenerLector(); return; }
+  try{
+    const u = new SpeechSynthesisUtterance(texto);
+    const vs = speechSynthesis.getVoices(), v = vs.find(x=>/es[-_]MX/i.test(x.lang)) || vs.find(x=>/^es/i.test(x.lang));
+    if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "es-MX";
+    u.rate = Math.min(1.15, Math.max(.6, (E.ajustes.ritmo||.82) * (E.ajustes.velocidad||1)));
+    u.onend = ()=>{ lectorU = null; if(btn) btn.textContent = btn.dataset.lbl || "Escuchar"; };
+    u.onerror = u.onend;
+    lectorU = u;
+    try{ if(navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}
+    speechSynthesis.cancel(); speechSynthesis.speak(u);
+    if(btn) btn.textContent = "Detener";
+  }catch(e){}
+}
+function cerrarHoja(){ detenerLector(); $("#hojas").innerHTML = ""; }
 function gestoSwipeCerrar(el, scrollEl, cerrar){
   if(!el) return;
   let x0 = 0, y0 = 0, on = false;
@@ -2521,7 +2546,7 @@ function hojaJournal(){
   const txt = E.registro.journal[hoy] || "";
   hoja("Journal", "Escritura libre. Solo para ti.",
     '<p class="cad-fecha">'+fechaLegible(new Date())+'</p>' +
-    '<div class="campo"><textarea class="campo-area grande" id="jHoy" placeholder="Escribe lo que traes hoy…">'+esc(txt)+'</textarea></div>' +
+    '<div class="campo"><textarea class="campo-area grande" id="jHoy" placeholder="¿Qué quieres compartirte hoy?">'+esc(txt)+'</textarea></div>' +
     '<div class="reg-guardado" id="regGuardado"></div>' +
     historialJournal() +
     '<div class="acciones"><button class="accion llena" id="jCerrar">Listo</button></div>',
@@ -2564,7 +2589,7 @@ function hojaDoctrina(){
     doctrinaTodas().map((t,i)=>
       '<div class="doctrina-item">' +
       '<button class="doctrina-cab" data-doc="'+i+'" aria-expanded="false" aria-controls="doc'+i+'"><span>'+esc(t.t)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
-      '<div class="doctrina-cuerpo" id="doc'+i+'">'+t.e+'</div>' +
+      '<div class="doctrina-cuerpo" id="doc'+i+'"><button class="leer-btn" data-lbl="Escuchar" data-doc-leer="'+i+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/></svg>Escuchar</button>'+t.e+'</div>' +
       '</div>').join("") +
     '</div>' +
     '<div class="acciones" style="margin-top:24px"><button class="accion' + (leido?'':' llena') + '" id="dLeido">' + (leido ? "Leído esta semana" : "Marcar como leído") + '</button></div>',
@@ -2579,6 +2604,8 @@ function hojaDoctrina(){
         });
       });
       $("#dLeido").addEventListener("click", ()=>{ E.doctrina.semana = s; guardar(); cerrarHoja(); });
+      const docs = doctrinaTodas();
+      document.querySelectorAll("[data-doc-leer]").forEach(b=>b.addEventListener("click", (e)=>{ e.stopPropagation(); const t = docs[+b.dataset.docLeer]; if(t) leerAlto(textoPlano(t.e), b); }));
     });
 }
 
@@ -2921,7 +2948,76 @@ const DIALOGO = {
   "Atraigo clientes, contratos y oportunidades con facilidad.": { c:"Pondré ante ti clientes, contratos y oportunidades.", u:"Atraes clientes, contratos y oportunidades con facilidad." },
   "Uso mi dinero con sabiduría y siempre regresa multiplicado.": { c:"Usa lo que te doy con sabiduría, y yo lo multiplicaré.", u:"Usas tu dinero con sabiduría, y regresa multiplicado." },
   "Soy próspero en salud, en amor y en recursos.": { c:"Te quiero próspero en salud, en amor y en recursos.", u:"Eres próspero en salud, en amor y en recursos." },
-  "La riqueza es energía, y yo estoy en sintonía con ella.": { c:"La abundancia es mía, y la comparto contigo.", u:"La riqueza es energía, y estás en sintonía con ella." }
+  "La riqueza es energía, y yo estoy en sintonía con ella.": { c:"La abundancia es mía, y la comparto contigo.", u:"La riqueza es energía, y estás en sintonía con ella." },
+  // ── Confianza ──
+  "Confío en lo que sé y en lo que soy capaz de aprender.": { c:"Confía en lo que te di y en lo que eres capaz de aprender.", u:"Confía en lo que sabes y en lo que eres capaz de aprender." },
+  "Tengo lo que se necesita para lo que tengo enfrente.": { c:"Te di lo que necesitas para lo que tienes enfrente.", u:"Tienes lo que se necesita para lo que tienes enfrente." },
+  "Hablo y actúo desde mi valor, no desde el miedo.": { c:"Habla y actúa desde el valor que puse en ti, no desde el miedo.", u:"Habla y actúa desde tu valor, no desde el miedo." },
+  "Merezco ocupar espacio y que me escuchen.": { c:"Mereces ocupar espacio; te hice para ser visto.", u:"Mereces ocupar espacio y que te escuchen." },
+  "Cada paso que doy me hace más capaz.": { c:"Cada paso que das te hace más capaz; yo camino contigo.", u:"Cada paso que das te hace más capaz." },
+  "No necesito permiso para empezar.": { c:"No necesitas permiso para empezar; yo ya te lo di.", u:"No necesitas permiso para empezar." },
+  "Confío en mi criterio, aunque otros duden.": { c:"Confía en el criterio que te di, aunque otros duden.", u:"Confía en tu criterio, aunque otros duden." },
+  "Mi voz importa y merece ser escuchada.": { c:"Tu voz importa; yo la escucho.", u:"Tu voz importa y merece ser escuchada." },
+  "Puedo con lo que venga; siempre he encontrado la forma.": { c:"Puedes con lo que venga; nunca te he dejado solo.", u:"Puedes con lo que venga; siempre has encontrado la forma." },
+  "No necesito la aprobación de nadie para valer.": { c:"No necesitas la aprobación de nadie: ante mí ya vales.", u:"No necesitas la aprobación de nadie para valer." },
+  "Cada vez que me atrevo, me hago más fuerte.": { c:"Cada vez que te atreves, te hago más fuerte.", u:"Cada vez que te atreves, te haces más fuerte." },
+  "Soy el tipo de persona que termina lo que se propone.": { c:"Eres de los que terminan lo que se proponen; yo te sostengo.", u:"Eres el tipo de persona que termina lo que se propone." },
+  "Pertenezco en cualquier lugar donde decida estar.": { c:"Perteneces donde yo te pongo; camina con seguridad.", u:"Perteneces en cualquier lugar donde decidas estar." },
+  "Soy capaz de más de lo que creo.": { c:"Eres capaz de más de lo que crees; yo lo veo en ti.", u:"Eres capaz de más de lo que crees." },
+  // ── Fe ──
+  "Confío en el tiempo de Dios, aunque no lo entienda.": { c:"Confía en mi tiempo, aunque hoy no lo entiendas.", u:"Confía en el tiempo de la vida, aunque no lo entiendas." },
+  "Todo lo puedo en aquel que me fortalece.": { c:"Todo lo puedes en mí, que te fortalezco.", u:"Todo lo puedes con la fuerza que llevas dentro." },
+  "Lo que es para mí, no va a pasar de largo.": { c:"Lo que preparé para ti no pasará de largo.", u:"Lo que es para ti, no va a pasar de largo." },
+  "Entrego lo que me preocupa y descanso en que está en buenas manos.": { c:"Entrégame lo que te preocupa y descansa; está en mis manos.", u:"Entrega lo que te preocupa y descansa: está en buenas manos." },
+  "No camino solo.": { c:"No caminas solo; yo voy contigo.", u:"No caminas solo." },
+  "Suelto el control y confío en el proceso.": { c:"Suelta el control y confía en mí.", u:"Suelta el control y confía en el proceso." },
+  "Algo más grande que yo sostiene lo que no puedo cargar.": { c:"Yo sostengo lo que tú no puedes cargar.", u:"Algo más grande que tú sostiene lo que no puedes cargar." },
+  // ── Disciplina / motivación ──
+  "Hago lo que dije que haría, aunque no tenga ganas.": { c:"Harás lo que dijiste, aunque no tengas ganas; yo te doy la fuerza.", u:"Haz lo que dijiste que harías, aunque no tengas ganas." },
+  "Soy constante en lo pequeño, y lo pequeño construye lo grande.": { c:"Sé fiel en lo pequeño; sobre eso construyo lo grande.", u:"Sé constante en lo pequeño; lo pequeño construye lo grande." },
+  "Elijo hoy lo que mi yo de mañana me va a agradecer.": { c:"Elige hoy lo que tu mañana agradecerá.", u:"Elige hoy lo que tu yo de mañana agradecerá." },
+  "No espero motivación; empiezo, y la motivación llega.": { c:"No esperes motivación; empieza, y yo te sostengo.", u:"No esperes motivación; empieza, y la motivación llega." },
+  "Termino lo que empiezo.": { c:"Termina lo que empiezas; camino contigo hasta el final.", u:"Termina lo que empiezas." },
+  "Un día a la vez, me convierto en quien quiero ser.": { c:"Un día a la vez te formo en quien quieres ser.", u:"Un día a la vez, te conviertes en quien quieres ser." },
+  "Protejo mi atención como mi recurso más valioso.": { c:"Cuida tu atención; es un don que te confié.", u:"Cuida tu atención: es tu recurso más valioso." },
+  "Una tarea a la vez. Así se construye lo grande.": { c:"Una tarea a la vez; así construyo lo grande en ti.", u:"Una tarea a la vez. Así se construye lo grande." },
+  "Lo difícil primero; el resto se acomoda solo.": { c:"Empieza por lo difícil; el resto lo acomodo yo.", u:"Empieza por lo difícil; el resto se acomoda solo." },
+  "No busco perfección, busco progreso.": { c:"No busques perfección; yo miro tu progreso.", u:"No busques perfección; busca progreso." },
+  "Puedo enfocarme; solo empiezo por lo siguiente.": { c:"Puedes enfocarte; empieza por lo siguiente, yo te guío.", u:"Puedes enfocarte; solo empieza por lo siguiente." },
+  "Cierro lo que abrí antes de empezar algo nuevo.": { c:"Cierra lo que abriste antes de empezar algo nuevo.", u:"Cierra lo que abriste antes de empezar algo nuevo." },
+  "Mi energía sigue a mi atención; elijo dónde ponerla.": { c:"Tu energía sigue a tu atención; elige bien dónde ponerla.", u:"Tu energía sigue a tu atención; elige dónde ponerla." },
+  "Los pasos pequeños, repetidos, me llevan lejos.": { c:"Los pasos pequeños, repetidos, te llevan lejos; yo cuento cada uno.", u:"Los pasos pequeños, repetidos, te llevan lejos." },
+  "Descansar a tiempo es parte de trabajar bien.": { c:"Descansa a tiempo; también en eso confío en ti.", u:"Descansar a tiempo es parte de trabajar bien." },
+  "Hoy avanzo un paso concreto, y con eso basta.": { c:"Da hoy un paso concreto; con eso me basta.", u:"Da hoy un paso concreto, y con eso basta." },
+  // ── Salud ──
+  "Mi cuerpo está sano, fuerte y lleno de energía.": { c:"Cuido tu cuerpo; lo hago sano, fuerte y lleno de vida.", u:"Tu cuerpo está sano, fuerte y lleno de energía." },
+  "Cada día cuido mi cuerpo y él me responde con vitalidad.": { c:"Cuida el cuerpo que te di, y responderá con vitalidad.", u:"Cada día cuidas tu cuerpo, y él responde con vitalidad." },
+  "Duermo profundo y despierto renovado.": { c:"Duerme; yo velo tu sueño y te levanto renovado.", u:"Duermes profundo y despiertas renovado." },
+  "La salud fluye por cada parte de mí.": { c:"La vida que puse en ti fluye por cada parte.", u:"La salud fluye por cada parte de ti." },
+  "Elijo lo que me nutre y me da vida.": { c:"Elige lo que te nutre; te di el cuerpo para cuidarlo.", u:"Elige lo que te nutre y te da vida." },
+  "Cada célula de mi cuerpo se renueva y se sana.": { c:"Renuevo y sano cada célula de tu cuerpo.", u:"Cada célula de tu cuerpo se renueva y se sana." },
+  "Tengo la energía que necesito para lo que amo hacer.": { c:"Te doy la energía para lo que amas hacer.", u:"Tienes la energía que necesitas para lo que amas hacer." },
+  "Mi cuerpo es fuerte, flexible y está en paz.": { c:"Tu cuerpo, obra de mis manos, es fuerte y está en paz.", u:"Tu cuerpo es fuerte, flexible y está en paz." },
+  // ── Relaciones ──
+  "Atraigo a mi vida personas que me suman y me quieren bien.": { c:"Traigo a tu vida personas que te suman y te quieren bien.", u:"Atraes personas que te suman y te quieren bien." },
+  "Doy y recibo amor con libertad y sin miedo.": { c:"Da y recibe amor sin miedo; yo te amé primero.", u:"Das y recibes amor con libertad y sin miedo." },
+  "Estoy rodeado de relaciones sanas y sinceras.": { c:"Te rodeo de relaciones sanas y sinceras.", u:"Estás rodeado de relaciones sanas y sinceras." },
+  "El amor que doy regresa a mí multiplicado.": { c:"El amor que das, yo lo multiplico y te lo devuelvo.", u:"El amor que das regresa a ti multiplicado." },
+  "Merezco un amor que me elige todos los días.": { c:"Mereces un amor que te elija; yo te elijo cada día.", u:"Mereces un amor que te elija todos los días." },
+  "Las personas correctas están llegando a mi vida.": { c:"Las personas correctas ya vienen hacia tu vida.", u:"Las personas correctas están llegando a tu vida." },
+  "Suelto lo que ya no me corresponde para dar lugar a lo nuevo.": { c:"Suelta lo que ya no te corresponde; yo traigo lo nuevo.", u:"Suelta lo que ya no te corresponde para dar lugar a lo nuevo." },
+  "Soy amado tal como soy.": { c:"Eres amado tal como eres; así te hice.", u:"Eres amado tal como eres." },
+  // ── Propósito ──
+  "Estoy exactamente donde necesito estar para mi propósito.": { c:"Estás justo donde te necesito para tu propósito.", u:"Estás exactamente donde necesitas estar para tu propósito." },
+  "Mi trabajo tiene sentido y da fruto.": { c:"Tu trabajo tiene sentido; yo lo hago dar fruto.", u:"Tu trabajo tiene sentido y da fruto." },
+  "Cada día me acerco más a la vida que estoy construyendo.": { c:"Cada día te acerco más a la vida que construyo contigo.", u:"Cada día te acercas más a la vida que estás construyendo." },
+  "Uso mis dones y el mundo los recibe.": { c:"Usa los dones que te di; el mundo los recibirá.", u:"Usas tus dones y el mundo los recibe." },
+  "Mi carrera crece en la dirección de mis sueños.": { c:"Hago crecer tu camino en la dirección de tus sueños.", u:"Tu carrera crece en la dirección de tus sueños." },
+  "Tengo claridad sobre mi siguiente paso, y lo doy.": { c:"Te doy claridad sobre tu siguiente paso; darlo depende de ti.", u:"Tienes claridad sobre tu siguiente paso, y lo das." },
+  "Mi propósito se revela con claridad, paso a paso.": { c:"Te revelo tu propósito, paso a paso.", u:"Tu propósito se revela con claridad, paso a paso." },
+  "El trabajo que amo me encuentra.": { c:"El trabajo que amas te encontrará; yo abro la puerta.", u:"El trabajo que amas te encuentra." },
+  "Cada 'no' me acerca al 'sí' correcto.": { c:"Cada 'no' te acerca al 'sí' que preparé para ti.", u:"Cada 'no' te acerca al 'sí' correcto." },
+  "Confío en que voy en la dirección correcta.": { c:"Confía: yo te llevo en la dirección correcta.", u:"Confía en que vas en la dirección correcta." }
 };
 function vozLinea(x){
   const p = (typeof E!=="undefined" && E.perfil) ? E.perfil : {};
@@ -2981,7 +3077,7 @@ function renderHistorias(tema, cont){
     lista.map((h,i)=>
       '<div class="doctrina-item">' +
       '<button class="doctrina-cab" data-h="'+i+'" aria-expanded="false"><span>'+esc(h.titulo)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
-      '<div class="doctrina-cuerpo" id="histC'+i+'"><p>'+h.texto.split("\n").map(esc).join('</p><p>')+'</p></div>' +
+      '<div class="doctrina-cuerpo" id="histC'+i+'"><button class="leer-btn" data-lbl="Escuchar" data-h-leer="'+i+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/></svg>Escuchar</button><p>'+h.texto.split("\n").map(esc).join('</p><p>')+'</p></div>' +
       '</div>').join("") +
     '</div>';
   document.querySelectorAll("#histCont .doctrina-cab").forEach(b=>{
@@ -2993,6 +3089,7 @@ function renderHistorias(tema, cont){
       cuerpo.classList.toggle("abierto", !abierto);
     });
   });
+  document.querySelectorAll("#histCont [data-h-leer]").forEach(b=>b.addEventListener("click", (e)=>{ e.stopPropagation(); const h = lista[+b.dataset.hLeer]; if(h) leerAlto(h.texto.replace(/\n/g," "), b); }));
 }
 
 function medsActivas(){ const l = AUDIO_MED.filter(m=>!fbOculto(m.id)); return l.length ? l : AUDIO_MED; }
@@ -3642,7 +3739,7 @@ function onbPantalla(tipo){
     E.perfil.sub[c] = E.perfil.sub[c] || [];
     return {
       html:'<h1 class="onb-t">'+esc(s.q)+'</h1><p class="onb-p">Elige una o varias. O afínalo después.</p>' + onbChips(s.opts, E.perfil.sub[c], "data-sub") + onbBtn("Continuar") + '<button class="onb-saltar-paso" id="onbSaltarPaso">Después lo afino</button>',
-      wire:()=>{ document.querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.sub[c], b.dataset.sub); })); const sp=$("#onbSaltarPaso"); if(sp) sp.addEventListener("click", onbSig); } };
+      wire:()=>{ document.querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.sub[c], b.dataset.sub); if(c === "concentracion"){ const esc = { marron:"marron", blanco:"blanco", binaural:"binaural", naturaleza:"lluvia" }[b.dataset.sub]; if(esc && b.classList.contains("on")){ try{ Pad.desbloquear(); Pad.iniciar(esc, E.ajustes.padVol); }catch(e){} } else { try{ Pad.detener(1.2); }catch(e){} } } })); const sp=$("#onbSaltarPaso"); if(sp) sp.addEventListener("click", onbSig); } };
   }
   if(tipo === "preferencias") return {
     html:'<h1 class="onb-t">Tu ambiente</h1><p class="onb-p">Cómo se ve y se siente. Todo se puede cambiar luego en Ajustes.</p>' +
@@ -3663,13 +3760,15 @@ function onbRender(){
   const nx = $("#onbNext"); if(nx) nx.addEventListener("click", ()=>{ if(nx.dataset.fin) terminarOnb(); else onbSig(); });
 }
 function onbSig(){
+  try{ Pad.detener(1); }catch(e){}
   if(onbSeq[onbIdx] === "categorias"){ const pos = onbIdx; onbSeq = onbConstruirSeq(); onbIdx = pos; }
   onbIdx++;
   if(onbIdx >= onbSeq.length){ terminarOnb(); return; }
   onbRender();
 }
-function onbAtras(){ if(onbIdx > 0){ onbIdx--; onbRender(); } }
+function onbAtras(){ if(onbIdx > 0){ try{ Pad.detener(1); }catch(e){} onbIdx--; onbRender(); } }
 function terminarOnb(){
+  try{ Pad.detener(1); }catch(e){}
   E.ajustes.onboarded = true; E.perfil.hecho = true; guardar();
   $("#onboarding").classList.add("oculto");
   render();
