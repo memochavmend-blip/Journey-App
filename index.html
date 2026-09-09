@@ -216,7 +216,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .p-salir{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-baja);padding:6px 0 6px 12px}
 .p-salir:focus-visible{outline:1px solid var(--llama);outline-offset:3px}
 
-.p-centro{flex:1;display:flex;flex-direction:column;justify-content:center;padding:22px 0}
+.p-centro{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:safe center;padding:22px 0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 .p-centro.respirando{align-items:center;text-align:center}
 /* Vela ceremonial (encender / apagar) */
 .vela-rito{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px}
@@ -266,6 +266,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
   animation:entra .7s cubic-bezier(.2,.7,.3,1);
 }
 .p-linea .kw{opacity:.2;transition:opacity .55s ease}
+.p-linea.largo{font-size:clamp(1.12rem,4.1vw,1.5rem);line-height:1.5;letter-spacing:0}
 .p-linea .kw.on{opacity:1}
 @keyframes entra{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
 .p-nota{margin-top:22px;font-size:13px;color:var(--tinta-baja);line-height:1.6;max-width:34ch}
@@ -281,6 +282,15 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 .respiro-aro.dentro{transform:scale(1.06);border-color:var(--llama)}
 .respiro-txt{font-family:var(--serif);font-size:1.2rem;color:var(--tinta-baja);letter-spacing:.02em}
+.resp-barra{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:34px}
+.resp-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.resp-chip{padding:8px 13px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
+.resp-chip.activo{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 12%,transparent)}
+.resp-chip:hover,.resp-chip:focus-visible{border-color:var(--llama);color:var(--tinta)}
+.resp-voz{width:38px;height:38px;border-radius:50%;border:1px solid var(--linea-fuerte);display:flex;align-items:center;justify-content:center;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
+.resp-voz svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.resp-voz.activo{border-color:var(--llama);color:var(--llama);background:color-mix(in srgb,var(--llama) 10%,transparent)}
+.resp-voz:hover,.resp-voz:focus-visible{border-color:var(--llama);color:var(--tinta)}
 
 .p-bajo{transition:opacity .5s ease}
 .p-bajo.dormido{opacity:.16}
@@ -598,7 +608,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   padding:calc(env(safe-area-inset-top) + 30px) 32px calc(env(safe-area-inset-bottom) + 30px);gap:0}
 .sos-respira{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:38px;
   background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--llama) 22%,transparent), transparent 70%);
-  border:1px solid var(--linea-fuerte);animation:respirar 11s ease-in-out infinite}
+  border:1px solid var(--linea-fuerte);transform:scale(.78);transition:transform 4s ease}
 .sos-guia{font-family:var(--serif);font-size:1.15rem;color:var(--tinta-baja);letter-spacing:.02em}
 @keyframes respirar{
   0%{transform:scale(.72)}
@@ -623,8 +633,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-espacio{font-family:var(--serif);font-size:1.45rem;color:var(--tinta);text-align:center;margin:0 0 26px;line-height:1.4}
 .sos-comparo{font-family:var(--mono);font-size:15px;color:var(--oro);text-align:center;margin:16px 0 0;letter-spacing:.03em}
 .sos-preg-sug{margin-top:32px}
-.sos-sug{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:2px}
-.sos-sug-i{padding:9px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:13px;color:var(--tinta-baja)}
+.sos-sug{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-bottom:2px;max-width:34ch}
+.sos-sug-i{font-size:13.5px;color:var(--tinta-tenue);letter-spacing:.01em}
 .sos-acc-cierre{margin-top:30px}
 .sos-acc{display:flex;gap:12px}
 .sos-btn{padding:13px 26px;border-radius:12px;border:1px solid var(--linea-fuerte);font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
@@ -829,6 +839,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   </div>
   <div class="sos-paso oculto" id="sosP2">
     <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span></div>
+    <div id="respChipsSos"></div>
     <p class="sos-linea" id="sosLinea"></p>
     <div class="sos-acc">
       <button class="sos-btn" id="sosOtra">Otra</button>
@@ -846,7 +857,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
       </div>
       <p class="sos-comparo oculto" id="sosComparo"></p>
     </div>
-    <p class="sos-preg sos-preg-sug">¿Quieres hacer algo estos minutos?</p>
+    <p class="sos-preg sos-preg-sug">Algo que puede ayudarte estos minutos:</p>
     <div class="sos-sug">
       <span class="sos-sug-i">Camina un poco</span>
       <span class="sos-sug-i">Toma agua</span>
@@ -901,6 +912,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <p class="p-nota oculto" id="pNota"></p>
     <div class="respiro oculto" id="pRespiro">
       <div class="respiro-aro" id="respiroAro"><span class="respiro-txt" id="respiroTxt">Inhala</span></div>
+      <div id="respChipsRitual"></div>
     </div>
   </div>
 
@@ -990,14 +1002,14 @@ let E = {
   feedback:{ pesos:{}, ocultos:[] },
   ritos:{},
   v:2,
-  ajustes:{ nombre:"", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:0, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, alarma:{ on:false, hora:"07:00", escena:"eter" }, urlAudio:{}, ritual:{} }
+  ajustes:{ nombre:"", onboarded:false, intereses:[], tema:"sistema", voz:true, vozNombre:"", ritmo:.82, velocidad:1, pausa:3000, pad:true, padVol:.5, escena:"auto", ambienteApp:true, dormir:0, recordatorios:{ on:false, manana:"07:00", nucleo:"13:00", noche:"21:00" }, alarma:{ on:false, hora:"07:00", escena:"eter" }, urlAudio:{}, ritual:{}, respiroPatron:"serena", respiroVoz:false }
 };
 
 async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {nombre:"",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{}}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{},respiroPatron:"serena",respiroVoz:false}, g.ajustes||{});
     if(!E.ajustes.recordatorios || typeof E.ajustes.recordatorios !== "object") E.ajustes.recordatorios = {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
     if(!E.ajustes.alarma || typeof E.ajustes.alarma !== "object") E.ajustes.alarma = {on:false,hora:"07:00",escena:"eter"};
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
@@ -1242,24 +1254,28 @@ function manifestacionesRitual(n, temas){
   return manifestacionesActivas().slice(0, n).map(vozManifestacion);
 }
 
+const RESPALDO = { presencia:"Estoy aquí, presente.", entrega:"Suelto lo que no puedo cargar.", palabra:"Todo lo que necesito ya está en camino.", afirmacion:"Estoy en paz conmigo.", manifestacion:"Lo bueno también es para mí.", recepcion:"Me abro a recibir lo bueno.", cierre:"Confío.", seguridad:"Todo está bien." };
+function respaldoLinea(slot){ return RESPALDO[slot] || "Respira."; }
 function ritSemilla(slot, n, temas){
-  if(slot === "afirmacion") return afirmacionesRitual(n||3, temas);
-  if(slot === "manifestacion") return manifestacionesRitual(n||3, temas);
-  return litPaso(slot, n||3);
+  let txt;
+  if(slot === "afirmacion") txt = afirmacionesRitual(n||3, temas);
+  else if(slot === "manifestacion") txt = manifestacionesRitual(n||3, temas);
+  else txt = litPaso(slot, n||3);
+  txt = (txt||[]).filter(x=>x && x !== "…");
+  if(!txt.length) txt = [respaldoLinea(slot)];
+  return txt;
 }
+function vacio(arr){ return !Array.isArray(arr) || !arr.length || arr.every(x=>!x || x === "…"); }
 // Devuelve las líneas guardadas del bloque; si no hay, las siembra desde el perfil y las guarda (queda estable).
 // Con un sesgo del día, los espacios de afirmación/manifestación se siembran frescos, sin persistir (es la sesión de hoy).
 function ritLineas(id, b, sesgo){
   if(sesgo && (b.slot === "afirmacion" || b.slot === "manifestacion")){
     const temas = b.slot === "afirmacion" ? sesgo.af : sesgo.man;
-    let txt = ritSemilla(b.slot, b.n, (temas && temas.length) ? temas : null);
-    if(!txt.length) txt = ["…"];
-    return txt;
+    return ritSemilla(b.slot, b.n, (temas && temas.length) ? temas : null);
   }
   E.ritos[id] = E.ritos[id] || {};
-  if(Array.isArray(E.ritos[id][b.num])) return E.ritos[id][b.num].slice();
-  let txt = ritSemilla(b.slot, b.n);
-  if(!txt.length) txt = ["…"];
+  if(!vacio(E.ritos[id][b.num])) return E.ritos[id][b.num].slice();
+  const txt = ritSemilla(b.slot, b.n);
   E.ritos[id][b.num] = txt.slice();
   return txt.slice();
 }
@@ -1893,7 +1909,16 @@ const Voz = (() => {
     }catch(e){ alTerminar(false); }
   }
   function callar(){ if(soporte) try{ speechSynthesis.cancel(); }catch(e){} }
-  return { soporte, hablar, callar, lista:()=>ordenadas(), mejor };
+  function decir(texto){
+    if(!soporte) return;
+    try{
+      const u = new SpeechSynthesisUtterance(texto);
+      const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = "es-MX"; }
+      u.rate = .9; u.pitch = 1; u.volume = 1;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  return { soporte, hablar, decir, callar, lista:()=>ordenadas(), mejor };
 })();
 
 /* ════════════════ REPRODUCTOR DE PRÁCTICA ════════════════ */
@@ -2044,6 +2069,7 @@ function mostrar(){
   $("#pRespiro").classList.add("oculto");
   const el = $("#pLinea");
   el.classList.remove("oculto");
+  el.classList.toggle("largo", (o.t||"").length > 200);
   clearInterval(P.karTick); P.karTick = null;
   if(!P.corriendo){ el.textContent = o.t; el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; pintar(); return; }
   const conVoz = P.vozOn && Voz.soporte;
@@ -2090,6 +2116,64 @@ function esperar(ms){
   P.raf = requestAnimationFrame(paso);
 }
 
+const RESPIROS = {
+  serena:    { nom:"Serena",    fases:[["Inhala",4000,1],["Sostén",1000,1],["Exhala",6000,0]] },
+  caja:      { nom:"Caja",      fases:[["Inhala",4000,1],["Sostén",4000,1],["Exhala",4000,0],["Sostén",4000,0]] },
+  "478":     { nom:"4·7·8",     fases:[["Inhala",4000,1],["Sostén",7000,1],["Exhala",8000,0]] },
+  coherente: { nom:"Coherente", fases:[["Inhala",5500,1],["Exhala",5500,0]] }
+};
+const RESP_ORDEN = ["serena","caja","478","coherente"];
+let respSesion = null, respReiniciar = null;
+function breathStop(){ if(respSesion){ clearTimeout(respSesion.t); respSesion = null; } Voz.callar(); }
+// Motor único: anima un círculo + etiqueta según el patrón elegido, con voz opcional. Lo usan el Anclaje y "Ahora mismo".
+function breathEngine(circle, label, opts){
+  breathStop();
+  const pat = RESPIROS[opts.patron] || RESPIROS.serena;
+  const ses = { t:null, ciclo:0, fi:0 };
+  respSesion = ses;
+  const vivo = ()=> respSesion === ses && (!opts.vigente || opts.vigente());
+  const escala = (abierto, dur)=>{
+    circle.style.transition = "transform " + dur + "ms cubic-bezier(.4,0,.5,1), border-color 1s ease";
+    circle.style.transform = "scale(" + (abierto ? 1.06 : 0.78) + ")";
+    circle.style.borderColor = abierto ? "var(--llama)" : "";
+  };
+  circle.style.transition = "none"; circle.style.transform = "scale(0.78)"; circle.style.borderColor = "";
+  void circle.offsetWidth;
+  const paso = ()=>{
+    if(!vivo()) return;
+    if(ses.fi >= pat.fases.length){ ses.fi = 0; ses.ciclo++; if(opts.onCiclo) opts.onCiclo(ses.ciclo); }
+    if(opts.veces && ses.ciclo >= opts.veces){ if(opts.onDone) opts.onDone(); return; }
+    const f = pat.fases[ses.fi], nombre = f[0], dur = f[1], abierto = !!f[2];
+    label.textContent = nombre;
+    escala(abierto, dur);
+    if(E.ajustes.respiroVoz && Voz.soporte) Voz.decir(nombre);
+    ses.fi++;
+    ses.t = setTimeout(paso, dur);
+  };
+  paso();
+}
+function respChipsHTML(){
+  return '<div class="resp-barra"><div class="resp-chips">' +
+    RESP_ORDEN.map(k=>'<button type="button" class="resp-chip" data-patron="'+k+'">'+RESPIROS[k].nom+'</button>').join("") +
+    '</div><button type="button" class="resp-voz" aria-pressed="false" aria-label="Voz guiada"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/></svg></button></div>';
+}
+function respMarcarChips(){
+  const p = E.ajustes.respiroPatron || "serena";
+  document.querySelectorAll(".resp-chip").forEach(c=>c.classList.toggle("activo", c.dataset.patron === p));
+  const on = !!E.ajustes.respiroVoz;
+  document.querySelectorAll(".resp-voz").forEach(v=>{ v.classList.toggle("activo", on); v.setAttribute("aria-pressed", on ? "true" : "false"); });
+}
+function wireRespiro(){
+  document.querySelectorAll(".resp-chip").forEach(c=>c.addEventListener("click", ()=>{
+    E.ajustes.respiroPatron = c.dataset.patron; guardar(); respMarcarChips();
+    if(respReiniciar) respReiniciar();
+  }));
+  document.querySelectorAll(".resp-voz").forEach(v=>v.addEventListener("click", ()=>{
+    E.ajustes.respiroVoz = !E.ajustes.respiroVoz; guardar(); respMarcarChips();
+    if(!E.ajustes.respiroVoz) Voz.callar();
+  }));
+  respMarcarChips();
+}
 function respirar(veces){
   P.objetivo = 0; P.acumulado = 0;
   cancelAnimationFrame(P.raf);
@@ -2098,24 +2182,20 @@ function respirar(veces){
   $("#pCentro").classList.add("respirando");
   const aro = $("#respiroAro"), txt = $("#respiroTxt");
   const miIndice = P.i;
-  let n = 0;
-  const vigente = () => P.corriendo && P.i === miIndice;
-  const ciclo = ()=>{
-    if(!vigente()) return;
-    if(n >= veces){
+  respReiniciar = ()=>respirar(veces);
+  breathEngine(aro, txt, {
+    patron: E.ajustes.respiroPatron,
+    veces: veces,
+    vigente: ()=> P.corriendo && P.i === miIndice,
+    onCiclo: (c)=>{ pintar(Math.min(1, c/Math.max(1, veces))); },
+    onDone: ()=>{
       $("#pRespiro").classList.add("oculto");
       $("#pLinea").classList.remove("oculto");
-      aro.classList.remove("dentro");
-      P.i++; mostrar(); return;
+      aro.style.transition = ""; aro.style.transform = ""; aro.style.borderColor = "";
+      respReiniciar = null;
+      P.i++; mostrar();
     }
-    n++;
-    txt.textContent = "Inhala"; aro.classList.add("dentro");
-    pintar(n/veces);
-    setTimeout(()=>{ if(vigente()) txt.textContent = "Sostén"; }, 4000);
-    setTimeout(()=>{ if(vigente()){ txt.textContent = "Exhala"; aro.classList.remove("dentro"); } }, 5000);
-    setTimeout(ciclo, 11000);
-  };
-  ciclo();
+  });
 }
 
 const NODO = {};
@@ -3799,19 +3879,20 @@ function sosBreath(){
   sosPaso(2);
   $("#sosLinea").innerHTML = fraseCalma();
   $("#sosLinea").style.opacity = "1";
-  sosT0 = Date.now();
-  const guia = $("#sosGuia");
-  const actualizar = ()=>{ const t = (Date.now() - sosT0) % 11000; const txt = t < 4000 ? "Inhala" : t < 5500 ? "Sostén" : t < 9500 ? "Exhala" : "Sostén"; if(guia.textContent !== txt) guia.textContent = txt; };
-  actualizar();
-  clearInterval(sosTimer); sosTimer = setInterval(actualizar, 350);
+  const aro = $("#sosRespira"), txt = $("#sosGuia");
+  respReiniciar = ()=>sosBreath();
+  breathEngine(aro, txt, {
+    patron: E.ajustes.respiroPatron,
+    vigente: ()=> !$("#sos").classList.contains("oculto") && !$("#sosP2").classList.contains("oculto")
+  });
 }
 function sosIrDespues(){
-  clearInterval(sosTimer); sosTimer = null;
+  breathStop();
   sosPaso(3);
   const di = $("#sosDespuesInt"); if(di) di.classList.toggle("oculto", pausaAntes === null);
 }
 function cerrarSOS(){
-  clearInterval(sosTimer); sosTimer = null;
+  breathStop();
   $("#sos").classList.add("oculto");
   document.body.classList.remove("encendida");
   padBed = false;
@@ -3909,6 +3990,10 @@ function chequearRecordatorios(){
 }
 function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
 (function cablearSOS(){
+  const _rc1 = $("#respChipsRitual"), _rc2 = $("#respChipsSos");
+  if(_rc1) _rc1.innerHTML = respChipsHTML();
+  if(_rc2) _rc2.innerHTML = respChipsHTML();
+  wireRespiro();
   const ab = $("#ahoraBtn"); if(ab) ab.addEventListener("click", abrirSOS);
   const vo = $("#velaObj"); if(vo) vo.addEventListener("click", ()=>{ if(velaAccion) velaAccion(); });
   const rg = $("#reflGuardar"); if(rg) rg.addEventListener("click", guardarReflexion);
