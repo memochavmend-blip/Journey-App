@@ -1209,15 +1209,16 @@ const LIT = {
     universal:["Todo lo que necesito ya está en camino.","Tengo la fuerza para lo que este día me pida.","Nada de lo que temo es más grande que lo que me sostiene.","Lo que es para mí, no va a pasar de largo."]
   },
   recepcion:{
-    cristiano:["Recibo con gratitud lo que Dios pone en mi camino.","Abro las manos a lo que Dios quiera darme hoy.","Recibo su paz, su fuerza y su provisión."],
+    cristiano:["Recibo con gratitud lo que Dios pone en mi camino.","Abro las manos a lo que Dios quiera darme hoy.","Recibo su paz, su fuerza y su provisión.","Lo que viene de tu mano, lo recibo bien.","Estoy listo para lo bueno que preparaste para mí."],
     universal:["Me abro a recibir cosas buenas en mi vida.","Recibo más de lo que imaginé.","Todo lo que pasa en mi vida es a mi favor.","Estoy listo para lo que viene.","Lo bueno también es para mí."]
   },
   seguridad:{
-    universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo."]
+    cristiano:["En tus manos, estoy a salvo.","Nada me falta bajo tu cuidado."],
+    universal:["Todo está bien.","Todo funciona para mi mayor y más alto bien.","Estoy a salvo.","Donde estoy es un buen lugar para empezar.","Estoy sostenido."]
   },
   cierre:{
     cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
-    universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día."]
+    universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día.","Que así sea.","Suelto, y sigo con mi día.","Me llevo esta calma conmigo."]
   }
 };
 
@@ -1279,6 +1280,13 @@ function ritLineas(id, b, sesgo){
   E.ritos[id][b.num] = txt.slice();
   return txt.slice();
 }
+// Frases-puente (invisibles): suavizan los pivotes fuertes entre movimientos. c = cristiano, u = universal.
+const PUENTES = {
+  "entrega>palabra":        { u:"Al soltar, hago espacio para lo que viene.", c:"Al dejarlo en tus manos, hago espacio para lo que traes." },
+  "palabra>manifestacion":  { u:"Desde aquí, me atrevo a pedir.", c:"Desde aquí, me atrevo a pedirte." },
+  "vision>recepcion":       { u:"Y abro las manos para recibirlo.", c:"Y abro las manos a lo que quieras darme." }
+};
+function puenteVoz(){ return (E.perfil.dirige === "dios" || E.perfil.tono === "cristiano") ? "c" : "u"; }
 function construirRitual(id, sesgo){
   const p = RITUALES[id]; if(!p) return null;
   const bloques = p.bloques.map(b=>{
@@ -1293,6 +1301,16 @@ function construirRitual(id, sesgo){
     const lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
     return { num:b.num, nom:b.nom, rub:b.rub, lineas:lineas };
   });
+  // Insertar puentes: bisagra al inicio del movimiento destino cuando el pivote lo pide.
+  const vz = puenteVoz();
+  for(let i = 1; i < bloques.length; i++){
+    const clave = p.bloques[i-1].slot + ">" + p.bloques[i].slot;
+    const pu = PUENTES[clave];
+    if(pu && Array.isArray(bloques[i].lineas) && bloques[i].lineas.length){
+      const linea = pu[vz] || pu.u;
+      bloques[i].lineas = [ (typeof bloques[i].lineas[0] === "string" ? linea : { t:linea }) ].concat(bloques[i].lineas);
+    }
+  }
   guardar();
   return { id:p.id, nombre:p.nombre, sub:p.sub, dur:p.dur, tema:p.tema, bloques:bloques };
 }
@@ -3877,7 +3895,8 @@ function abrirSOS(){
 }
 function sosBreath(){
   sosPaso(2);
-  $("#sosLinea").innerHTML = fraseCalma();
+  P.sosCalma = calmaSecuencia(); P.sosIdx = 0;
+  $("#sosLinea").innerHTML = P.sosCalma[0] || fraseCalma();
   $("#sosLinea").style.opacity = "1";
   const aro = $("#sosRespira"), txt = $("#sosGuia");
   respReiniciar = ()=>sosBreath();
@@ -3988,6 +4007,23 @@ function chequearRecordatorios(){
     if(r[s[0]] === hhmm && recNotif[key] !== 1){ recNotif[key] = 1; try{ new Notification(APP_NOMBRE + " · " + s[1], { body: s[2] }); }catch(e){} }
   });
 }
+// Etapa de cada frase de calma (paralelo a CALMA): 1 contención · 2 cuerpo · 3 respiro · 4 soltar · 5 perspectiva · 6 paz
+const CALMA_ETAPA = [3,1,6,5,4,1,2,3,1,5,4,4,2,6,5,4,5,5,2,4,2,3,6,2,5,2,1,3,5,2,4,6,3];
+// Construye la cadena de "Ahora mismo": recorre las etapas en orden (round-robin), con variedad dentro de cada etapa.
+function calmaSecuencia(){
+  const pool = calmaActivas().filter(f=>!fbOculto(f));
+  const base = pool.length ? pool : calmaActivas();
+  const grupos = {};
+  base.forEach(f=>{ const e = CALMA_ETAPA[CALMA.indexOf(f)] || 3; (grupos[e] = grupos[e] || []).push(f); });
+  Object.keys(grupos).forEach(k=>grupos[k].sort(()=>Math.random()-0.5));
+  const orden = [];
+  let quedan = true;
+  while(quedan){
+    quedan = false;
+    [1,2,3,4,5,6].forEach(e=>{ if(grupos[e] && grupos[e].length){ orden.push(grupos[e].shift()); quedan = true; } });
+  }
+  return orden.length ? orden : base;
+}
 function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
 (function cablearSOS(){
   const _rc1 = $("#respChipsRitual"), _rc2 = $("#respChipsSos");
@@ -4003,7 +4039,12 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   const si = $("#sosSaltarInt"); if(si) si.addEventListener("click", ()=>{ pausaAntes = null; sosBreath(); });
   const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
     const l = $("#sosLinea"); l.style.opacity = "0";
-    setTimeout(()=>{ l.innerHTML = fraseCalma(); l.style.opacity = "1"; }, 320);
+    setTimeout(()=>{
+      if(!P.sosCalma || !P.sosCalma.length) P.sosCalma = calmaSecuencia();
+      P.sosIdx = (P.sosIdx||0) + 1;
+      l.innerHTML = P.sosCalma[P.sosIdx % P.sosCalma.length];
+      l.style.opacity = "1";
+    }, 320);
   });
   const sc = $("#sosCompartir"); if(sc) sc.addEventListener("click", ()=>{
     const txt = ($("#sosLinea").textContent || "").trim(); if(!txt) return;
