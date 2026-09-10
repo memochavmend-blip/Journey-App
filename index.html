@@ -100,7 +100,9 @@ input,select{font:inherit;color:inherit}
   position:fixed;left:var(--vela-x);top:0;bottom:0;width:3px;z-index:60;pointer-events:none;
   padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
   transform:translateZ(0);will-change:transform;
+  display:none;
 }
+body.encendida #vela{display:block}
 .vela-tubo{position:relative;height:100%;width:3px}
 .vela-cera{
   position:absolute;inset:0;border-radius:2px;
@@ -178,6 +180,10 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 .rito:hover,.rito:focus-visible{transform:translateY(-1px);border-color:var(--linea-fuerte)}
 .rito:focus-visible{outline:2px solid var(--llama);outline-offset:3px}
+.rito.hecho{background:color-mix(in srgb,var(--llama) 8%,var(--panel));border-color:color-mix(in srgb,var(--llama) 28%,var(--linea))}
+.rito.hecho .rito-nom{color:var(--tinta-baja)}
+.rito-check{display:inline-flex;vertical-align:middle;margin-left:9px;width:19px;height:19px;border-radius:50%;background:var(--llama);align-items:center;justify-content:center}
+.rito-check svg{width:12px;height:12px;fill:none;stroke:var(--noche);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .rito-alto{display:flex;align-items:baseline;justify-content:space-between;gap:14px}
 .rito-num{
   font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--tinta-tenue);
@@ -507,16 +513,16 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .fb-med .fb-btn.fb-on{border-color:var(--llama);color:var(--llama)}
 
 /* ── Sonido (hub + pomodoro) ── */
-.concentra{position:fixed;inset:0;z-index:96;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px)}
-.concentra-salir{position:absolute;top:calc(env(safe-area-inset-top) + 20px);right:24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-tenue);transition:color .2s}
-.concentra-salir:hover,.concentra-salir:focus-visible{color:var(--tinta-baja)}
+.concentra{position:fixed;inset:0;z-index:96;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px)}
 .concentra-fase{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta-tenue);margin:0}
-.concentra-aro{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center}
+.concentra-aro{position:relative;width:158px;height:158px;display:flex;align-items:center;justify-content:center}
 .concentra-svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .concentra-pista{fill:none;stroke:var(--linea);stroke-width:1}
-.concentra-prog{fill:none;stroke:var(--llama);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:289.03;stroke-dashoffset:289.03;transition:stroke-dashoffset 1s linear;opacity:.75}
-.concentra-num{font-family:var(--serif);font-size:2.1rem;color:var(--tinta-baja);letter-spacing:.01em;font-variant-numeric:tabular-nums}
-.concentra-msg{font-family:var(--serif);font-size:1.15rem;line-height:1.45;color:var(--tinta-tenue);text-align:center;max-width:24ch;min-height:2.9em;margin:0;transition:opacity .5s ease}.son-now{display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--llama) 14%,transparent);border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 15px;margin-bottom:20px;font-size:13.5px;color:var(--tinta)}
+.concentra-prog{fill:none;stroke:var(--llama);stroke-width:1.4;stroke-linecap:round;stroke-dasharray:289.03;stroke-dashoffset:289.03;transition:stroke-dashoffset 1s linear;opacity:.7}
+.concentra-num{font-family:var(--serif);font-size:1.7rem;color:var(--tinta-baja);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.concentra-msg{font-family:var(--serif);font-size:1.15rem;line-height:1.5;color:var(--tinta-tenue);text-align:center;max-width:24ch;min-height:3em;margin:0;transition:opacity .5s ease}
+.concentra-salir{margin-top:8px;padding:13px 40px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:14px;letter-spacing:.02em;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.concentra-salir:hover,.concentra-salir:focus-visible{border-color:var(--llama);color:var(--tinta)}.son-now{display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--llama) 14%,transparent);border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 15px;margin-bottom:20px;font-size:13.5px;color:var(--tinta)}
 .son-stop{font-size:12px;color:var(--brasa);white-space:nowrap;padding:4px 8px}
 .son-cat{margin-bottom:20px}
 .son-cat-t{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 11px}
@@ -634,7 +640,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   86%{transform:scale(.72)}
   100%{transform:scale(.72)}
 }
-.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:0 0 34px;min-height:4.5rem;transition:opacity .5s ease}
+.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:24px 0 34px;min-height:4.5rem;transition:opacity .5s ease}
 .sos-paso{display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px}
 .sos-intro{font-family:var(--serif);font-size:1.4rem;color:var(--tinta);text-align:center;margin:0 0 30px;line-height:1.4}
 .sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
@@ -910,7 +916,6 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 </div>
 
 <div class="concentra oculto" id="concentra">
-  <button class="concentra-salir" id="concentraSalir">Terminar</button>
   <p class="concentra-fase" id="concentraFase">Enfoque</p>
   <div class="concentra-aro">
     <svg class="concentra-svg" viewBox="0 0 100 100" aria-hidden="true">
@@ -920,6 +925,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <span class="concentra-num" id="concentraNum">25:00</span>
   </div>
   <p class="concentra-msg" id="concentraMsg"></p>
+  <button class="concentra-salir" id="concentraSalir">Terminar</button>
 </div>
 
 <div class="sos oculto" id="despertar">
@@ -2324,6 +2330,8 @@ function terminar(){
     const d = hoyISO();
     E.dias[d] = E.dias[d] || {am:false,pm:false};
     if(id === "noche") E.dias[d].pm = true; else E.dias[d].am = true;
+    E.dias[d].hechos = E.dias[d].hechos || [];
+    if(RITUALES[id] && E.dias[d].hechos.indexOf(id) < 0) E.dias[d].hechos.push(id);
     guardar();
   }
   $("#velaQuemada").style.height = "100%";
@@ -2512,14 +2520,16 @@ function render(){
   $("#marcaPM").classList.toggle("hecho", !!hoy.pm);
 
   const sug = h < 12 ? "manana" : h < 19 ? "nucleo" : "noche";
+  const hechosHoy = (E.dias[hoyISO()] && E.dias[hoyISO()].hechos) || [];
   const cont = $("#ritos"); cont.innerHTML = "";
   ["manana","noche","nucleo"].forEach(id=>{
     const r = RITUALES[id];
+    const hecho = hechosHoy.indexOf(id) >= 0;
     const b = document.createElement("button");
-    b.className = "rito" + (id === sug ? " sugerido" : "");
+    b.className = "rito" + (id === sug && !hecho ? " sugerido" : "") + (hecho ? " hecho" : "");
     b.innerHTML =
       '<span class="rito-num">' + r.bloques.map(x=>x.num).join(" · ") + '</span>' +
-      '<span class="rito-alto"><span class="rito-nom">' + r.nombre + '</span>' +
+      '<span class="rito-alto"><span class="rito-nom">' + r.nombre + (hecho ? '<span class="rito-check" aria-label="Hecho hoy"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>' : '') + '</span>' +
       '<span class="rito-dur">' + r.dur + '</span></span>' +
       '<span class="rito-sub">' + r.sub + '</span>';
     b.addEventListener("click", ()=>abrirRitual(id));
