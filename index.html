@@ -282,6 +282,10 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 .respiro-aro.dentro{transform:scale(1.06);border-color:var(--llama)}
 .respiro-txt{font-family:var(--serif);font-size:1.2rem;color:var(--tinta-baja);letter-spacing:.02em}
+.respiro-aro{flex-direction:column;gap:2px}
+.respiro-num{font-family:var(--serif);font-size:1.6rem;color:var(--tinta-baja);opacity:.7;min-height:1.7rem;line-height:1}
+.sos-respira{flex-direction:column;gap:2px}
+.sos-num{font-family:var(--serif);font-size:1.5rem;color:var(--tinta-baja);opacity:.7;min-height:1.6rem;line-height:1}
 .resp-barra{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:34px}
 .resp-chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
 .resp-chip{padding:8px 13px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
@@ -838,7 +842,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <button class="sos-skip" id="sosSaltarInt">Prefiero no decir</button>
   </div>
   <div class="sos-paso oculto" id="sosP2">
-    <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span></div>
+    <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span><span class="sos-num" id="sosNum"></span></div>
     <div id="respChipsSos"></div>
     <p class="sos-linea" id="sosLinea"></p>
     <div class="sos-acc">
@@ -911,7 +915,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <p class="p-linea" id="pLinea" aria-live="polite" aria-atomic="true"></p>
     <p class="p-nota oculto" id="pNota"></p>
     <div class="respiro oculto" id="pRespiro">
-      <div class="respiro-aro" id="respiroAro"><span class="respiro-txt" id="respiroTxt">Inhala</span></div>
+      <div class="respiro-aro" id="respiroAro"><span class="respiro-txt" id="respiroTxt">Inhala</span><span class="respiro-num" id="respiroNum"></span></div>
       <div id="respChipsRitual"></div>
     </div>
   </div>
@@ -2024,6 +2028,15 @@ function iniciarMovimientos(){
   pintarControles();
   mostrar();
 }
+const APERTURA = {
+  manana: ["Hoy es un nuevo día.","Un día nuevo, sin estrenar.","Empieza otra vez. Hoy es tuyo.","Amanece, y con eso basta para empezar.","Hoy no tiene que ser perfecto para ser bueno.","Un nuevo comienzo, y estás en él."],
+  nucleo: ["Una pausa en medio del día.","Vuelve a ti un momento.","El día puede esperar un momento.","Un alto para recuperar el centro.","Este momento es tuyo, en medio de todo.","Respira. Aquí, ahora, todo puede esperar."],
+  noche: ["El día se acaba; puedes soltarlo.","Cierra el día en paz.","Ya hiciste suficiente por hoy.","Deja el día atrás; ahora descansa.","La noche llega; suelta lo de hoy.","El día termina. Puedes bajar los brazos."]
+};
+function mensajeApertura(){
+  const id = P.rito && P.rito.id, pool = APERTURA[id];
+  return (pool && pool.length) ? pool[Math.floor(Math.random()*pool.length)] : "Este momento es tuyo.";
+}
 function velaRito(modo){
   const obj = $("#velaObj"), instr = $("#velaInstr");
   $("#pCentro").classList.add("oculto");
@@ -2038,7 +2051,7 @@ function velaRito(modo){
       obj.classList.add("viva");                 // la llama y el resplandor crecen (CSS .viva)
       instr.style.opacity = "0";                 // se desvanece la instrucción
       setTimeout(()=>{                            // con la llama ya viva, se abre el umbral
-        instr.textContent = "Este momento es tuyo.";
+        instr.textContent = mensajeApertura();
         instr.style.opacity = "1";
       }, 560);
       setTimeout(()=>{ instr.style.opacity = "0"; }, 2060);  // el momento respira ~1.5 s y se disuelve
@@ -2142,13 +2155,14 @@ const RESPIROS = {
 };
 const RESP_ORDEN = ["serena","caja","478","coherente"];
 let respSesion = null, respReiniciar = null;
-function breathStop(){ if(respSesion){ clearTimeout(respSesion.t); respSesion = null; } Voz.callar(); }
+function breathStop(){ if(respSesion){ clearTimeout(respSesion.t); clearInterval(respSesion.ci); respSesion = null; } Voz.callar(); }
 // Motor único: anima un círculo + etiqueta según el patrón elegido, con voz opcional. Lo usan el Anclaje y "Ahora mismo".
 function breathEngine(circle, label, opts){
   breathStop();
   const pat = RESPIROS[opts.patron] || RESPIROS.serena;
-  const ses = { t:null, ciclo:0, fi:0 };
+  const ses = { t:null, ci:null, ciclo:0, fi:0 };
   respSesion = ses;
+  const cnt = opts.count || null;
   const vivo = ()=> respSesion === ses && (!opts.vigente || opts.vigente());
   const escala = (abierto, dur)=>{
     circle.style.transition = "transform " + dur + "ms cubic-bezier(.4,0,.5,1), border-color 1s ease";
@@ -2157,12 +2171,20 @@ function breathEngine(circle, label, opts){
   };
   circle.style.transition = "none"; circle.style.transform = "scale(0.78)"; circle.style.borderColor = "";
   void circle.offsetWidth;
+  const contar = (dur)=>{
+    if(!cnt) return;
+    clearInterval(ses.ci);
+    let restante = Math.round(dur/1000);
+    cnt.textContent = restante > 0 ? restante : "";
+    ses.ci = setInterval(()=>{ if(!vivo()){ clearInterval(ses.ci); return; } restante--; cnt.textContent = restante > 0 ? restante : ""; if(restante <= 0) clearInterval(ses.ci); }, 1000);
+  };
   const paso = ()=>{
     if(!vivo()) return;
     if(ses.fi >= pat.fases.length){ ses.fi = 0; ses.ciclo++; if(opts.onCiclo) opts.onCiclo(ses.ciclo); }
     if(opts.veces && ses.ciclo >= opts.veces){ if(opts.onDone) opts.onDone(); return; }
     const f = pat.fases[ses.fi], nombre = f[0], dur = f[1], abierto = !!f[2];
     label.textContent = nombre;
+    contar(dur);
     escala(abierto, dur);
     if(E.ajustes.respiroVoz && Voz.soporte) Voz.decir(nombre);
     ses.fi++;
@@ -2203,6 +2225,7 @@ function respirar(veces){
   respReiniciar = ()=>respirar(veces);
   breathEngine(aro, txt, {
     patron: E.ajustes.respiroPatron,
+    count: $("#respiroNum"),
     veces: veces,
     vigente: ()=> P.corriendo && P.i === miIndice,
     onCiclo: (c)=>{ pintar(Math.min(1, c/Math.max(1, veces))); },
@@ -2956,7 +2979,7 @@ function filtraTexto(lista){
   const l = lista.filter(x => perm[esCristiano(x) ? "cristiano" : "universal"]);
   return l.length ? l : lista;
 }
-function calmaActivas(){ return filtraTexto(CALMA); }
+function calmaActivas(){ let l = filtraTexto(CALMA); if(!esNoche()) l = l.filter(f=>CALMA_NOCHE.indexOf(CALMA.indexOf(f)) < 0); return l; }
 function mensajesActivos(){ return filtraTexto(MENSAJES); }
 
 // ── Feedback (👍/👎) → pesos por etiqueta + ocultar piezas ──
@@ -3902,6 +3925,7 @@ function sosBreath(){
   respReiniciar = ()=>sosBreath();
   breathEngine(aro, txt, {
     patron: E.ajustes.respiroPatron,
+    count: $("#sosNum"),
     vigente: ()=> !$("#sos").classList.contains("oculto") && !$("#sosP2").classList.contains("oculto")
   });
 }
@@ -4009,6 +4033,9 @@ function chequearRecordatorios(){
 }
 // Etapa de cada frase de calma (paralelo a CALMA): 1 contención · 2 cuerpo · 3 respiro · 4 soltar · 5 perspectiva · 6 paz
 const CALMA_ETAPA = [3,1,6,5,4,1,2,3,1,5,4,4,2,6,5,4,5,5,2,4,2,3,6,2,5,2,1,3,5,2,4,6,3];
+// Frases de calma que asumen que es de noche (índices en CALMA): solo se muestran de noche.
+const CALMA_NOCHE = [4,16,17,18,19];
+function esNoche(){ const h = new Date().getHours(); return h >= 21 || h < 6; }
 // Construye la cadena de "Ahora mismo": recorre las etapas en orden (round-robin), con variedad dentro de cada etapa.
 function calmaSecuencia(){
   const pool = calmaActivas().filter(f=>!fbOculto(f));
