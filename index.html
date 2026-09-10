@@ -507,16 +507,16 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .fb-med .fb-btn.fb-on{border-color:var(--llama);color:var(--llama)}
 
 /* ── Sonido (hub + pomodoro) ── */
-.concentra{position:fixed;inset:0;z-index:80;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px);animation:onbIn .5s ease}
+.concentra{position:fixed;inset:0;z-index:96;background:var(--fondo);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:30px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px)}
 .concentra-salir{position:absolute;top:calc(env(safe-area-inset-top) + 20px);right:24px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--tinta-tenue);transition:color .2s}
 .concentra-salir:hover,.concentra-salir:focus-visible{color:var(--tinta-baja)}
-.concentra-fase{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--llama);margin:0}
-.concentra-aro{position:relative;width:250px;height:250px;display:flex;align-items:center;justify-content:center}
+.concentra-fase{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta-tenue);margin:0}
+.concentra-aro{position:relative;width:190px;height:190px;display:flex;align-items:center;justify-content:center}
 .concentra-svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
-.concentra-pista{fill:none;stroke:var(--linea);stroke-width:1.6}
-.concentra-prog{fill:none;stroke:var(--llama);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:289.03;stroke-dashoffset:289.03;transition:stroke-dashoffset 1s linear}
-.concentra-num{font-family:var(--serif);font-size:3rem;color:var(--tinta);letter-spacing:.01em;font-variant-numeric:tabular-nums}
-.concentra-msg{font-family:var(--serif);font-size:1.3rem;line-height:1.4;color:var(--tinta-baja);text-align:center;max-width:22ch;min-height:2.8em;margin:0;transition:opacity .5s ease}.son-now{display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--llama) 14%,transparent);border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 15px;margin-bottom:20px;font-size:13.5px;color:var(--tinta)}
+.concentra-pista{fill:none;stroke:var(--linea);stroke-width:1}
+.concentra-prog{fill:none;stroke:var(--llama);stroke-width:1.6;stroke-linecap:round;stroke-dasharray:289.03;stroke-dashoffset:289.03;transition:stroke-dashoffset 1s linear;opacity:.75}
+.concentra-num{font-family:var(--serif);font-size:2.1rem;color:var(--tinta-baja);letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.concentra-msg{font-family:var(--serif);font-size:1.15rem;line-height:1.45;color:var(--tinta-tenue);text-align:center;max-width:24ch;min-height:2.9em;margin:0;transition:opacity .5s ease}.son-now{display:flex;align-items:center;justify-content:space-between;gap:12px;background:color-mix(in srgb,var(--llama) 14%,transparent);border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 15px;margin-bottom:20px;font-size:13.5px;color:var(--tinta)}
 .son-stop{font-size:12px;color:var(--brasa);white-space:nowrap;padding:4px 8px}
 .son-cat{margin-bottom:20px}
 .son-cat-t{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 11px}
@@ -810,8 +810,9 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <div class="panel oculto" id="panelSonido">
     <h1 class="panel-titulo">Sonido</h1>
     <div class="nav-cards">
-      <button class="nav-card" data-abrir="sonido"><span class="nav-card-tx"><span class="nav-card-t">Paisajes de sonido</span><span class="nav-card-s">Relajación · concentración · enfoque</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="sonido"><span class="nav-card-tx"><span class="nav-card-t">Concentración</span><span class="nav-card-s">Enfoque por tiempo · método Pomodoro</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="paisajes"><span class="nav-card-tx"><span class="nav-card-t">Paisajes de sonido</span><span class="nav-card-s">Relajación · concentración · enfoque</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="concentracion"><span class="nav-card-tx"><span class="nav-card-t">Concentración</span><span class="nav-card-s">Enfoque por tiempo · método Pomodoro</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="temporizador"><span class="nav-card-tx"><span class="nav-card-t">Temporizador y alarma</span><span class="nav-card-s">Para dormir y despertar con sonido</span></span><span class="nav-card-ch">›</span></button>
     </div>
   </div>
 
@@ -2083,8 +2084,8 @@ function velaRito(modo){
         instr.textContent = mensajeApertura();
         instr.style.opacity = "1";
       }, 560);
-      setTimeout(()=>{ instr.style.opacity = "0"; }, 2060);  // el momento respira ~1.5 s y se disuelve
-      setTimeout(iniciarMovimientos, 2440);
+      setTimeout(()=>{ instr.style.transition = "opacity 1.4s ease"; instr.style.opacity = "0"; }, 4200);  // se lee ~3.6 s y se disuelve lento
+      setTimeout(()=>{ instr.style.transition = ""; iniciarMovimientos(); }, 5800);
     };
   } else {
     obj.classList.add("viva");
@@ -2113,7 +2114,7 @@ function guardarReflexion(){
   }
   cerrarPractica();
 }
-function reflexionOtra(){ guardarReflexion(); }
+function reflexionOtra(){ guardarReflexion(); mostrarTab("explorar"); }
 
 function mostrar(){
   P.objetivo = 0; P.acumulado = 0;
@@ -2955,14 +2956,30 @@ function refrescarChips(){
   document.querySelectorAll(".son-chip").forEach(ch=>ch.classList.toggle("on", ch.dataset.esc === sonidoManual));
 }
 
-function hojaSonido(){
+function hojaPaisajes(){
   let cuerpo = '<div id="sonNow">' + estadoSonido() + '</div>';
   SONIDOS.forEach(c=>{
     cuerpo += '<div class="son-cat"><p class="son-cat-t">' + esc(c.cat) + '</p><div class="son-chips">' +
       c.escenas.map(e=>'<button class="son-chip'+(sonidoManual===e[0]?' on':'')+'" data-esc="'+e[0]+'">'+esc(e[1])+'</button>').join("") +
       '</div>' + (c.nota ? '<p class="campo-ayuda">'+esc(c.nota)+'</p>' : '') + '</div>';
   });
-  cuerpo += '<div class="son-cat"><p class="son-cat-t">Temporizador de sueño</p><div class="segmento" id="sonDormir">' +
+  hoja("Paisajes de sonido", "Sonidos para relajación, concentración y enfoque. Siguen sonando mientras usas la app.",
+    cuerpo + '<div class="acciones"><button class="accion" id="sonCerrar">Cerrar</button></div>',
+    ()=>{
+      document.querySelectorAll(".son-chip").forEach(ch=>{
+        ch.addEventListener("click", ()=>{
+          if(sonidoManual === ch.dataset.esc){ detenerSonido(); }
+          else { reproducirSonido(ch.dataset.esc); }
+          refrescarChips(); pintarSonNow();
+        });
+      });
+      const s = $("#sonStop"); if(s) s.addEventListener("click", ()=>{ detenerSonido(); refrescarChips(); pintarSonNow(); });
+      $("#sonCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function hojaTemporizador(){
+  let cuerpo = '<div class="son-cat"><p class="son-cat-t">Temporizador de sueño</p><div class="segmento" id="sonDormir">' +
     [[15,"15"],[30,"30"],[45,"45"],[60,"60"]].map(o=>'<button type="button" class="seg'+(((E.ajustes.dormir||15)===o[0])?' activo':'')+'" data-min="'+o[0]+'">'+o[1]+' min</button>').join("") +
     '</div><div id="sonDormirEstado">' + estadoDormir() + '</div>' +
     '<p class="campo-ayuda">Reproduce un paisaje de relajación y se apaga solo tras ese tiempo, para no fragmentar el sueño toda la noche.</p></div>';
@@ -2975,28 +2992,9 @@ function hojaSonido(){
       '</select></div>' +
       '<p class="campo-ayuda">Suena cuando la app está abierta a esa hora. Para que despierte con la app cerrada se necesita el mismo paso extra que las notificaciones (versión nativa).</p>' +
     '</div></div>';
-  cuerpo += '<div class="son-pomo"><p class="son-cat-t">Concentración · método Pomodoro</p>' +
-    '<p class="pomo-sub">Bloques de enfoque con descansos. Elige tu método.</p>' +
-    '<div class="campo"><div class="segmento" id="pomoCiclo">' +
-      METODOS.map(mt=>'<button type="button" class="seg'+((Pomo.foco===mt.foco)?' activo':'')+'" data-foco="'+mt.foco+'" data-desc="'+mt.descanso+'">'+mt.nom+' · '+mt.desc+'</button>').join("") +
-    '</div></div>' +
-    '<div class="campo"><label class="campo-et" for="pomoEsc">Sonido de enfoque</label><select class="campo-sel" id="pomoEsc">' +
-      [["concentracion","Enfoque"],["marron","Ruido marrón"],["binaural","Ondas binaurales"],["blanco","Ruido blanco"]].map(e=>'<option value="'+e[0]+'"'+(Pomo.escena===e[0]?' selected':'')+'>'+e[1]+'</option>').join("") +
-    '</select></div>' +
-    '<div class="acciones" style="margin-top:0"><button class="accion llena" id="pomoBtn">Iniciar concentración</button></div>' +
-    '</div>';
-
-  hoja("Sonido", "Paisajes para relajación, concentración y enfoque. Sigue sonando mientras usas la app.",
+  hoja("Temporizador y alarma", "Para dormir sin que suene toda la noche, y despertar con sonido.",
     cuerpo + '<div class="acciones"><button class="accion" id="sonCerrar">Cerrar</button></div>',
     ()=>{
-      document.querySelectorAll(".son-chip").forEach(ch=>{
-        ch.addEventListener("click", ()=>{
-          if(sonidoManual === ch.dataset.esc){ detenerSonido(); }
-          else { reproducirSonido(ch.dataset.esc); }
-          refrescarChips(); pintarPomo();
-        });
-      });
-      const s = $("#sonStop"); if(s) s.addEventListener("click", ()=>{ detenerSonido(); refrescarChips(); pintarPomo(); });
       document.querySelectorAll("#sonDormir .seg").forEach(b=>b.addEventListener("click", ()=>{
         document.querySelectorAll("#sonDormir .seg").forEach(x=>x.classList.remove("activo"));
         b.classList.add("activo");
@@ -3014,6 +3012,22 @@ function hojaSonido(){
       });
       const ah = $("#alarmaHora"); if(ah) ah.addEventListener("change", ()=>{ E.ajustes.alarma = E.ajustes.alarma||{on:true,hora:"07:00",escena:"eter"}; E.ajustes.alarma.hora = ah.value; guardar(); });
       const ae = $("#alarmaEsc"); if(ae) ae.addEventListener("change", ()=>{ E.ajustes.alarma = E.ajustes.alarma||{on:true,hora:"07:00",escena:"eter"}; E.ajustes.alarma.escena = ae.value; guardar(); });
+      $("#sonCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function hojaConcentracion(){
+  let cuerpo = '<p class="pomo-sub">Bloques de enfoque con descansos. Elige tu método y empieza.</p>' +
+    '<div class="campo"><label class="campo-et">Método</label><div class="segmento" id="pomoCiclo">' +
+      METODOS.map(mt=>'<button type="button" class="seg'+((Pomo.foco===mt.foco)?' activo':'')+'" data-foco="'+mt.foco+'" data-desc="'+mt.descanso+'">'+mt.nom+' · '+mt.desc+'</button>').join("") +
+    '</div></div>' +
+    '<div class="campo"><label class="campo-et" for="pomoEsc">Sonido de enfoque</label><select class="campo-sel" id="pomoEsc">' +
+      [["concentracion","Enfoque"],["marron","Ruido marrón"],["binaural","Ondas binaurales"],["blanco","Ruido blanco"]].map(e=>'<option value="'+e[0]+'"'+(Pomo.escena===e[0]?' selected':'')+'>'+e[1]+'</option>').join("") +
+    '</select></div>' +
+    '<div class="acciones" style="margin-top:8px"><button class="accion llena" id="pomoBtn">Iniciar concentración</button></div>';
+  hoja("Concentración", "Enfoque por tiempo · método Pomodoro.",
+    cuerpo + '<div class="acciones"><button class="accion" id="sonCerrar">Cerrar</button></div>',
+    ()=>{
       document.querySelectorAll("#pomoCiclo .seg").forEach(b=>{
         b.addEventListener("click", ()=>{
           document.querySelectorAll("#pomoCiclo .seg").forEach(x=>x.classList.remove("activo"));
@@ -3021,7 +3035,7 @@ function hojaSonido(){
           Pomo.foco = +b.dataset.foco; Pomo.descanso = +b.dataset.desc;
         });
       });
-      const pe = $("#pomoEsc"); if(pe) pe.addEventListener("change", ()=>{ Pomo.escena = pe.value; if(Pomo.activo && Pomo.modo === "foco") reproducirSonido(Pomo.escena); refrescarChips(); });
+      const pe = $("#pomoEsc"); if(pe) pe.addEventListener("change", ()=>{ Pomo.escena = pe.value; if(Pomo.activo && Pomo.modo === "foco") reproducirSonido(Pomo.escena); });
       $("#pomoBtn").addEventListener("click", ()=>{ iniciarPomo(); });
       $("#sonCerrar").addEventListener("click", cerrarHoja);
     });
@@ -3779,7 +3793,9 @@ document.addEventListener("click", e=>{
   else if(k === "arquitecto") hojaArquitecto();
   else if(k === "journal") hojaJournal();
   else if(k === "meditacion") hojaMeditacion();
-  else if(k === "sonido") hojaSonido();
+  else if(k === "paisajes") hojaPaisajes();
+  else if(k === "concentracion") hojaConcentracion();
+  else if(k === "temporizador") hojaTemporizador();
   else if(k === "doctrina") hojaDoctrina();
   else if(k === "historias") hojaHistorias();
   else if(k === "salmos") hojaSalmos();
