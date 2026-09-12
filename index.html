@@ -582,6 +582,10 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-area:focus{border-color:var(--llama)}
 .onb-preview{font-family:var(--serif);font-style:italic;font-size:1.05rem;line-height:1.5;color:var(--tinta-baja);margin:18px 0 8px;min-height:2.6em;opacity:0;transform:translateY(4px);transition:opacity .5s ease,transform .5s ease}
 .onb-preview.visible{opacity:1;transform:none}
+.onb-opt-desc{display:flex;flex-direction:column;gap:3px;align-items:flex-start;text-align:left}
+.onb-opt-nom{font-family:var(--serif);font-size:1.15rem}
+.onb-opt-sub{font-size:12.5px;color:var(--tinta-tenue);letter-spacing:.01em}
+.onb-opt-desc.on .onb-opt-sub{color:var(--tinta-baja)}
 .onb-chips{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:30px}
 .onb-chip{padding:12px 16px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:14px;color:var(--tinta-baja);transition:border-color .2s,color .2s,background .2s}
 .onb-chip.on{border-color:var(--llama);color:var(--tinta);background:color-mix(in srgb,var(--llama) 16%,transparent)}
@@ -611,13 +615,16 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .nivel:hover,.nivel:focus-visible{opacity:.8}
 .nivel:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:8px}
 .nivel-svg{width:26px;height:38px;display:block}
-.nivel-glow{fill:var(--llama);filter:blur(5px)}
-.nivel-flama{fill:var(--llama)}
+.nivel-glow{fill:var(--llama);filter:blur(5px);transition:opacity 1.1s ease}
+.nivel-flama{fill:var(--llama);transition:transform 1.1s cubic-bezier(.3,.8,.3,1)}
 .nivel-cuerpo{fill:var(--cera)}
+.nivel-lleno{fill:color-mix(in srgb,var(--llama) 45%,var(--cera));transition:height 1.1s cubic-bezier(.3,.8,.3,1),y 1.1s cubic-bezier(.3,.8,.3,1)}
 .nivel-txt{display:flex;flex-direction:column;gap:1px}
 .nivel-nom{font-family:var(--serif);font-size:1.15rem;color:var(--tinta);line-height:1.1}
 .nivel-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue)}
 .nivel-det{text-align:center;padding:8px 0}
+.nivel-det-vela{display:flex;justify-content:center;margin:0 0 20px}
+.nivel-det-vela svg{width:110px;height:184px}
 .nivel-det-nom{font-family:var(--serif);font-size:2rem;color:var(--tinta);margin:0 0 8px}
 .nivel-det-desc{font-family:var(--serif);font-size:1.15rem;line-height:1.5;color:var(--tinta-baja);margin:0 auto 28px;max-width:26ch;font-style:italic}
 .nivel-escala{display:flex;flex-direction:column;gap:2px;max-width:220px;margin:0 auto 22px;text-align:left}
@@ -795,6 +802,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
         <ellipse class="nivel-glow" id="nivelGlow" cx="20" cy="15" rx="15" ry="17"></ellipse>
         <path class="nivel-flama" id="nivelFlama" d="M20 5 C25 12 25 19 20 22 C15 19 15 12 20 5 Z"></path>
         <rect class="nivel-cuerpo" x="13" y="22" width="14" height="30" rx="2"></rect>
+        <rect class="nivel-lleno" id="nivelLleno" x="13" y="52" width="14" height="0" rx="2"></rect>
       </svg></span>
       <span class="nivel-txt"><span class="nivel-nom" id="nivelNom">Chispa</span><span class="nivel-sub">tu vela</span></span>
     </button>
@@ -1491,6 +1499,37 @@ const CALMA = [
   "Una mano en el vientre. Siente cómo sube y baja. Solo eso."
 ];
 // ── Afirmaciones (primera persona) — etiquetadas por subtema del perfil ──
+// Contenido budista (mindfulness, impermanencia, desapego, compasión). Voz en primera persona —
+// autenticidad de la práctica: entrenas tu propia atención, no te habla una deidad.
+const AFIRMACIONES_BUD = [
+  { t:"budista", x:"Todo cambia; este momento también pasará." },
+  { t:"budista", x:"Suelto el apego a lo que no puedo controlar." },
+  { t:"budista", x:"Observo mis pensamientos sin creerles todo." },
+  { t:"budista", x:"Este instante es suficiente. No me falta nada ahora." },
+  { t:"budista", x:"Respiro, y vuelvo al presente." },
+  { t:"budista", x:"El dolor es parte de la vida; el sufrimiento que le agrego, no." },
+  { t:"budista", x:"Me trato con la misma compasión que ofrecería a un amigo." },
+  { t:"budista", x:"No soy mis pensamientos; soy quien los observa." },
+  { t:"budista", x:"Dejo ir lo que ya pasó; suelto lo que aún no llega." },
+  { t:"budista", x:"La calma ya está en mí; solo vuelvo a ella." },
+  { t:"budista", x:"Acepto lo que es, sin pelearme con ello." },
+  { t:"budista", x:"Cada respiración me ancla en el ahora." },
+  { t:"budista", x:"Suelto la necesidad de que todo sea distinto." },
+  { t:"budista", x:"En la quietud, encuentro claridad." },
+  { t:"budista", x:"Lo que resisto, persiste; lo que acepto, se transforma." },
+  { t:"budista", x:"Mi mente es como el cielo; los pensamientos, solo nubes que pasan." }
+];
+const CALMA_BUD = [
+  "Respira. Este momento es lo único que existe.",
+  "Como una ola, esto surge y también pasará.",
+  "Suelta. Nada tienes que sostener ahora mismo.",
+  "Observa el pensamiento, y déjalo ir como una nube.",
+  "Vuelve al aliento. Ahí está tu ancla.",
+  "El malestar también es impermanente.",
+  "No luches con lo que sientes; solo obsérvalo pasar.",
+  "En la respiración, encuentras el ahora."
+];
+
 const AFIRMACIONES = [
   { t:"confianza", x:"Confío en lo que sé y en lo que soy capaz de aprender." },
   { t:"confianza", x:"Tengo lo que se necesita para lo que tengo enfrente." },
@@ -2110,18 +2149,45 @@ function nivelActual(){
   return { nivel:NIVELES[idx], indice:idx, total:NIVELES.length, puntos:p };
 }
 function sumarProgreso(n){ E.progreso = E.progreso || { puntos:0 }; E.progreso.puntos = (E.progreso.puntos||0) + (n||1); guardar(); }
+function progresoVela(){
+  const p = (E.progreso && E.progreso.puntos) || 0;
+  const max = NIVELES[NIVELES.length-1].min || 1;
+  const total = Math.max(0.04, Math.min(1, p / max));   // 0.04..1 (nunca vacío del todo)
+  const n = nivelActual(), sig = NIVELES[n.indice+1];
+  const frac = sig ? Math.min(1, (p - n.nivel.min) / (sig.min - n.nivel.min)) : 1;
+  return { total, frac, indice:n.indice, nivel:n.nivel, total_pts:p };
+}
+// Pinta una vela SVG (glow, llama, relleno de cera) según el progreso total. bodyTop/bodyBot = geometría del cuerpo.
+function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot){
+  const alto = bodyBot - bodyTop;
+  if(lleno){ const h = g.total * alto; lleno.setAttribute("height", h.toFixed(1)); lleno.setAttribute("y", (bodyBot - h).toFixed(1)); }
+  if(flama){ flama.style.transformOrigin = "20px " + bodyTop + "px"; flama.style.transform = "scale(" + (0.5 + g.total * 0.65).toFixed(3) + ")"; }
+  if(glow){ glow.style.opacity = (0.1 + g.total * 0.5).toFixed(3); }
+}
 function pintarNivel(){
-  const n = nivelActual();
-  const nom = $("#nivelNom"); if(nom) nom.textContent = n.nivel.nom;
-  const glow = $("#nivelGlow"); if(glow) glow.style.opacity = (0.12 + n.indice * 0.15).toFixed(2);
-  const flama = $("#nivelFlama"); if(flama){ flama.style.transformOrigin = "20px 22px"; flama.style.transform = "scale(" + (0.72 + n.indice * 0.07).toFixed(2) + ")"; }
+  const g = progresoVela();
+  const nom = $("#nivelNom"); if(nom) nom.textContent = g.nivel.nom;
+  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 22, 52);
 }
 function hojaNivel(){
-  const n = nivelActual();
-  let cuerpo = '<div class="nivel-det"><p class="nivel-det-nom">' + esc(n.nivel.nom) + '</p><p class="nivel-det-desc">' + esc(n.nivel.desc) + '</p>';
+  const g = progresoVela(), n = nivelActual();
+  let cuerpo = '<div class="nivel-det">' +
+    '<div class="nivel-det-vela"><svg viewBox="0 0 120 200" aria-hidden="true">' +
+      '<ellipse class="nivel-glow" id="nivelDetGlow" cx="60" cy="46" rx="46" ry="52"></ellipse>' +
+      '<path class="nivel-flama" id="nivelDetFlama" d="M60 14 C74 40 74 62 60 72 C46 62 46 40 60 14 Z"></path>' +
+      '<rect class="nivel-cuerpo" x="42" y="72" width="36" height="112" rx="5"></rect>' +
+      '<rect class="nivel-lleno" id="nivelDetLleno" x="42" y="184" width="36" height="0" rx="5"></rect>' +
+    '</svg></div>' +
+    '<p class="nivel-det-nom">' + esc(n.nivel.nom) + '</p><p class="nivel-det-desc">' + esc(n.nivel.desc) + '</p>';
   cuerpo += '<div class="nivel-escala">' + NIVELES.map((nv,i)=>'<div class="nivel-paso'+(i===n.indice?' actual':'')+(i<n.indice?' pasado':'')+'"><span class="nivel-paso-pt"></span><span class="nivel-paso-nom">'+esc(nv.nom)+'</span></div>').join("") + '</div>';
   cuerpo += '<p class="campo-ayuda">Tu vela crece con cada ritual y cada pausa. No cuenta días ni rachas — solo tu camino, a tu ritmo.</p></div>';
-  hoja("Tu vela", "", cuerpo + '<div class="acciones"><button class="accion llena" id="nivelCerrar">Listo</button></div>', ()=>{ const c=$("#nivelCerrar"); if(c) c.addEventListener("click", cerrarHoja); });
+  hoja("Tu vela", "", cuerpo + '<div class="acciones"><button class="accion llena" id="nivelCerrar">Listo</button></div>', ()=>{
+    const c=$("#nivelCerrar"); if(c) c.addEventListener("click", cerrarHoja);
+    const glow=$("#nivelDetGlow"), flama=$("#nivelDetFlama"), lleno=$("#nivelDetLleno");
+    // arranca apagada y se llena al abrir (animación de progreso)
+    velaVisual(glow, flama, lleno, { total:0.04 }, 72, 184);
+    setTimeout(()=>{ velaVisual(glow, flama, lleno, g, 72, 184); }, 240);
+  });
 }
 const APERTURA = {
   manana: ["Hoy es un nuevo día.","Un día nuevo, sin estrenar.","Empieza otra vez. Hoy es tuyo.","Amanece, y con eso basta para empezar.","Hoy no tiene que ser perfecto para ser bueno.","Un nuevo comienzo, y estás en él."],
@@ -3111,7 +3177,8 @@ function hojaConcentracion(){
 function tradPermitidas(){
   const t = (E.perfil && E.perfil.tono) || "mezcla";
   if(t === "cristiano") return { cristiano:1, universal:1 };
-  if(t === "espiritual") return { universal:1, budista:1 };
+  if(t === "espiritual") return { universal:1 };
+  if(t === "budista") return { budista:1, universal:1 };
   return { cristiano:1, universal:1, budista:1 };
 }
 function esCristiano(txt){ return /ancla-ref|\bDios\b|\bSe(ñ|n)or\b|Cristo|Esp[ií]ritu Santo|Jes[uú]s/i.test(String(txt)); }
@@ -3120,7 +3187,7 @@ function filtraTexto(lista){
   const l = lista.filter(x => perm[esCristiano(x) ? "cristiano" : "universal"]);
   return l.length ? l : lista;
 }
-function calmaActivas(){ let l = filtraTexto(CALMA); if(!esNoche()) l = l.filter(f=>CALMA_NOCHE.indexOf(CALMA.indexOf(f)) < 0); return l; }
+function calmaActivas(){ let l = filtraTexto(CALMA); const perm = tradPermitidas(); if(perm.budista) l = l.concat(CALMA_BUD); if(!esNoche()) l = l.filter(f=>CALMA_NOCHE.indexOf(CALMA.indexOf(f)) < 0); return l; }
 function mensajesActivos(){ return filtraTexto(MENSAJES); }
 
 // ── Feedback (👍/👎) → pesos por etiqueta + ocultar piezas ──
@@ -3295,8 +3362,9 @@ function vozManifestacion(m){ return vozLinea(m.x); }
 function afirmacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = tradPermitidas();
   const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>DIALOGO[a.x] || perm[esCristiano(a.x)?"cristiano":"universal"]);
+  const bud = perm.budista ? AFIRMACIONES_BUD.slice() : [];
   const mios = (E.contenido.afirmaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
-  let l = base.concat(mios).filter(a=>!fbOculto(a.x));
+  let l = base.concat(bud).concat(mios).filter(a=>!fbOculto(a.x));
   if(!l.length) l = AFIRMACIONES.concat(mios).filter(a=>!fbOculto(a.x));
   if(!l.length) l = AFIRMACIONES.slice();
   return l.sort((a,b)=>(fbPeso([b.t]) + (b.t==="mio"?1.4:0) + Math.random()*0.7) - (fbPeso([a.t]) + (a.t==="mio"?1.4:0) + Math.random()*0.7));
@@ -3579,7 +3647,9 @@ function renderEditor(){
 }
 function hojaPreferenciasContenido(){
   const cuerpo = ()=>{
-    let h = '<div class="pref-bloque"><p class="pref-t">¿A quién le hablas?</p><div class="onb-opts" id="prefDirige">' +
+    let h = '<div class="pref-bloque"><p class="pref-t">¿Qué contenido buscas?</p><div class="onb-opts" id="prefTrad">' +
+      TRADICION.map(t=>'<button type="button" class="onb-opt'+(E.perfil.tono===t[0]?" on":"")+'" data-ptrad="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div></div>';
+    h += '<div class="pref-bloque"><p class="pref-t">¿A quién le hablas?</p><div class="onb-opts" id="prefDirige">' +
       DIRIGE.map(t=>'<button type="button" class="onb-opt'+(E.perfil.dirige===t[0]?" on":"")+'" data-pdirige="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div></div>';
     h += '<div class="pref-bloque"><p class="pref-t">¿Qué te trae aquí?</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-pcat") + '</div>';
     h += '<div class="pref-bloque"><p class="pref-t">¿Qué quieres llamar a tu vida?</p><textarea class="onb-area" id="prefIntencion" rows="2" placeholder="Opcional — una frase, o déjalo vacío">'+esc(E.perfil.intencion||"")+'</textarea></div>';
@@ -3598,6 +3668,7 @@ function hojaPreferenciasContenido(){
       const re = ()=>{ $("#prefCont").innerHTML = cuerpo(); cablear(); };
       function cablear(){
         document.querySelectorAll("[data-pcat]").forEach(b=>b.addEventListener("click", ()=>{ toggleArr(E.perfil.categorias, b.dataset.pcat); guardar(); re(); }));
+        document.querySelectorAll("#prefTrad .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#prefTrad .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.ptrad; guardar(); }));
         document.querySelectorAll("#prefDirige .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#prefDirige .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); aplicarDirige(b.dataset.pdirige); guardar(); }));
         const pin = $("#prefIntencion"); if(pin) pin.addEventListener("input", ()=>{ E.perfil.intencion = pin.value; guardar(); });
         document.querySelectorAll("[data-psub]").forEach(b=>b.addEventListener("click", ()=>{ const p = b.dataset.psub.split("|"), c = p[0], tag = p[1]; b.classList.toggle("on"); E.perfil.sub[c] = E.perfil.sub[c] || []; toggleArr(E.perfil.sub[c], tag); guardar(); }));
@@ -3967,6 +4038,12 @@ const CATEGORIAS = [
 ];
 const TONOS = [["cristiano","Cristiano y bíblico"],["espiritual","Espiritual, sin religión específica"],["mezcla","Una mezcla"]];
 const DIRIGE = [["dios","A Dios"],["universo","A la vida, al universo"],["yo","A mi voz interior"],["abierto","A una mezcla de todo"]];
+const TRADICION = [
+  ["cristiano","Cristiano","Escritura, oración, fe cristiana"],
+  ["espiritual","Espiritual","Universal, sin religión específica"],
+  ["budista","Budista","Mindfulness, impermanencia, compasión"],
+  ["mezcla","Una mezcla","Un poco de cada camino"]
+];
 const SONIDO_ONB = [["vela","Vela"],["oceano","Océano"],["lluvia","Lluvia"],["eter","Éter"]];
 const DIRIGE_PREVIEW = {
   dios: "Te hablará así: «Eres suficiente. Te hice a mi imagen.»",
@@ -3975,7 +4052,7 @@ const DIRIGE_PREVIEW = {
   abierto: "Una mezcla de las tres voces, según el momento."
 };
 const DIRIGE_TONO = { dios:"cristiano", universo:"espiritual", yo:"espiritual", abierto:"mezcla" };
-function aplicarDirige(d){ E.perfil.dirige = d; E.perfil.tono = DIRIGE_TONO[d] || "mezcla"; }
+function aplicarDirige(d){ E.perfil.dirige = d; }   // solo la voz; el contenido lo decide la tradición
 const SEGUIMIENTOS = {
   oracion:      { q:"¿En qué momentos rezas?", opts:[["manana","Mañana"],["noche","Noche"],["dia","A lo largo del día"]] },
   manifestacion:{ q:"¿Qué quieres llamar a tu vida?", opts:[["abundancia","Abundancia"],["salud","Salud"],["relaciones","Relaciones"],["proposito","Propósito y carrera"]] },
@@ -3993,7 +4070,7 @@ function onbBtn(label, fin){ return '<button class="onb-btn" id="onbNext" data-f
 
 let onbSeq = [], onbIdx = 0;
 function onbConstruirSeq(){
-  const seq = ["bienvenida","privacidad","nombre","dirige","categorias","intencion","sonido"];
+  const seq = ["bienvenida","privacidad","nombre","tradicion","dirige","categorias","intencion","sonido"];
   (E.perfil.categorias||[]).forEach(c=>{ if(SEGUIMIENTOS[c]) seq.push("seg:"+c); });
   seq.push("preferencias","listo");
   return seq;
@@ -4008,6 +4085,9 @@ function onbPantalla(tipo){
   if(tipo === "categorias") return {
     html:'<h1 class="onb-t">¿Qué te trae aquí?</h1><p class="onb-p">Elige lo que te importa. Puedes cambiarlo después.</p>' + onbChips(CATEGORIAS, E.perfil.categorias, "data-cat") + onbBtn("Continuar"),
     wire:()=>{ document.querySelectorAll("[data-cat]").forEach(b=>b.addEventListener("click", ()=>{ b.classList.toggle("on"); toggleArr(E.perfil.categorias, b.dataset.cat); })); } };
+  if(tipo === "tradicion") return {
+    html:'<h1 class="onb-t">¿Qué contenido buscas?</h1><p class="onb-p">Define de qué se nutre tu práctica. Puedes cambiarlo después.</p><div class="onb-opts" id="onbTrad">' + TRADICION.map(t=>'<button type="button" class="onb-opt onb-opt-desc'+(E.perfil.tono===t[0]?" on":"")+'" data-trad="'+t[0]+'"><span class="onb-opt-nom">'+esc(t[1])+'</span><span class="onb-opt-sub">'+esc(t[2])+'</span></button>').join("") + '</div>' + onbBtn("Continuar"),
+    wire:()=>{ document.querySelectorAll("#onbTrad .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbTrad .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); E.perfil.tono = b.dataset.trad; })); } };
   if(tipo === "dirige") return {
     html:'<h1 class="onb-t">¿A quién le hablas cuando te detienes?</h1><p class="onb-p">Esto le da voz a tu práctica. Puedes cambiarlo después.</p><div class="onb-opts" id="onbDirige">' + DIRIGE.map(t=>'<button type="button" class="onb-opt'+(E.perfil.dirige===t[0]?" on":"")+'" data-dirige="'+t[0]+'">'+esc(t[1])+'</button>').join("") + '</div><p class="onb-preview' + (E.perfil.dirige?" visible":"") + '" id="dirigePreview">' + (E.perfil.dirige ? esc(DIRIGE_PREVIEW[E.perfil.dirige]||"") : "") + '</p>' + onbBtn("Continuar"),
     wire:()=>{ document.querySelectorAll("#onbDirige .onb-opt").forEach(b=>b.addEventListener("click", ()=>{ document.querySelectorAll("#onbDirige .onb-opt").forEach(x=>x.classList.remove("on")); b.classList.add("on"); aplicarDirige(b.dataset.dirige); const pv=$("#dirigePreview"); if(pv){ pv.textContent = DIRIGE_PREVIEW[b.dataset.dirige]||""; pv.classList.add("visible"); } })); } };
