@@ -512,6 +512,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .fb-med .fb-btn{width:34px;height:34px}
 .fb-med .fb-btn.fb-on{border-color:var(--llama);color:var(--llama)}
 
+.version-sello{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--tinta-tenue);margin:18px 0 4px}
 /* ── Sonido (hub + pomodoro) ── */
 .concentra{position:fixed;inset:0;z-index:96;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px)}
 .concentra-fase{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta-tenue);margin:0}
@@ -1005,6 +1006,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <script>
 "use strict";
+const APP_VER = "v6";  // subir junto con VERSION en sw.js en cada despliegue
 
 /* ════════════════ ALMACENAMIENTO ════════════════ */
 const Guardado = (() => {
@@ -3747,6 +3749,7 @@ function hojaAjustes(){
       '<div class="acciones" style="margin-top:0"><button class="accion" id="sExportar">Exportar datos</button>' +
       '<label class="accion" for="sImportar" style="cursor:pointer">Importar datos<input type="file" id="sImportar" accept="application/json,.json" style="display:none"></label></div>' +
       '<p class="campo-ayuda">Descarga una copia de tu progreso, oraciones y ajustes. Guárdala en Drive o Dropbox. Impórtala para restaurar en otro dispositivo o si reinstalas.</p></div>' +
+    '<p class="version-sello">Práctica · ' + APP_VER + '</p>' +
     '<div class="acciones"><button class="accion llena" id="sCerrar">Listo</button></div>',
     ()=>{
       const sw = (sel, cb)=>{ const b=$(sel); if(!b) return; b.addEventListener("click", ()=>{ const on = !b.classList.contains("on"); b.classList.toggle("on", on); cb(on); guardar(); }); };
@@ -3893,7 +3896,13 @@ try{
   }
 }catch(e){}
 if("serviceWorker" in navigator && location.protocol.startsWith("http")){
-  navigator.serviceWorker.register("sw.js").catch(()=>{});
+  const _teniaCtrl = !!navigator.serviceWorker.controller;
+  navigator.serviceWorker.register("sw.js").then(reg=>{ try{ reg.update(); }catch(e){} }).catch(()=>{});
+  let _recargando = false;
+  navigator.serviceWorker.addEventListener("controllerchange", ()=>{
+    if(_recargando || !_teniaCtrl) return;   // no recargar en la primera instalación ni en bucle
+    _recargando = true; location.reload();
+  });
 }
 
 /* ════════════════ ARRANQUE ════════════════ */
