@@ -1367,6 +1367,8 @@ const PUENTES = {
 function puenteVoz(){ return (E.perfil.dirige === "dios" || E.perfil.tono === "cristiano") ? "c" : "u"; }
 function construirRitual(id, sesgo){
   const p = RITUALES[id]; if(!p) return null;
+  _vozRitual = vozRitual(id);                              // la voz del ritual manda dentro del ritual
+  const esCrist = (E.perfil && E.perfil.tono) === "cristiano";
   const bloques = p.bloques.map(b=>{
     if(b.slot === "vision") return { num:b.num, nom:b.nom, rub:b.rub, dinamico:bloqueVision };
     if(b.slot === "respiro") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}] };
@@ -1376,19 +1378,23 @@ function construirRitual(id, sesgo){
       return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}].concat((pres.length?pres:["Estoy aquí."]).map(t=>({t:t, hold:6000}))) };
     }
     const txt = ritLineas(id, b, sesgo);
-    const lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
+    let lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
+    // Marcador mínimo y silencioso: un respiro antes del umbral de oración (Sello cristiano), donde la voz pasa a dirigirse a Dios.
+    if(b.slot === "cierre" && esCrist) lineas = [{respiro:2}].concat(lineas);
     return { num:b.num, nom:b.nom, rub:b.rub, lineas:lineas };
   });
-  // Insertar puentes: bisagra al inicio del movimiento destino cuando el pivote lo pide.
+  // Puentes (líneas en primera persona, coherentes con la voz YO): bisagra al inicio del movimiento destino.
   const vz = puenteVoz();
   for(let i = 1; i < bloques.length; i++){
     const clave = p.bloques[i-1].slot + ">" + p.bloques[i].slot;
     const pu = PUENTES[clave];
     if(pu && Array.isArray(bloques[i].lineas) && bloques[i].lineas.length){
       const linea = pu[vz] || pu.u;
-      bloques[i].lineas = [ (typeof bloques[i].lineas[0] === "string" ? linea : { t:linea }) ].concat(bloques[i].lineas);
+      const idx0 = bloques[i].lineas[0] && bloques[i].lineas[0].respiro ? 1 : 0;   // no partir el respiro-marcador
+      bloques[i].lineas = bloques[i].lineas.slice(0,idx0).concat([ (typeof bloques[i].lineas[idx0] === "string" ? linea : { t:linea }) ], bloques[i].lineas.slice(idx0));
     }
   }
+  _vozRitual = null;                                        // fuera del ritual, la voz vuelve a la del usuario
   guardar();
   return { id:p.id, nombre:p.nombre, sub:p.sub, dur:p.dur, tema:p.tema, bloques:bloques };
 }
@@ -3388,8 +3394,22 @@ function vozLinea(x){
   if(dlg) return (d==="dios" ? dlg.c : dlg.u) || dlg.u || x;
   return x;
 }
-function vozAfirmacion(a){ return vozLinea(a.x); }
-function vozManifestacion(m){ return vozLinea(m.x); }
+// Voz dominante por ritual. Manda sobre la preferencia del usuario DENTRO del ritual, para que no haya
+// cambios de sujeto accidentales. Núcleo pasará a "tu" (acompañamiento) cuando se rediseñe con contenido TÚ.
+const VOZ_RITUAL = { manana:"yo", noche:"yo", nucleo:"yo" };
+function vozRitual(id){ return VOZ_RITUAL[id] || "yo"; }
+let _vozRitual = null;   // voz forzada mientras se construye un ritual; null fuera del ritual
+function vozForzada(x){
+  const p = (typeof E!=="undefined" && E.perfil) ? E.perfil : {};
+  if(_vozRitual === "tu"){                                 // acompañamiento (hacia ti) para todos
+    const dlg = DIALOGO[x]; return dlg ? ((p.tono==="cristiano"?dlg.c:dlg.u)||dlg.u||x) : x;
+  }
+  // "yo": cristiano mantiene la voz devocional (Dios→ti, coherente con la oración); secular = primera persona
+  if(p.tono === "cristiano"){ const dlg = DIALOGO[x]; return dlg ? (dlg.c||x) : x; }
+  return x;                                                // secular: el texto base, primera persona
+}
+function vozAfirmacion(a){ return _vozRitual ? vozForzada(a.x) : vozLinea(a.x); }
+function vozManifestacion(m){ return _vozRitual ? vozForzada(m.x) : vozLinea(m.x); }
 
 function afirmacionesActivas(){
   const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = tradPermitidas();
