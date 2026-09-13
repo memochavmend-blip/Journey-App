@@ -1235,7 +1235,7 @@ function bloqueVision(){
 
 const RITUALES = {
   manana:{
-    id:"manana", nombre:"Mañana", sub:"Activación — vaciar, anclar, declarar", dur:"~9 min", tema:"dia",
+    id:"manana", nombre:"Mañana", sub:"Abrir el día — vaciar, anclar, declarar", dur:"~9 min", tema:"dia",
     bloques:[
       { num:"·",   nom:"Anclaje",     rub:"Tres respiraciones lentas", slot:"anclaje" },
       { num:"I",   nom:"Entrega",     rub:"Vaciar antes de llenar",    slot:"entrega", n:4 },
@@ -1248,7 +1248,7 @@ const RITUALES = {
     ]
   },
   noche:{
-    id:"noche", nombre:"Noche", sub:"Rendición — sin declaraciones de logro", dur:"~6 min", tema:"noche",
+    id:"noche", nombre:"Noche", sub:"Cerrar el día — soltar y descansar", dur:"~6 min", tema:"noche",
     bloques:[
       { num:"·",   nom:"Anclaje",    rub:"El día terminó",   slot:"respiro" },
       { num:"I",   nom:"Gratitud",   rub:"En voz alta",      slot:"gratitud" },
@@ -1260,14 +1260,13 @@ const RITUALES = {
     ]
   },
   nucleo:{
-    id:"nucleo", nombre:"Núcleo", sub:"El innegociable — una línea por movimiento", dur:"3 min", tema:"dia",
+    id:"nucleo", nombre:"Núcleo", sub:"Volver al centro — recentrar en medio del día", dur:"3 min", tema:"dia",
     bloques:[
-      { num:"·",   nom:"Anclaje",     rub:"Empieza aquí", slot:"presencia", n:1, hold:8000 },
-      { num:"I",   nom:"Entrega",     rub:"",             slot:"entrega", n:1, hold:9000 },
-      { num:"II",  nom:"Palabra",     rub:"",             slot:"palabra", n:1, hold:9000 },
-      { num:"III", nom:"Declaración", rub:"",             slot:"manifestacion", n:1, hold:9000 },
-      { num:"IV",  nom:"Identidad",   rub:"",             slot:"afirmacion", n:1, hold:9000 },
-      { num:"V",   nom:"Sello",       rub:"",             slot:"cierre", n:1, hold:9000 }
+      { num:"·",   nom:"Alto",      rub:"Detente un momento", slot:"respiro" },
+      { num:"I",   nom:"Reconocer", rub:"Dónde estás",     slot:"reconocer", n:1, hold:8000 },
+      { num:"II",  nom:"Descargar", rub:"Suelta el exceso", slot:"descargar", n:1, hold:9000 },
+      { num:"III", nom:"Volver",    rub:"Regresa a ti",    slot:"volver", n:2, hold:9000 },
+      { num:"IV",  nom:"Seguir",    rub:"Vuelve al día",   slot:"seguir", n:1, hold:8000 }
     ]
   }
 };
@@ -1297,6 +1296,22 @@ const LIT = {
   cierre:{
     cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
     universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día.","Que así sea.","Suelto, y sigo con mi día.","Me llevo esta calma conmigo."]
+  },
+  reconocer: {
+    universal:["El día me llevó lejos de mí.","Vengo corriendo por dentro.","Traigo la mente en mil lugares.","Me perdí un poco en el ruido.","El día me tiene disperso.","Llego aquí agitado, y está bien."],
+    cristiano:["El día me alejó de tu presencia.","Vengo disperso, Señor.","Me perdí en el ruido del día.","Llego a ti agitado, tal como estoy.","Traigo el día encima, y vengo a ti.","Me alejé de ti sin darme cuenta."]
+  },
+  descargar: {
+    universal:["Suelto lo que vengo cargando.","No tengo que resolverlo todo ahora.","Dejo el ruido un momento.","Suelto la prisa; puede esperar.","Bajo los hombros. Aflojo.","Lo pendiente seguirá ahí; ahora no."],
+    cristiano:["Dejo en tus manos lo que vengo cargando.","Suelto ante ti la prisa del día.","No tengo que resolverlo todo; te lo entrego.","Ante ti, dejo el ruido un momento.","Contigo puedo soltar lo pendiente.","Te confío lo que no alcanzo a resolver."]
+  },
+  volver: {
+    universal:["Estoy aquí. Estoy presente.","Vuelvo a mí.","Debajo del ruido, sigo siendo yo.","Aquí, en este respiro, estoy entero.","Regreso al centro. Sigo aquí.","Este instante es suficiente. Yo soy suficiente."],
+    cristiano:["Vuelvo a tu presencia.","Aquí, contigo, estoy completo.","En ti me reencuentro.","Debajo del ruido, sigo siendo tuyo.","Regreso a ti. Aquí descanso.","Contigo, este instante es suficiente."]
+  },
+  seguir: {
+    universal:["Ahora sigo, más presente.","Vuelvo al día, distinto.","Un paso a la vez, desde aquí.","Sigo, sin perderme otra vez.","Retomo el día con más calma."],
+    cristiano:["Sigo el día contigo.","Vuelvo al día en tu paz.","Contigo, retomo con calma.","Sigo, sabiendo que me acompañas.","Un paso a la vez, de tu mano."]
   }
 };
 
@@ -1358,7 +1373,27 @@ function declaracionRitual(need, n){
   return l.slice(0, n || 3);
 }
 
+// Identidad cristiana: la persona reconociendo quién es ANTE Dios (oración/reflexión, persona→Dios).
+// Reemplaza la afirmación secular solo en tono cristiano, para que la Identidad suene a oración y no a autoayuda.
+const IDENTIDAD_CRIST = [
+  "Soy suficiente ante ti, tal como soy.",
+  "Me hiciste a tu imagen; en eso descanso.",
+  "No tengo que ganarme tu amor; ya es mío.",
+  "Confío en lo que pusiste en mí.",
+  "Soy tuyo, y eso me basta.",
+  "En ti soy más de lo que creo.",
+  "Me sostienes, aunque yo dude.",
+  "Confío en que me hiciste capaz de lo de hoy.",
+  "Ante ti, mi valor no depende de lo que logre.",
+  "Soy amado por quien me creó."
+];
+
 function afirmacionesRitual(n, temas){
+  // Identidad cristiana: la persona reconociéndose ante Dios (oración), no afirmación secular ni "Dios te habla".
+  if(_vozRitual && (E.perfil && E.perfil.tono) === "cristiano"){
+    const l = IDENTIDAD_CRIST.slice().sort(()=>Math.random()-0.5);
+    return l.slice(0, n || 3);
+  }
   if(temas && temas.length){
     let l = AFIRMACIONES.filter(a=>temas.indexOf(a.t)>=0 && !fbOculto(a.x));
     if(!l.length) l = AFIRMACIONES.filter(a=>temas.indexOf(a.t)>=0);
@@ -1395,6 +1430,10 @@ function ritLineas(id, b, sesgo){
   // Declaración: SIEMPRE por el enfoque de hoy/permanente (nunca del pool de manifestaciones de la Biblioteca).
   if(b.slot === "manifestacion"){
     return declaracionRitual(sesgo && sesgo.need, b.n);
+  }
+  // Núcleo (recentrar): siempre fresco, para dar variedad si se hace varias veces al día.
+  if(b.slot === "reconocer" || b.slot === "descargar" || b.slot === "volver" || b.slot === "seguir"){
+    return litPaso(b.slot, b.n);
   }
   if(sesgo && b.slot === "afirmacion"){
     const temas = sesgo.af;
@@ -2179,6 +2218,7 @@ function abrirRitual(id){
   $("#pAudioLista").classList.add("oculto");
   const url = (E.ajustes.urlAudio||{})[id] || "";
   if(url){ arrancarRitual(id, null, url); return; }
+  if(id === "nucleo"){ arrancarRitual(id, null, null); return; }   // Núcleo entra directo: es la respuesta a la saturación
   mostrarNecesitas(id);
 }
 function mostrarNecesitas(id){
@@ -2729,7 +2769,7 @@ function render(){
   const sug = h < 12 ? "manana" : h < 19 ? "nucleo" : "noche";
   const hechosHoy = (E.dias[hoyISO()] && E.dias[hoyISO()].hechos) || [];
   const cont = $("#ritos"); cont.innerHTML = "";
-  ["manana","noche","nucleo"].forEach(id=>{
+  ["manana","nucleo","noche"].forEach(id=>{
     const r = RITUALES[id];
     const hecho = hechosHoy.indexOf(id) >= 0;
     const b = document.createElement("button");
@@ -3897,7 +3937,7 @@ function hojaEditarRitual(id){
 function hojaRitualesElegir(){
   erAddNum = null;
   hoja("Personalizar rituales", "Haz tuyo cada ritual. Elige cuál ajustar.",
-    '<div class="nav-cards">' + ["manana","noche","nucleo"].map(id=>{
+    '<div class="nav-cards">' + ["manana","nucleo","noche"].map(id=>{
       const r = RITUALES[id];
       return '<button class="nav-card" data-rit="'+id+'"><span class="nav-card-tx"><span class="nav-card-t">'+r.nombre+'</span><span class="nav-card-s">'+esc(r.sub)+'</span></span><span class="nav-card-ch">›</span></button>';
     }).join("") + '</div><div class="acciones"><button class="accion" id="ritElegirCerrar">Cerrar</button></div>',
@@ -3963,7 +4003,7 @@ function hojaAjustes(){
       [0,10,20,30].map(m=>'<option value="'+m+'"'+(a.dormir===m?' selected':'')+'>'+(m?m+' minutos':'Sin temporizador')+'</option>').join("") + '</select>' +
       '<p class="campo-ayuda">La ventana hipnagógica son los primeros 10–20 min mientras te duermes. Audio toda la noche fragmenta el sueño; el track termina en silencio, no en loop.</p></div>' +
     '<div class="campo"><label class="campo-et">Tus grabaciones</label>' +
-      ["manana","noche","nucleo"].map(id=>
+      ["manana","nucleo","noche"].map(id=>
         '<div style="display:flex;gap:10px;align-items:center;margin-bottom:9px">' +
         '<span style="font-size:12px;width:66px;color:var(--tinta-baja)">'+RITUALES[id].nombre+'</span>' +
         '<input class="campo-in" style="flex:1;font-size:.85rem;font-family:var(--mono)" data-audio="'+id+'" placeholder="pega una URL de audio" value="'+esc((a.urlAudio||{})[id]||"")+'"></div>').join("") +
