@@ -2859,7 +2859,7 @@ function render(){
   const nom = (E.ajustes.nombre || "").trim();
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
-  const _hoy = $("#hoyTxt"); if(_hoy){ const _m = mensajesActivos(); _hoy.textContent = _m[Math.floor(Date.now()/86400000) % _m.length]; }
+  const _hoy = $("#hoyTxt"); if(_hoy) _hoy.textContent = mensajeDelMomento();
   const _cont = $("#continua");
   if(_cont){
     const _r = (E.registro.reflexiones || []), _u = _r.length ? _r[_r.length-1] : null;
@@ -3419,6 +3419,44 @@ function filtraTexto(lista){
   return l.length ? l : lista;
 }
 function calmaActivas(){ let l = filtraTexto(CALMA); const perm = tradPermitidas(); if(perm.budista) l = l.concat(CALMA_BUD); if(!esNoche()) l = l.filter(f=>CALMA_NOCHE.indexOf(CALMA.indexOf(f)) < 0); return l; }
+// Mensaje de hoy: 3 bancos por momento del día (mañana / día / noche), alineados a la intención de cada ritual.
+// Se elige por la hora del sistema y se filtra por tono. Banco grande para que no se repita en semanas.
+const MENSAJES_DIA = {
+  manana: {
+    universal:[
+      "Hoy no tiene que ser perfecto para ser bueno.","Un día nuevo, sin estrenar. Empieza donde estás.","No cargas el día entero de golpe; solo el siguiente paso.","Lo que hagas hoy con calma vale más que lo que hagas con prisa.","No tienes que sentirte listo para empezar. Solo empieza.","Hoy elige una cosa que importe, y suéltate del resto.","El día apenas abre. Aún cabe todo lo bueno.","Entra al día como quien entra a algo suyo, sin apuro.","Lo que ayer pesó no tiene que pesar hoy.","Hoy puedes ser amable contigo mientras avanzas.","No se trata de hacerlo todo, sino de estar presente en lo que haces.","Un buen día no es uno sin problemas, es uno que atraviesas con calma.","Hoy tienes permiso de ir a tu ritmo.","Empieza suave. La fuerza llega andando."
+    ],
+    cristiano:[
+      "Hoy es un regalo; no tienes que merecerlo, solo recibirlo.","Este día es nuevo, y sus misericordias también.","No cargas el día solo; Él va contigo.","Entrega el día antes de que empiece, y camínalo en paz.","Hoy no tienes que tener la fuerza; Él la da al andar.","Empieza el día en sus manos y suéltate del resto.","Lo que hoy no sabes, Él ya lo ve. Confía y avanza.","Camina hoy sabiendo que no vas solo.","Hoy elige la paz que Él ofrece por encima de la prisa.","Sea lo que traiga el día, su presencia va contigo.","No se trata de lograr, sino de caminar con Él.","Hoy puedes descansar en que Él sostiene lo que tú no.","Empieza suave; su fuerza se perfecciona en tu debilidad.","Este día es tuyo para vivirlo con Él, sin apuro."
+    ]
+  },
+  dia: {
+    universal:[
+      "En medio de todo, aquí sigues.","Detente un segundo. El día puede esperar un respiro.","No tienes que resolverlo todo ahora mismo.","Vuelve a ti; el ruido no eres tú.","Una cosa a la vez. Solo una.","Respira. Todavía estás bien.","Baja el ritmo un momento; nada se rompe por parar.","Estás haciendo más de lo que crees.","El día te llevó lejos; puedes volver al centro.","No pasa nada si necesitas un alto.","Suelta los hombros. Afloja. Sigue.","Aquí, en este respiro, todo cabe.","No tienes que ir tan rápido para estar a la altura.","Vuelve al presente; ahí es donde puedes."
+    ],
+    cristiano:[
+      "En medio del día, Él sigue contigo.","Detente un segundo y vuelve a su presencia.","No tienes que resolverlo todo; deja algo en sus manos.","Vuelve a Él; el ruido no tiene la última palabra.","Una cosa a la vez; Él sostiene el resto.","Respira. Su paz sigue disponible ahora mismo.","Baja el ritmo; en la quietud lo encuentras.","Él ve tu esfuerzo, aunque nadie más lo note.","El día te dispersó; en Él vuelves al centro.","Está bien parar y volver a orar un momento.","Suelta la carga; no tienes que llevarla solo.","Aquí, en este respiro, Él está.","No corras para estar a la altura; Él ya te sostiene.","Vuelve al presente; ahí también está Él."
+    ]
+  },
+  noche: {
+    universal:[
+      "Ya hiciste suficiente por hoy.","El día terminó; puedes soltarlo.","Lo que quedó sin resolver esperará al mañana.","No todo salió como querías, y aun así hubo bien en el día.","Suelta el día. Mereces descansar.","Hiciste lo que pudiste con el día que tuviste.","Deja los pendientes; a esta hora no son tuyos.","Cierra el día en paz; mañana es otra oportunidad.","Lo que hoy pareció enorme, mañana tendrá su tamaño.","No tienes que resolver nada más esta noche.","Descansa; el mundo sigue sin ti un rato.","Quédate con lo bueno de hoy; suelta lo demás.","Tu valor no depende de lo que lograste hoy.","El día se apaga. Puedes bajar los brazos."
+    ],
+    cristiano:[
+      "Ya hiciste suficiente; el resto déjalo en Él.","El día terminó; descansa en sus manos.","Lo que quedó sin resolver, Él lo cuida esta noche.","No todo salió como querías, y aun así Él estuvo en el día.","Suelta el día ante Él y descansa.","Hiciste lo que pudiste; lo demás es suyo.","Deja los pendientes; Él vela mientras duermes.","Cierra el día en su paz; mañana es nueva.","Lo que hoy pesó, en sus manos tiene su tamaño.","Nada más tienes que resolver; entrégate a su descanso.","Descansa; Él sostiene lo que tú sueltas.","Quédate con lo bueno; agradece y suelta lo demás.","Tu valor ante Él no depende de lo que lograste.","El día se apaga. En Él, puedes bajar los brazos."
+    ]
+  }
+};
+
+// Mensaje de hoy según el momento del día (hora del sistema) y el tono. Banco grande para no repetir.
+function mensajeDelMomento(){
+  const h = new Date().getHours();
+  const banco = MENSAJES_DIA[h < 12 ? "manana" : h < 19 ? "dia" : "noche"];
+  const esCrist = (E.perfil && E.perfil.tono) === "cristiano";
+  const l = (esCrist ? banco.cristiano : banco.universal) || banco.universal || [];
+  if(!l.length) return "";
+  return l[Math.floor(Date.now()/86400000) % l.length];
+}
 function mensajesActivos(){ return filtraTexto(MENSAJES); }
 
 // ── Feedback (👍/👎) → pesos por etiqueta + ocultar piezas ──
@@ -4422,7 +4460,7 @@ function abrirSOS(){
 }
 function sosBreath(){
   sosPaso(2);
-  P.sosCalma = calmaSecuencia(); P.sosIdx = 0;
+  P.sosCalma = calmaSecuencia(pausaAntes); P.sosIdx = 0;
   $("#sosLinea").innerHTML = P.sosCalma[0] || fraseCalma();
   $("#sosLinea").style.opacity = "1";
   const aro = $("#sosRespira"), txt = $("#sosGuia");
@@ -4542,17 +4580,26 @@ const CALMA_ETAPA = [3,1,6,5,4,1,2,3,1,5,4,4,2,6,5,4,5,5,2,4,2,3,6,2,5,2,1,3,5,2
 const CALMA_NOCHE = [4,16,17,18,19];
 function esNoche(){ const h = new Date().getHours(); return h >= 21 || h < 6; }
 // Construye la cadena de "Ahora mismo": recorre las etapas en orden (round-robin), con variedad dentro de cada etapa.
-function calmaSecuencia(){
+// El nivel de intensidad decide DÓNDE entra el arco: alta → contención (rescate completo);
+// media → respiro/soltar; baja → perspectiva/paz (reencuadre suave). Sin decir → media.
+function entradaEtapa(intensidad){
+  if(intensidad == null) return 3;
+  if(intensidad >= 8) return 1;
+  if(intensidad >= 5) return 3;
+  return 5;
+}
+function calmaSecuencia(intensidad){
+  const entrada = entradaEtapa(intensidad);
   const pool = calmaActivas().filter(f=>!fbOculto(f));
   const base = pool.length ? pool : calmaActivas();
   const grupos = {};
-  base.forEach(f=>{ const e = CALMA_ETAPA[CALMA.indexOf(f)] || 3; (grupos[e] = grupos[e] || []).push(f); });
+  base.forEach(f=>{ const e = CALMA_ETAPA[CALMA.indexOf(f)] || 3; if(e >= entrada) (grupos[e] = grupos[e] || []).push(f); });
   Object.keys(grupos).forEach(k=>grupos[k].sort(()=>Math.random()-0.5));
   const orden = [];
   let quedan = true;
   while(quedan){
     quedan = false;
-    [1,2,3,4,5,6].forEach(e=>{ if(grupos[e] && grupos[e].length){ orden.push(grupos[e].shift()); quedan = true; } });
+    for(let e = entrada; e <= 6; e++){ if(grupos[e] && grupos[e].length){ orden.push(grupos[e].shift()); quedan = true; } }
   }
   return orden.length ? orden : base;
 }
@@ -4575,7 +4622,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
     const l = $("#sosLinea"); l.style.opacity = "0";
     setTimeout(()=>{
-      if(!P.sosCalma || !P.sosCalma.length) P.sosCalma = calmaSecuencia();
+      if(!P.sosCalma || !P.sosCalma.length) P.sosCalma = calmaSecuencia(pausaAntes);
       P.sosIdx = (P.sosIdx||0) + 1;
       l.innerHTML = P.sosCalma[P.sosIdx % P.sosCalma.length];
       l.style.opacity = "1";
