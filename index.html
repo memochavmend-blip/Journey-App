@@ -1314,6 +1314,50 @@ function litPaso(slot, n){
   const v = cand.filter(x=>!fbOculto(x));
   return elegirN(v.length ? v : cand, n || cand.length);
 }
+// Declaración: el movimiento donde la persona "pone algo hacia adelante". Se guía por "¿Qué necesitas hoy?"
+// (o el enfoque permanente, o universal serena). NUNCA jala del pool de manifestaciones de la Biblioteca.
+// yo = declaración propia (secular / 1a persona) · crist = petición o confianza (persona → Dios). Cero absolutismo.
+const DECLARACION = {
+  calma: {
+    yo:["Hoy elijo la calma.","Entro al día sin prisa.","Elijo responder con calma a lo que venga.","Hoy me muevo despacio y presente."],
+    crist:["Señor, dame hoy tu calma.","Confío en que tu paz va conmigo hoy.","Que tu serenidad guíe mi día.","En tu paz descanso hoy."]
+  },
+  animo: {
+    yo:["Hoy me muevo con ánimo.","Empiezo, un paso a la vez.","Tengo el impulso para lo que hoy me toca.","Elijo avanzar, aunque sea despacio."],
+    crist:["Señor, dame ánimo para este día.","Renueva hoy mis fuerzas.","Confío en que me sostienes cuando flaqueo.","Contigo doy el siguiente paso."]
+  },
+  fuerza: {
+    yo:["Hoy me sostengo con fuerza.","Tengo lo que este día me pida.","Enfrento el día con firmeza.","Soy más capaz de lo que creo."],
+    crist:["Señor, dame fuerza para lo que hoy enfrente.","Todo lo puedo en quien me fortalece.","Tu fuerza es mi sostén hoy.","Contigo, lo de hoy no me supera."]
+  },
+  fe: {
+    yo:["Hoy camino con fe.","Confío en que el camino se abre al andar.","Elijo confiar, aunque no lo vea todo.","Suelto el control y confío."],
+    crist:["Señor, aumenta mi fe hoy.","Confío en ti, aunque no entienda el camino.","En tus manos dejo lo que no controlo.","Hágase tu voluntad, no la mía."]
+  },
+  universal: {
+    yo:["Me abro a lo que este día traiga.","Hoy entro con presencia.","Recibo el día tal como viene.","Elijo estar presente hoy."],
+    crist:["Señor, me abro a lo que hoy tengas para mí.","Confío en tu voluntad para este día.","Que se haga tu voluntad en mi día.","Guíame en lo que hoy venga."]
+  }
+};
+
+// Mapea el enfoque permanente (texto libre de la intención) a un tema de Declaración; respaldo universal.
+function temaEnfoque(){
+  const t = ((E.perfil && E.perfil.intencion) || "").toLowerCase();
+  if(/paz|calma|tranquil|serenidad|descanso|quietud/.test(t)) return "calma";
+  if(/fuerza|fuerte|firme|valor|coraje/.test(t)) return "fuerza";
+  if(/[áa]nimo|motivaci|impulso|energ|disciplina/.test(t)) return "animo";
+  if(/\bfe\b|confianza|creer|esperanza/.test(t)) return "fe";
+  return "universal";
+}
+// Declaración del ritual: por el enfoque de hoy (si hay), o el permanente, o universal. Voz por tradición.
+function declaracionRitual(need, n){
+  const tema = DECLARACION[need] ? need : temaEnfoque();
+  const pool = DECLARACION[tema] || DECLARACION.universal;
+  const esCrist = (E.perfil && E.perfil.tono) === "cristiano";
+  const l = (esCrist ? pool.crist : pool.yo).slice().sort(()=>Math.random()-0.5);
+  return l.slice(0, n || 3);
+}
+
 function afirmacionesRitual(n, temas){
   if(temas && temas.length){
     let l = AFIRMACIONES.filter(a=>temas.indexOf(a.t)>=0 && !fbOculto(a.x));
@@ -1348,8 +1392,12 @@ function vacio(arr){ return !Array.isArray(arr) || !arr.length || arr.every(x=>!
 // Devuelve las líneas guardadas del bloque; si no hay, las siembra desde el perfil y las guarda (queda estable).
 // Con un sesgo del día, los espacios de afirmación/manifestación se siembran frescos, sin persistir (es la sesión de hoy).
 function ritLineas(id, b, sesgo){
-  if(sesgo && (b.slot === "afirmacion" || b.slot === "manifestacion")){
-    const temas = b.slot === "afirmacion" ? sesgo.af : sesgo.man;
+  // Declaración: SIEMPRE por el enfoque de hoy/permanente (nunca del pool de manifestaciones de la Biblioteca).
+  if(b.slot === "manifestacion"){
+    return declaracionRitual(sesgo && sesgo.need, b.n);
+  }
+  if(sesgo && b.slot === "afirmacion"){
+    const temas = sesgo.af;
     return ritSemilla(b.slot, b.n, (temas && temas.length) ? temas : null);
   }
   E.ritos[id] = E.ritos[id] || {};
@@ -2114,10 +2162,10 @@ function duracion(o){
 
 const NECESITAS = [
   ["siempre","Lo de siempre", null],
-  ["calma","Calma", { af:["calma"], man:["salud"] }],
-  ["animo","Ánimo", { af:["disciplina"], man:["proposito"] }],
-  ["fuerza","Fuerza", { af:["confianza","merecer"], man:["proposito"] }],
-  ["fe","Fe", { af:["fe"], man:[] }]
+  ["calma","Calma", { need:"calma", af:["calma"] }],
+  ["animo","Ánimo", { need:"animo", af:["disciplina"] }],
+  ["fuerza","Fuerza", { need:"fuerza", af:["confianza","merecer"] }],
+  ["fe","Fe", { need:"fe", af:["fe"] }]
 ];
 function abrirRitual(id){
   const p = RITUALES[id]; if(!p) return;
@@ -3404,9 +3452,7 @@ function vozForzada(x){
   if(_vozRitual === "tu"){                                 // acompañamiento (hacia ti) para todos
     const dlg = DIALOGO[x]; return dlg ? ((p.tono==="cristiano"?dlg.c:dlg.u)||dlg.u||x) : x;
   }
-  // "yo": cristiano mantiene la voz devocional (Dios→ti, coherente con la oración); secular = primera persona
-  if(p.tono === "cristiano"){ const dlg = DIALOGO[x]; return dlg ? (dlg.c||x) : x; }
-  return x;                                                // secular: el texto base, primera persona
+  return x;   // "yo": primera persona para TODOS — en el ritual la persona habla/ora, nunca "Dios te dice…"
 }
 function vozAfirmacion(a){ return _vozRitual ? vozForzada(a.x) : vozLinea(a.x); }
 function vozManifestacion(m){ return _vozRitual ? vozForzada(m.x) : vozLinea(m.x); }
