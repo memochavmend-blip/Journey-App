@@ -275,6 +275,14 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
   animation:entra .7s cubic-bezier(.2,.7,.3,1);
 }
 .p-linea .kw{opacity:.2;transition:opacity .55s ease}
+.p-fb{display:flex;gap:18px;justify-content:center;margin-top:22px;opacity:.55;transition:opacity .3s}
+.p-fb:hover{opacity:1}
+.p-fb-btn{width:34px;height:34px;display:flex;align-items:center;justify-content:center;color:var(--tinta-tenue);border-radius:50%;transition:color .2s,transform .15s}
+.p-fb-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+.p-fb-btn#pFbDown svg{transform:rotate(180deg)}
+.p-fb-btn:hover{color:var(--tinta-baja)}
+.p-fb-btn.on{color:var(--llama)}
+.p-fb-btn.on svg{fill:color-mix(in srgb,var(--llama) 22%,transparent)}
 .p-linea.largo{font-size:clamp(1.12rem,4.1vw,1.5rem);line-height:1.5;letter-spacing:0}
 .p-linea .kw.on{opacity:1}
 @keyframes entra{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
@@ -839,10 +847,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     </div>
     <p class="nav-grupo">Para leer y reflexionar</p>
     <div class="nav-cards">
-      <button class="nav-card" data-abrir="biblia"><span class="nav-card-tx"><span class="nav-card-t">Historias bíblicas</span><span class="nav-card-s">Relatos breves, uno a la vez</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span><span class="nav-card-s">Estudio, una vez por semana</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span><span class="nav-card-s">Relatos para reflexionar</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="salmos"><span class="nav-card-tx"><span class="nav-card-t">Salmos</span><span class="nav-card-s">Los más importantes, uno a la vez</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="ancla"><span class="nav-card-tx"><span class="nav-card-t">Ancla</span><span class="nav-card-s">Una frase para volver al centro</span></span><span class="nav-card-ch">›</span></button>
     </div>
   </div>
@@ -981,6 +987,10 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <p class="p-bloque" id="pBloque"></p>
     <p class="p-linea" id="pLinea" aria-live="polite" aria-atomic="true"></p>
     <p class="p-nota oculto" id="pNota"></p>
+    <div class="p-fb oculto" id="pFb">
+      <button class="p-fb-btn" id="pFbUp" aria-label="Me gusta esta frase"><svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg></button>
+      <button class="p-fb-btn" id="pFbDown" aria-label="No es para mí"><svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg></button>
+    </div>
     <div class="respiro oculto" id="pRespiro">
       <div class="respiro-aro" id="respiroAro"><span class="respiro-txt" id="respiroTxt">Inhala</span><span class="respiro-num" id="respiroNum"></span></div>
       <div id="respChipsRitual"></div>
@@ -1978,6 +1988,18 @@ Esa voz miente. El camino de regreso siempre está abierto, y del otro lado no h
 Horas después, el monje joven ya no aguantó: ¿cómo pudiste cargar a esa mujer? Nuestra regla dice que no debemos tocar a una mujer.
 El monje mayor respondió tranquilo: yo la dejé en la orilla hace horas. ¿Por qué la sigues cargando tú?
 Lo que nos pesa casi nunca es lo que pasó, sino lo que seguimos cargando después.` },
+{ tema:"biblia", titulo:"David y Goliat", texto:"Un gigante llamado Goliat aterrorizaba al ejército de Israel; nadie se atrevía a enfrentarlo. David, un pastor joven, se ofreció. Rechazó la armadura del rey —no sabía moverse con ella— y bajó al valle con su honda y cinco piedras lisas. «Tú vienes con espada y lanza», le dijo al gigante, «pero yo vengo en el nombre del Señor.» Una sola piedra bastó. A veces lo que parece imposible cae por lo que menos esperabas." },
+  { tema:"biblia", titulo:"Noé y el arca", texto:"Cuando el mundo se había llenado de violencia, Dios le pidió a Noé algo absurdo: construir un barco enorme, tierra adentro, sin señal de lluvia. Noé obedeció durante años entre las burlas de todos. Luego llegó el diluvio, y en el arca se salvaron su familia y una pareja de cada especie. Cuando las aguas bajaron, un arcoíris selló una promesa. Obedecer antes de ver la prueba: eso es la fe." },
+  { tema:"biblia", titulo:"Daniel en el foso de los leones", texto:"Daniel servía al rey con tal integridad que sus envidiosos no hallaron falta en él, salvo su costumbre de orar. Lograron una ley que lo prohibía. Daniel siguió orando, con las ventanas abiertas, como siempre. Lo echaron al foso de los leones. Al amanecer, el rey corrió a ver: Daniel estaba ileso. «Mi Dios envió a su ángel y cerró la boca de los leones.» La fidelidad no negocia, ni cuando cuesta." },
+  { tema:"biblia", titulo:"Jonás y el gran pez", texto:"Dios le pidió a Jonás ir a advertir a una ciudad enemiga. Jonás huyó en dirección contraria, en barco. Una tormenta casi los hunde; Jonás terminó en el mar y en el vientre de un gran pez. Tres días en la oscuridad le bastaron para rendirse. El pez lo devolvió a tierra, y esta vez fue. Puedes correr de lo que debes hacer, pero rara vez llegas lejos." },
+  { tema:"biblia", titulo:"Moisés y el mar Rojo", texto:"Con el ejército del faraón pisándoles los talones y el mar enfrente, el pueblo de Israel se dio por perdido. «No teman», dijo Moisés, «estén quietos y vean.» Extendió su mano, el mar se abrió en dos, y cruzaron por tierra seca. Cuando el enemigo los siguió, las aguas volvieron. A veces el camino no aparece hasta que das el primer paso hacia el mar." },
+  { tema:"biblia", titulo:"José y sus hermanos", texto:"Sus hermanos, celosos, vendieron a José como esclavo. Pasó por la casa de un extranjero y por la cárcel, hasta llegar a ser la mano derecha del faraón. Años después, ellos llegaron a Egipto muriendo de hambre, sin reconocerlo. José pudo vengarse; en cambio lloró y los abrazó: «Ustedes pensaron hacerme mal, pero Dios lo encaminó a bien.» Lo que te rompió puede ser, con el tiempo, lo que salve a muchos." },
+  { tema:"biblia", titulo:"El horno de fuego", texto:"El rey ordenó que todos se inclinaran ante una estatua de oro; quien no lo hiciera, al horno. Tres jóvenes se negaron: «Nuestro Dios puede librarnos, y aunque no lo haga, no serviremos a tu estatua.» Los arrojaron al fuego siete veces más caliente. El rey miró adentro y vio no a tres, sino a cuatro, caminando ilesos. Hay convicciones que no se doblan ni ante el fuego." },
+  { tema:"biblia", titulo:"El hijo pródigo", texto:"Un hijo pidió su herencia por adelantado y la gastó toda lejos de casa. Arruinado, decidió volver dispuesto a ser un sirviente más. Pero el padre lo vio venir de lejos —llevaba tiempo esperándolo— y corrió a abrazarlo, y ordenó una fiesta. La historia no es del hijo que falló, sino del padre que corre. Nunca has caído tan lejos como para no poder volver." },
+  { tema:"biblia", titulo:"El buen samaritano", texto:"Un hombre quedó tirado y herido al borde del camino. Un sacerdote lo vio y siguió de largo; otro religioso también. El que se detuvo fue un samaritano, un extranjero despreciado: le curó las heridas, lo llevó a una posada y pagó por él. «¿Quién fue el prójimo?», preguntó Jesús. El que tuvo compasión. Amar no se mide en palabras, sino en detenerse." },
+  { tema:"biblia", titulo:"Los panes y los peces", texto:"Miles de personas habían seguido a Jesús hasta un lugar desierto, y caía la tarde con hambre. Solo había cinco panes y dos peces, de un niño. Jesús dio gracias, partió el pan, y empezaron a repartir, y no se acababa. Comieron todos, y sobraron doce canastas. Lo poco, puesto en las manos correctas y con gratitud, alcanza para más de lo que crees." },
+  { tema:"biblia", titulo:"La oveja perdida", texto:"Un pastor tenía cien ovejas, y una se perdió. Dejó las noventa y nueve a salvo y fue a buscar la que faltaba, por barrancos y espinas, hasta encontrarla. Volvió con ella sobre los hombros, feliz, y reunió a sus amigos para celebrar. Así, dijo Jesús, hay fiesta en el cielo por uno que regresa. Nadie es un número. A ti te irían a buscar." },
+  { tema:"biblia", titulo:"La creación", texto:"Al principio no había nada, y sobre el vacío se movía el Espíritu de Dios. «Que haya luz», dijo, y hubo luz. Separó el día de la noche, el mar de la tierra; llenó el cielo de estrellas y la tierra de árboles, aves y animales. Y al final formó al ser humano a su imagen, y le entregó todo. Miró lo hecho y dijo que era bueno. No fuiste un accidente: fuiste la última palabra de algo llamado bueno." }
 ];
 const AUDIO_MED = [
   { id:"m1", titulo:"Anclaje matutino", dur:"~4 min", src:"audio/med-01.mp3",
@@ -2489,8 +2511,10 @@ function mostrar(){
   if(o.nota){ nota.textContent = o.nota; nota.classList.remove("oculto"); }
   else nota.classList.add("oculto");
 
-  if(o.respiro){ respirar(o.respiro); return; }
+  if(o.respiro){ respirar(o.respiro); const _fb=$("#pFb"); if(_fb) _fb.classList.add("oculto"); return; }
   $("#pRespiro").classList.add("oculto");
+  const _fb = $("#pFb");
+  if(_fb){ P.fbLinea = o.t; if(o.t && !o.nota){ _fb.classList.remove("oculto"); const up=$("#pFbUp"), dn=$("#pFbDown"); if(up) up.classList.toggle("on", fbOculto(o.t) ? false : false); if(up) up.classList.remove("on"); if(dn) dn.classList.remove("on"); } else _fb.classList.add("oculto"); }
   const el = $("#pLinea");
   el.classList.remove("oculto");
   el.classList.toggle("largo", (o.t||"").length > 200);
@@ -3727,19 +3751,29 @@ function hojaMeditacion(){
 }
 
 function hojaAncla(){
-  let lista = anclasTodas();
-  if(anclaI === null || anclaI >= lista.length) anclaI = Math.floor(Date.now()/86400000) % lista.length;
+  const perm = tradPermitidas();
+  const tabs = [["frases","Frases", anclasTodas()]];
+  if(perm.cristiano) tabs.push(["salmos","Salmos", salmosTodos()]);
+  let tabId = tabs[0][0], idx = 0;
+  const dat = ()=>{ const t = tabs.find(x=>x[0]===tabId); return t ? t[2] : []; };
+  idx = Math.floor(Date.now()/86400000) % Math.max(1, dat().length);
+  const tabsHTML = tabs.length > 1 ? '<div class="segmento cad-tabs" id="anclaTabs">' + tabs.map(t=>'<button type="button" class="seg'+(t[0]===tabId?' activo':'')+'" data-atab="'+t[0]+'">'+t[1]+'</button>').join("") + '</div>' : '';
   hoja("Ancla", "Una línea para volver al centro.",
-    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + lista[anclaI] + '</p></div>' +
+    tabsHTML +
+    '<div class="ancla-caja"><p class="ancla-txt" id="anclaTxt">' + (dat()[idx]||"") + '</p></div>' +
     fbHTML() +
     '<div class="acciones"><button class="accion" id="anclaOtra">Otra</button><button class="accion" id="anclaCerrar">Cerrar</button></div>',
     ()=>{
-      const mostrar = ()=>{ if(anclaI >= lista.length) anclaI = 0; $("#anclaTxt").innerHTML = lista[anclaI] || ""; };
-      $("#anclaOtra").addEventListener("click", ()=>{ anclaI = (anclaI + 1) % lista.length; mostrar(); });
+      const mostrar = ()=>{ const l = dat(); if(idx >= l.length) idx = 0; const c = $("#anclaTxt"); if(c) c.classList.toggle("salmo", tabId === "salmos"); $("#anclaTxt").innerHTML = l[idx] || ""; };
+      document.querySelectorAll("#anclaTabs .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#anclaTabs .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
+        tabId = b.dataset.atab; idx = 0; mostrar();
+      }));
+      $("#anclaOtra").addEventListener("click", ()=>{ const l = dat(); if(l.length) idx = (idx + 1) % l.length; mostrar(); });
       document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
-        const cur = lista[anclaI]; if(cur === undefined) return;
-        if(b.dataset.fb === "up"){ fbGusta(cur, []); pulso("#anclaTxt"); anclaI = (anclaI + 1) % lista.length; setTimeout(mostrar, 260); }
-        else { fbNoGusta(cur, []); lista.splice(anclaI, 1); if(!lista.length){ lista = anclasTodas(); anclaI = 0; } mostrar(); }
+        const l = dat(), cur = l[idx]; if(cur === undefined) return;
+        if(b.dataset.fb === "up"){ fbGusta(cur, []); pulso("#anclaTxt"); idx = (idx + 1) % l.length; setTimeout(mostrar, 260); }
+        else { fbNoGusta(cur, []); l.splice(idx, 1); mostrar(); }
       }));
       $("#anclaCerrar").addEventListener("click", cerrarHoja);
     });
@@ -4230,8 +4264,6 @@ document.addEventListener("click", e=>{
   else if(k === "temporizador") hojaTemporizador();
   else if(k === "doctrina") hojaDoctrina();
   else if(k === "historias") hojaHistorias();
-  else if(k === "salmos") hojaSalmos();
-  else if(k === "biblia") hojaBiblia();
   else if(k === "ancla") hojaAncla();
   else if(k === "ajustes") hojaAjustes();
   else if(k === "editor") hojaEditor();
@@ -4288,6 +4320,8 @@ $("#pSalir").addEventListener("click", cerrarPractica);
 $("#pDormir").addEventListener("click", ()=>{ hojaAjustes(); });
 ["pointerdown","keydown"].forEach(ev=>document.addEventListener(ev, ()=>{ if(!$("#practica").classList.contains("oculto")) despertarCtrl(); }));
 document.addEventListener("keydown", e=>{
+  const t = e.target, tag = t && t.tagName;
+  if(tag === "TEXTAREA" || tag === "INPUT" || (t && t.isContentEditable)) return;   // no robar teclas al escribir
   if($("#practica").classList.contains("oculto")) return;
   if(e.key === " "){ e.preventDefault(); alternarPlay(); }
   if(e.key === "ArrowRight") saltar(1);
@@ -4605,6 +4639,8 @@ function calmaSecuencia(intensidad){
 }
 function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random()*l.length)]; }
 (function cablearSOS(){
+  const _pfu = $("#pFbUp"); if(_pfu) _pfu.addEventListener("click", ()=>{ if(P.fbLinea){ fbGusta(P.fbLinea, []); _pfu.classList.add("on"); const d=$("#pFbDown"); if(d) d.classList.remove("on"); } });
+  const _pfd = $("#pFbDown"); if(_pfd) _pfd.addEventListener("click", ()=>{ if(P.fbLinea){ fbNoGusta(P.fbLinea, []); _pfd.classList.add("on"); const u=$("#pFbUp"); if(u) u.classList.remove("on"); } });
   const _nv = $("#nivel"); if(_nv) _nv.addEventListener("click", hojaNivel);
   const _cs = $("#concentraSalir"); if(_cs) _cs.addEventListener("click", detenerPomo);
   const _rc1 = $("#respChipsRitual"), _rc2 = $("#respChipsSos");
