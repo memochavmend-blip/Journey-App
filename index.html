@@ -1008,7 +1008,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   </div>
 
   <div class="necesitas oculto" id="pNecesitas">
-    <p class="nec-preg">¿Qué necesitas hoy?</p>
+    <p class="nec-preg" id="necesitasPreg">¿Qué necesitas hoy?</p>
     <div class="nec-opts" id="necesitasOpts"></div>
   </div>
 
@@ -1107,6 +1107,9 @@ async function cargar(){
     if(!E.feedback.pesos || typeof E.feedback.pesos !== "object") E.feedback.pesos = {};
     if(!Array.isArray(E.feedback.ocultos)) E.feedback.ocultos = [];
     E.ritos = (g.ritos && typeof g.ritos === "object") ? g.ritos : {};
+    // Migración: Noche y Núcleo cambiaron de estructura; limpiar ritos viejos una vez para evitar contenido obsoleto.
+    E.ritosV = g.ritosV || 0;
+    if(E.ritosV < 2){ delete E.ritos.noche; delete E.ritos.nucleo; E.ritosV = 2; }
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
@@ -1252,11 +1255,11 @@ const RITUALES = {
     bloques:[
       { num:"·",   nom:"Anclaje",    rub:"El día terminó",   slot:"respiro" },
       { num:"I",   nom:"Gratitud",   rub:"En voz alta",      slot:"gratitud" },
-      { num:"II",  nom:"Entrega",    rub:"Soltar el peso",   slot:"entrega", n:3 },
-      { num:"III", nom:"Palabra",    rub:"Un ancla",         slot:"palabra", n:2 },
-      { num:"IV",  nom:"Reencuadre", rub:"Perspectiva",      slot:"entrega", n:2 },
-      { num:"V",   nom:"Seguridad",  rub:"Tres veces, cada vez más lento", slot:"seguridad" },
-      { num:"VI",  nom:"Cierre",     rub:"Silencio después", slot:"cierre", n:3 }
+      { num:"II",  nom:"Entrega",    rub:"Soltar el peso",   slot:"entrega_noche", n:2 },
+      { num:"III", nom:"Palabra",    rub:"Reposo",           slot:"reposo", n:2 },
+      { num:"IV",  nom:"Reencuadre", rub:"Perspectiva",      slot:"reencuadre", n:2 },
+      { num:"V",   nom:"Seguridad",  rub:"Tres veces, cada vez más lento", slot:"seguridad_noche", n:2 },
+      { num:"VI",  nom:"Cierre",     rub:"Silencio después", slot:"cierre_noche", n:2 }
     ]
   },
   nucleo:{
@@ -1296,22 +1299,6 @@ const LIT = {
   cierre:{
     cristiano:["Dios, confío en Ti.","Jesucristo, confío en Ti.","Espíritu Santo, confío en Ti.","Gracias, Dios.","Te amo, Dios."],
     universal:["Confío en el proceso.","Confío en mí.","Todo está bien.","Gracias por este día.","Que así sea.","Suelto, y sigo con mi día.","Me llevo esta calma conmigo."]
-  },
-  reconocer: {
-    universal:["El día me llevó lejos de mí.","Vengo corriendo por dentro.","Traigo la mente en mil lugares.","Me perdí un poco en el ruido.","El día me tiene disperso.","Llego aquí agitado, y está bien."],
-    cristiano:["El día me alejó de tu presencia.","Vengo disperso, Señor.","Me perdí en el ruido del día.","Llego a ti agitado, tal como estoy.","Traigo el día encima, y vengo a ti.","Me alejé de ti sin darme cuenta."]
-  },
-  descargar: {
-    universal:["Suelto lo que vengo cargando.","No tengo que resolverlo todo ahora.","Dejo el ruido un momento.","Suelto la prisa; puede esperar.","Bajo los hombros. Aflojo.","Lo pendiente seguirá ahí; ahora no."],
-    cristiano:["Dejo en tus manos lo que vengo cargando.","Suelto ante ti la prisa del día.","No tengo que resolverlo todo; te lo entrego.","Ante ti, dejo el ruido un momento.","Contigo puedo soltar lo pendiente.","Te confío lo que no alcanzo a resolver."]
-  },
-  volver: {
-    universal:["Estoy aquí. Estoy presente.","Vuelvo a mí.","Debajo del ruido, sigo siendo yo.","Aquí, en este respiro, estoy entero.","Regreso al centro. Sigo aquí.","Este instante es suficiente. Yo soy suficiente."],
-    cristiano:["Vuelvo a tu presencia.","Aquí, contigo, estoy completo.","En ti me reencuentro.","Debajo del ruido, sigo siendo tuyo.","Regreso a ti. Aquí descanso.","Contigo, este instante es suficiente."]
-  },
-  seguir: {
-    universal:["Ahora sigo, más presente.","Vuelvo al día, distinto.","Un paso a la vez, desde aquí.","Sigo, sin perderme otra vez.","Retomo el día con más calma."],
-    cristiano:["Sigo el día contigo.","Vuelvo al día en tu paz.","Contigo, retomo con calma.","Sigo, sabiendo que me acompañas.","Un paso a la vez, de tu mano."]
   }
 };
 
@@ -1320,6 +1307,106 @@ function elegirN(lista, n){
   for(let i=l.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); const tmp=l[i]; l[i]=l[j]; l[j]=tmp; }
   return l.slice(0, Math.min(n, l.length));
 }
+// Núcleo reescrito. Reconocer/Descargar se ramifican por lo que la persona ELIGIÓ (calma/enfoque/pausa),
+// sin asumir su estado. Lenguaje tipo "Ahora mismo" con menos urgencia: baja, aquieta, centra — no describe.
+// Volver y Seguir son universales al estado. universal = 1a persona · cristiano = oración.
+const NUCLEO2 = {
+  // RECONOCER — nombrar el momento sin juzgar; según lo que busca
+  reconocer: {
+    calma: {
+      universal:["No hay nada que resolver en este respiro.","Aquí, ahora, puedes bajar la guardia.","Este momento no te pide nada.","Por un instante, nada urge."],
+      cristiano:["Contigo, nada urge en este instante.","Ante ti, puedo bajar la guardia.","Este momento, en tu presencia, basta.","Aquí, en tus manos, nada apremia."]
+    },
+    enfoque: {
+      universal:["Deja que la mente se pose, como el agua se aquieta.","Una sola cosa: este respiro.","No tienes que sostener todos los hilos a la vez.","Vuelve del ruido a una sola cosa: estar aquí."],
+      cristiano:["Ante ti, la mente puede aquietarse.","Contigo, una sola cosa basta: estar aquí.","Dejo los mil hilos y vuelvo a ti.","En tu presencia, la mente se posa."]
+    },
+    pausa: {
+      universal:["Esto es solo una pausa. Nada más.","Un alto, en medio del día.","Solo estás aquí, un momento.","Nada tiene que pasar en esta pausa."],
+      cristiano:["Un alto, contigo, en medio del día.","Solo estar aquí, en tu presencia.","Esta pausa es para volver a ti.","Contigo, un respiro basta."]
+    }
+  },
+  // DESCARGAR — soltar el peso; según lo que busca
+  descargar: {
+    calma: {
+      universal:["Deja caer los hombros. Suelta la mandíbula.","Suelta la tensión que traes sin darte cuenta.","Afloja. No tienes que sostenerte tan tenso.","Suelta el nudo del pecho, poco a poco."],
+      cristiano:["Ante ti, dejo caer la tensión del día.","Contigo, aflojo lo que vengo apretando.","Suelto en tus manos el peso del cuerpo.","En tu paz, la tensión se afloja."]
+    },
+    enfoque: {
+      universal:["Deja ir los pendientes por un momento; seguirán ahí.","Baja el volumen de todo lo que grita por atención.","Suelta lo que quedó a medias; ahora no.","Deja que el ruido se asiente, como polvo que baja."],
+      cristiano:["Te dejo los pendientes; ahora no son míos.","Contigo, bajo el volumen de todo.","Suelto lo que quedó a medias, en tus manos.","Ante ti, el ruido se asienta."]
+    },
+    pausa: {
+      universal:["Suelta lo que traes cargando, solo por ahora.","No tienes que llevar nada en esta pausa.","Deja el peso del día un momento en el suelo.","Suelta, sin prisa por volver a cargar."],
+      cristiano:["Dejo el peso del día en tus manos, un momento.","Contigo, no cargo nada en esta pausa.","Suelto lo que traigo, ante ti.","En tu presencia, dejo el peso un momento."]
+    }
+  },
+  // VOLVER — el corazón: presencia con toque de identidad (1a persona, "estoy aquí, estoy presente")
+  volver: {
+    universal:["Estoy aquí. Estoy presente.","Vuelvo a mí. Aquí sigo, entero.","Debajo del ruido del día, sigo siendo yo.","Regreso al centro; siempre estuvo aquí.","Este instante es suficiente. Yo soy suficiente.","Aquí, en este respiro, vuelvo a mí."],
+    cristiano:["Vuelvo a tu presencia. Aquí descanso.","En ti me reencuentro, debajo de todo.","Contigo estoy completo, aquí y ahora.","Regreso a ti; siempre estuviste aquí.","En tu presencia, este instante basta.","Vuelvo a ti, y vuelvo a mí."]
+  },
+  // SEGUIR — volver al día, distinto (más calma, no cerrar)
+  seguir: {
+    universal:["Ahora sigo, más presente.","Vuelvo al día con más calma.","Un paso a la vez, desde aquí.","Sigo, sin perderme otra vez.","Retomo, más liviano."],
+    cristiano:["Sigo el día contigo.","Vuelvo al día en tu paz.","Contigo, retomo con calma.","Un paso a la vez, de tu mano.","Sigo, sabiendo que me acompañas."]
+  }
+};
+
+// Noche — soltar con gratitud. Palabra de REPOSO (no de fuerza), Reencuadre PROPIO (perspectiva nocturna),
+// Entrega con aire de gratitud, Cierre que sella. El "gracias" dirigido va aparte (por dirige). Sin energía de día.
+const NOCHE_LIT = {
+  // PALABRA de reposo (reemplaza la de fuerza: nada de "tengo la fuerza para el día")
+  reposo: {
+    universal:["Nada de hoy tiene que resolverse esta noche.","El día terminó; puedes descansar.","Lo que quedó pendiente esperará al mañana.","No hay nada más que hacer hoy.","El día hizo su parte; ahora suelto la mía."],
+    cristiano:["Nada de hoy tiene que resolverse esta noche; en ti descanso.","El día terminó; en tus manos reposo.","Lo pendiente espera; tú velas mi noche.","Ya no hay nada que hacer; me entrego a tu descanso.","En ti reposo; el día terminó."]
+  },
+  // REENCUADRE propio: perspectiva nocturna + lo bueno que quedó (NO repetir la entrega)
+  reencuadre: {
+    universal:["Lo que hoy pareció enorme, mañana tendrá su tamaño.","No todo lo que quedó sin resolver era mío.","Hiciste lo que pudiste con el día que tuviste.","No todo salió como querías, y aun así hubo bien en el día.","Mañana es otra oportunidad; hoy ya diste lo tuyo.","Lo que no salió no borra lo que sí."],
+    cristiano:["Lo que hoy pareció enorme, en tus manos tiene su tamaño.","No todo lo que quedó sin resolver era mío; lo demás es tuyo.","Hice lo que pude; el resto lo dejo en ti.","No todo salió como quería, y aun así estuviste en el día.","Mañana es otra oportunidad; hoy la dejo contigo.","Aun en lo que no salió, no me faltaste."]
+  },
+  // ENTREGA nocturna: soltar CON aire de gratitud (lo bueno se queda)
+  entrega_noche: {
+    universal:["Suelto el peso de hoy, lo bueno y lo difícil.","Dejo ir lo que no pude; me quedo con lo que sí.","Entrego el día, agradecido de haberlo caminado.","Suelto la carga, y me quedo con lo que valió.","Dejo atrás lo pesado; lo bueno se queda conmigo."],
+    cristiano:["Te entrego el peso de hoy, lo bueno y lo difícil.","Dejo en tus manos lo que no pude; me quedo con lo que sí.","Te entrego el día, agradecido de haberlo caminado.","Suelto la carga en ti, y me quedo con lo que valió.","Dejo atrás lo pesado; contigo, lo bueno se queda."]
+  },
+  // SEGURIDAD engrosada (nocturna)
+  seguridad_noche: {
+    universal:["Estoy a salvo. Puedo cerrar los ojos.","Nada malo pasa en este momento.","Estoy sostenido, aunque no vea cómo.","Este lugar, esta noche, es seguro.","Puedo soltar; el mundo sigue sin mí un rato."],
+    cristiano:["En tus manos, estoy a salvo esta noche.","Nada me falta bajo tu cuidado.","Tú velas mientras yo descanso.","Bajo tu sombra, puedo cerrar los ojos.","Descanso, porque tú sostienes lo que suelto."]
+  },
+  // CIERRE nocturno: sella con gratitud + descanso (sin "sigo con mi día", que es de Núcleo)
+  cierre_noche: {
+    universal:["Me llevo lo bueno; suelto lo demás. Descanso.","Suelto, y descanso en paz.","El día terminó. Duermo tranquilo.","Gracias por este día. Ahora descanso.","Buenas noches."],
+    cristiano:["Gracias, Señor. En tus manos descanso.","Confío en ti, y duermo en paz.","Gracias por este día. Descanso en ti.","Me llevo tu paz; suelto lo demás.","En ti descanso. Buenas noches."]
+  }
+};
+
+
+// Destinatario del "gracias" en Noche: por dirige si hay señal clara; si no, neutral (regla a+b).
+function graciasDest(){
+  const d = E.perfil && E.perfil.dirige;
+  if(d === "dios") return "Gracias, Señor";
+  if(d === "universo") return "Gracias, vida";
+  if(d === "yo") return "Gracias, mi fuerza interior";
+  return "Gracias";
+}
+const GRACIAS_SUF = [", por este día.",", por lo que hoy me sostuvo.",", por lo bueno que hubo hoy.",", por haberme traído hasta aquí."];
+function lineaGratitud(){ return graciasDest() + GRACIAS_SUF[Math.floor(Math.random()*GRACIAS_SUF.length)]; }
+// Pool por tono (universal/cristiano) desde una estructura {universal,cristiano}.
+function poolTono(obj, n){
+  const esCrist = (E.perfil && E.perfil.tono) === "cristiano";
+  let l = ((esCrist ? obj.cristiano : obj.universal) || obj.universal || []).filter(x=>!fbOculto(x));
+  if(!l.length) l = (esCrist ? obj.cristiano : obj.universal) || [];
+  return elegirN(l, n || l.length);
+}
+// Núcleo reconocer/descargar: ramificado por lo que la persona eligió (calma/enfoque/pausa). Sin asumir.
+function nucRama(slot, need, n){
+  const rama = (NUCLEO2[slot] && NUCLEO2[slot][need]) ? NUCLEO2[slot][need] : (NUCLEO2[slot] && NUCLEO2[slot].pausa);
+  return rama ? poolTono(rama, n) : ["…"];
+}
+
 function litPaso(slot, n){
   const perm = tradPermitidas(), pool = LIT[slot] || {};
   let cand = [];
@@ -1431,9 +1518,17 @@ function ritLineas(id, b, sesgo){
   if(b.slot === "manifestacion"){
     return declaracionRitual(sesgo && sesgo.need, b.n);
   }
-  // Núcleo (recentrar): siempre fresco, para dar variedad si se hace varias veces al día.
-  if(b.slot === "reconocer" || b.slot === "descargar" || b.slot === "volver" || b.slot === "seguir"){
-    return litPaso(b.slot, b.n);
+  // Núcleo — Reconocer/Descargar se ramifican por lo que la persona eligió (calma/enfoque/pausa), siempre fresco (adaptativo).
+  if(b.slot === "reconocer" || b.slot === "descargar"){
+    return nucRama(b.slot, (sesgo && sesgo.nuc) || "pausa", b.n);
+  }
+  // Núcleo Volver/Seguir + slots de Noche: persistidos (editables), sembrados del pool si están vacíos.
+  if(b.slot === "volver" || b.slot === "seguir" || NOCHE_LIT[b.slot]){
+    E.ritos[id] = E.ritos[id] || {};
+    if(!vacio(E.ritos[id][b.num])) return E.ritos[id][b.num].slice();
+    const src = NOCHE_LIT[b.slot] ? poolTono(NOCHE_LIT[b.slot], b.n) : poolTono(NUCLEO2[b.slot], b.n);
+    E.ritos[id][b.num] = src.slice();
+    return src.slice();
   }
   if(sesgo && b.slot === "afirmacion"){
     const temas = sesgo.af;
@@ -1459,7 +1554,7 @@ function construirRitual(id, sesgo){
   const bloques = p.bloques.map(b=>{
     if(b.slot === "vision") return { num:b.num, nom:b.nom, rub:b.rub, dinamico:bloqueVision };
     if(b.slot === "respiro") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}] };
-    if(b.slot === "gratitud") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{ t:"Tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }] };
+    if(b.slot === "gratitud") return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{ t:lineaGratitud(), hold:6500 },{ t:"Y ahora, tres cosas concretas de hoy.", nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", hold:75000 }] };
     if(b.slot === "anclaje"){
       const pres = ritLineas(id, { num:b.num, slot:"presencia", n:1 });
       return { num:b.num, nom:b.nom, rub:b.rub, lineas:[{respiro:3}].concat((pres.length?pres:["Estoy aquí."]).map(t=>({t:t, hold:6000}))) };
@@ -2199,13 +2294,21 @@ function duracion(o){
   return Math.max(2600, n*430) + E.ajustes.pausa;
 }
 
-const NECESITAS = [
-  ["siempre","Lo de siempre", null],
-  ["calma","Calma", { need:"calma", af:["calma"] }],
-  ["animo","Ánimo", { need:"animo", af:["disciplina"] }],
-  ["fuerza","Fuerza", { need:"fuerza", af:["confianza","merecer"] }],
-  ["fe","Fe", { need:"fe", af:["fe"] }]
-];
+const NECESITAS_RIT = {
+  manana: [
+    ["siempre","Lo de siempre", null],
+    ["calma","Calma", { need:"calma", af:["calma"] }],
+    ["animo","Ánimo", { need:"animo", af:["disciplina"] }],
+    ["fuerza","Fuerza", { need:"fuerza", af:["confianza","merecer"] }],
+    ["fe","Fe", { need:"fe", af:["fe"] }]
+  ],
+  nucleo: [
+    ["calma","Calma", { nuc:"calma" }],
+    ["enfoque","Enfoque", { nuc:"enfoque" }],
+    ["pausa","Pausa", { nuc:"pausa" }]
+  ]
+};
+const NEC_PREG = { manana:"¿Qué necesitas hoy?", nucleo:"¿Qué traes ahora?" };
 function abrirRitual(id){
   const p = RITUALES[id]; if(!p) return;
   P.pendId = id;
@@ -2218,7 +2321,7 @@ function abrirRitual(id){
   $("#pAudioLista").classList.add("oculto");
   const url = (E.ajustes.urlAudio||{})[id] || "";
   if(url){ arrancarRitual(id, null, url); return; }
-  if(id === "nucleo"){ arrancarRitual(id, null, null); return; }   // Núcleo entra directo: es la respuesta a la saturación
+  if(id === "noche"){ arrancarRitual(id, null, null); return; }   // Noche entra directo: un solo destino, soltar
   mostrarNecesitas(id);
 }
 function mostrarNecesitas(id){
@@ -2226,11 +2329,13 @@ function mostrarNecesitas(id){
   $("#pVela").classList.add("oculto");
   $("#pReflexion").classList.add("oculto");
   $("#pBajo").classList.add("oculto");
+  const opts = NECESITAS_RIT[id] || NECESITAS_RIT.manana;
+  const preg = $("#necesitasPreg"); if(preg) preg.textContent = NEC_PREG[id] || "¿Qué necesitas hoy?";
   const cont = $("#necesitasOpts");
-  if(cont) cont.innerHTML = NECESITAS.map(o=>'<button class="nec-opt'+(o[0]==="siempre"?" nec-siempre":"")+'" data-nec="'+o[0]+'">'+esc(o[1])+'</button>').join("");
+  if(cont) cont.innerHTML = opts.map(o=>'<button class="nec-opt'+(o[0]==="siempre"?" nec-siempre":"")+'" data-nec="'+o[0]+'">'+esc(o[1])+'</button>').join("");
   $("#pNecesitas").classList.remove("oculto");
   document.querySelectorAll("#necesitasOpts .nec-opt").forEach(b=>b.addEventListener("click", ()=>{
-    const nec = NECESITAS.find(o=>o[0]===b.dataset.nec);
+    const nec = opts.find(o=>o[0]===b.dataset.nec);
     $("#pNecesitas").classList.add("oculto");
     $("#pCentro").classList.remove("oculto");
     arrancarRitual(id, nec ? nec[2] : null, null);
@@ -3818,10 +3923,22 @@ function hojaPreferenciasContenido(){
 }
 
 function ritBanco(id, b){
-  let pool;
-  if(b.slot === "afirmacion") pool = afirmacionesActivas().map(vozAfirmacion);
-  else if(b.slot === "manifestacion") pool = manifestacionesActivas().map(vozManifestacion);
-  else { const slotK = b.slot === "anclaje" ? "presencia" : b.slot; const p2 = LIT[slotK] || {}, perm = tradPermitidas(); pool = []; if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]); }
+  let pool = [];
+  const esCrist = (E.perfil && E.perfil.tono) === "cristiano", tono = esCrist ? "cristiano" : "universal";
+  if(b.slot === "afirmacion"){
+    pool = esCrist ? IDENTIDAD_CRIST.slice() : afirmacionesActivas().map(vozAfirmacion);
+  } else if(b.slot === "manifestacion"){
+    Object.keys(DECLARACION).forEach(t=>{ pool = pool.concat(DECLARACION[t][esCrist?"crist":"yo"]||[]); });
+  } else if(b.slot === "reconocer" || b.slot === "descargar"){
+    const s = NUCLEO2[b.slot] || {}; ["calma","enfoque","pausa"].forEach(nd=>{ if(s[nd]) pool = pool.concat(s[nd][tono]||[]); });
+  } else if(b.slot === "volver" || b.slot === "seguir"){
+    pool = (NUCLEO2[b.slot] && NUCLEO2[b.slot][tono]) || [];
+  } else if(NOCHE_LIT[b.slot]){
+    pool = NOCHE_LIT[b.slot][tono] || [];
+  } else {
+    const slotK = b.slot === "anclaje" ? "presencia" : b.slot; const p2 = LIT[slotK] || {}, perm = tradPermitidas();
+    if(p2.cristiano && perm.cristiano) pool = pool.concat(p2.cristiano); if(p2.universal && perm.universal) pool = pool.concat(p2.universal); if(!pool.length) pool = (p2.cristiano||[]).concat(p2.universal||[]);
+  }
   const usadas = (E.ritos[id] && E.ritos[id][b.num]) || [];
   return pool.filter(x=>usadas.indexOf(x) < 0 && !fbOculto(x));
 }
