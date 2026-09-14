@@ -625,16 +625,21 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .nivel:hover,.nivel:focus-visible{opacity:.8}
 .nivel:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:8px}
 .nivel-svg{width:26px;height:38px;display:block}
-.nivel-glow{fill:var(--llama);filter:blur(5px);transition:opacity 1.1s ease}
-.nivel-flama{fill:var(--llama);transition:transform 1.1s cubic-bezier(.3,.8,.3,1)}
-.nivel-cuerpo{fill:var(--cera)}
-.nivel-lleno{fill:color-mix(in srgb,var(--llama) 45%,var(--cera));transition:height 1.1s cubic-bezier(.3,.8,.3,1),y 1.1s cubic-bezier(.3,.8,.3,1)}
+@property --fl { syntax: "<number>"; inherits: false; initial-value: 0.6; }
+@property --go { syntax: "<number>"; inherits: false; initial-value: 0.3; }
+.nivel-glow{fill:var(--llama);filter:blur(5px);transition:--go 1.2s ease,fill 1.6s ease;animation:brilloVivo var(--fdur,2.6s) ease-in-out infinite}
+.nivel-flama{fill:var(--llama);transition:--fl 1.2s cubic-bezier(.3,.8,.3,1),fill 1.6s ease;animation:llamaViva var(--fdur,2.6s) ease-in-out infinite}
+.nivel-cuerpo{fill:var(--cera);opacity:.5}
+.nivel-lleno{fill:none}
+@keyframes llamaViva{0%,100%{transform:scale(var(--fl,.6))}44%{transform:scale(calc(var(--fl,.6) * 1.06)) translateY(-.4px)}70%{transform:scale(calc(var(--fl,.6) * .985))}}
+@keyframes brilloVivo{0%,100%{opacity:var(--go,.3)}50%{opacity:calc(var(--go,.3) * 1.3)}}
 .nivel-txt{display:flex;flex-direction:column;gap:1px}
 .nivel-nom{font-family:var(--serif);font-size:1.15rem;color:var(--tinta);line-height:1.1}
 .nivel-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue)}
 .nivel-det{text-align:center;padding:8px 0}
 .nivel-det-vela{display:flex;justify-content:center;margin:0 0 20px}
 .nivel-det-vela svg{width:110px;height:184px}
+.nivel-vuelta{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--oro);margin:0 0 6px}
 .nivel-det-nom{font-family:var(--serif);font-size:2rem;color:var(--tinta);margin:0 0 8px}
 .nivel-det-desc{font-family:var(--serif);font-size:1.15rem;line-height:1.5;color:var(--tinta-baja);margin:0 auto 28px;max-width:26ch;font-style:italic}
 .nivel-escala{display:flex;flex-direction:column;gap:2px;max-width:220px;margin:0 auto 22px;text-align:left}
@@ -2438,20 +2443,39 @@ function nivelActual(){
   return { nivel:NIVELES[idx], indice:idx, total:NIVELES.length, puntos:p };
 }
 function sumarProgreso(n){ E.progreso = E.progreso || { puntos:0 }; E.progreso.puntos = (E.progreso.puntos||0) + (n||1); guardar(); }
+const VUELTAS = [
+  { nom:"",                flama:"#E0942A", glow:"#E0942A", fdur:"2.6s", desc:"" },
+  { nom:"la llama honda",  flama:"#C8821E", glow:"#D89235", fdur:"3.4s", desc:"Has recorrido el camino una vez. Tu luz es más honda ahora." },
+  { nom:"la llama serena", flama:"#EBC876", glow:"#F1D68E", fdur:"4.4s", desc:"Una luz que ya no tiene prisa. Serena, y tuya." }
+];
 function progresoVela(){
   const p = (E.progreso && E.progreso.puntos) || 0;
-  const max = NIVELES[NIVELES.length-1].min || 1;
-  const total = Math.max(0.04, Math.min(1, p / max));   // 0.04..1 (nunca vacío del todo)
-  const n = nivelActual(), sig = NIVELES[n.indice+1];
-  const frac = sig ? Math.min(1, (p - n.nivel.min) / (sig.min - n.nivel.min)) : 1;
-  return { total, frac, indice:n.indice, nivel:n.nivel, total_pts:p };
+  const CICLO = NIVELES[NIVELES.length-1].min || 90;
+  const vuelta = Math.min(VUELTAS.length - 1, Math.floor(p / CICLO));
+  const pv = (vuelta >= VUELTAS.length - 1) ? Math.min(CICLO, p - vuelta*CICLO) : (p % CICLO);
+  let idx = 0; NIVELES.forEach((nv,i)=>{ if(pv >= nv.min) idx = i; });
+  const total = Math.max(0.06, Math.min(1, pv / CICLO));
+  return { total, vuelta, indice:idx, nivel:NIVELES[idx], total_pts:p };
 }
 // Pinta una vela SVG (glow, llama, relleno de cera) según el progreso total. bodyTop/bodyBot = geometría del cuerpo.
 function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot){
-  const alto = bodyBot - bodyTop;
-  if(lleno){ const h = g.total * alto; lleno.setAttribute("height", h.toFixed(1)); lleno.setAttribute("y", (bodyBot - h).toFixed(1)); }
-  if(flama){ flama.style.transformOrigin = "20px " + bodyTop + "px"; flama.style.transform = "scale(" + (0.5 + g.total * 0.65).toFixed(3) + ")"; }
-  if(glow){ glow.style.opacity = (0.1 + g.total * 0.5).toFixed(3); }
+  const v = VUELTAS[g.vuelta || 0] || VUELTAS[0];
+  if(lleno){ lleno.setAttribute("height", "0"); }                 // sin llenado de cera: el foco es la llama
+  if(flama){
+    const esc = (0.45 + g.total * 0.95).toFixed(3);               // rango mayor: de chispa tímida a llama plena
+    flama.style.transformOrigin = "50% " + bodyTop + "px";
+    flama.style.setProperty("--fl", esc);
+    flama.style.transform = "scale(" + esc + ")";
+    flama.style.fill = v.flama;
+    flama.style.setProperty("--fdur", v.fdur);
+  }
+  if(glow){
+    const op = (0.12 + g.total * 0.62).toFixed(3);
+    glow.style.setProperty("--go", op);
+    glow.style.opacity = op;
+    glow.style.fill = v.glow;
+    glow.style.setProperty("--fdur", v.fdur);
+  }
 }
 function pintarNivel(){
   const g = progresoVela();
@@ -2459,7 +2483,9 @@ function pintarNivel(){
   velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 22, 52);
 }
 function hojaNivel(){
-  const g = progresoVela(), n = nivelActual();
+  const g = progresoVela();
+  const v = VUELTAS[g.vuelta] || VUELTAS[0];
+  const nomVuelta = ["", "Segunda vuelta", "Tercera vuelta"][g.vuelta] || "";
   let cuerpo = '<div class="nivel-det">' +
     '<div class="nivel-det-vela"><svg viewBox="0 0 120 200" aria-hidden="true">' +
       '<ellipse class="nivel-glow" id="nivelDetGlow" cx="60" cy="46" rx="46" ry="52"></ellipse>' +
@@ -2467,15 +2493,16 @@ function hojaNivel(){
       '<rect class="nivel-cuerpo" x="42" y="72" width="36" height="112" rx="5"></rect>' +
       '<rect class="nivel-lleno" id="nivelDetLleno" x="42" y="184" width="36" height="0" rx="5"></rect>' +
     '</svg></div>' +
-    '<p class="nivel-det-nom">' + esc(n.nivel.nom) + '</p><p class="nivel-det-desc">' + esc(n.nivel.desc) + '</p>';
-  cuerpo += '<div class="nivel-escala">' + NIVELES.map((nv,i)=>'<div class="nivel-paso'+(i===n.indice?' actual':'')+(i<n.indice?' pasado':'')+'"><span class="nivel-paso-pt"></span><span class="nivel-paso-nom">'+esc(nv.nom)+'</span></div>').join("") + '</div>';
-  cuerpo += '<p class="campo-ayuda">Tu vela crece con cada ritual y cada pausa. No cuenta días ni rachas — solo tu camino, a tu ritmo.</p></div>';
+    (g.vuelta > 0 ? '<p class="nivel-vuelta">' + esc(nomVuelta) + ' · ' + esc(v.nom) + '</p>' : '') +
+    '<p class="nivel-det-nom">' + esc(g.nivel.nom) + '</p>' +
+    '<p class="nivel-det-desc">' + esc(g.vuelta > 0 && v.desc ? v.desc : g.nivel.desc) + '</p>';
+  cuerpo += '<div class="nivel-escala">' + NIVELES.map((nv,i)=>'<div class="nivel-paso'+(i===g.indice?' actual':'')+(i<g.indice?' pasado':'')+'"><span class="nivel-paso-pt"></span><span class="nivel-paso-nom">'+esc(nv.nom)+'</span></div>').join("") + '</div>';
+  cuerpo += '<p class="campo-ayuda">Tu llama crece con cada ritual y cada pausa. No cuenta días ni rachas — solo tu camino, a tu ritmo.</p></div>';
   hoja("Tu vela", "", cuerpo + '<div class="acciones"><button class="accion llena" id="nivelCerrar">Listo</button></div>', ()=>{
     const c=$("#nivelCerrar"); if(c) c.addEventListener("click", cerrarHoja);
     const glow=$("#nivelDetGlow"), flama=$("#nivelDetFlama"), lleno=$("#nivelDetLleno");
-    // arranca apagada y se llena al abrir (animación de progreso)
-    velaVisual(glow, flama, lleno, { total:0.04 }, 72, 184);
-    setTimeout(()=>{ velaVisual(glow, flama, lleno, g, 72, 184); }, 240);
+    velaVisual(glow, flama, lleno, { total:0.06, vuelta:g.vuelta }, 72, 184);   // arranca tenue, en el color de su vuelta
+    setTimeout(()=>{ velaVisual(glow, flama, lleno, g, 72, 184); }, 260);       // y crece ante los ojos
   });
 }
 const APERTURA = {
