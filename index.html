@@ -133,7 +133,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 
 /* ─── ESTRUCTURA ─── */
-#appShell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
+#appShell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:2}
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   width:100%;max-width:640px;margin:0 auto;
@@ -621,21 +621,26 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 /* ── Mensaje de hoy + Ahora mismo (inicio) ── */
 .hoy{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
 .continua{border-left:2px solid var(--llama);padding:4px 0 4px 16px;margin-bottom:20px}
-.nivel{display:flex;align-items:center;gap:13px;padding:6px 4px;margin:6px 0 22px;background:none;border:none;text-align:left;transition:opacity .2s}
-.nivel:hover,.nivel:focus-visible{opacity:.8}
-.nivel:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:8px}
-.nivel-svg{width:26px;height:38px;display:block}
+#velaAmbiente{position:fixed;top:0;left:0;width:78vw;height:62vh;max-width:640px;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at 14% 10%, var(--amb-col,#E0942A) 0%, transparent 62%);
+  opacity:var(--amb-op,0);transition:opacity 1.8s ease, background 2.2s ease}
+.contempla{position:fixed;inset:0;z-index:97;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;cursor:pointer;animation:contIn .9s ease}
+@keyframes contIn{from{opacity:0}to{opacity:1}}
+.contempla-vela{display:flex;justify-content:center}
+.contempla-vela svg{width:150px;height:250px;overflow:visible}
+.contempla-frase{font-family:var(--serif);font-style:italic;font-size:1.4rem;line-height:1.5;color:var(--tinta-baja);text-align:center;max-width:22ch;margin:0;opacity:0;transform:translateY(6px);transition:opacity 1.6s ease,transform 1.6s ease}
+.contempla-frase.visible{opacity:1;transform:none}
+.velita{display:block;width:52px;height:60px;margin:2px 0 20px;background:none;border:none;padding:0;transition:opacity .2s}
+.velita:hover,.velita:focus-visible{opacity:.85}
+.velita:focus-visible{outline:2px solid var(--llama);outline-offset:6px;border-radius:12px}
+.velita svg{width:100%;height:100%;display:block;overflow:visible}
 @property --fl { syntax: "<number>"; inherits: false; initial-value: 0.6; }
 @property --go { syntax: "<number>"; inherits: false; initial-value: 0.3; }
-.nivel-glow{fill:var(--llama);filter:blur(5px);transition:--go 1.2s ease,fill 1.6s ease;animation:brilloVivo var(--fdur,2.6s) ease-in-out infinite}
+.nivel-glow{fill:var(--llama);filter:blur(6px);transition:--go 1.2s ease,fill 1.6s ease;animation:brilloVivo var(--fdur,2.6s) ease-in-out infinite}
 .nivel-flama{fill:var(--llama);transition:--fl 1.2s cubic-bezier(.3,.8,.3,1),fill 1.6s ease;animation:llamaViva var(--fdur,2.6s) ease-in-out infinite}
-.nivel-cuerpo{fill:var(--cera);opacity:.5}
 .nivel-lleno{fill:none}
 @keyframes llamaViva{0%,100%{transform:scale(var(--fl,.6))}44%{transform:scale(calc(var(--fl,.6) * 1.06)) translateY(-.4px)}70%{transform:scale(calc(var(--fl,.6) * .985))}}
 @keyframes brilloVivo{0%,100%{opacity:var(--go,.3)}50%{opacity:calc(var(--go,.3) * 1.3)}}
-.nivel-txt{display:flex;flex-direction:column;gap:1px}
-.nivel-nom{font-family:var(--serif);font-size:1.15rem;color:var(--tinta);line-height:1.1}
-.nivel-sub{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-tenue)}
 .nivel-det{text-align:center;padding:8px 0}
 .nivel-det-vela{display:flex;justify-content:center;margin:0 0 20px}
 .nivel-det-vela svg{width:110px;height:184px}
@@ -807,6 +812,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 </head>
 <body>
 
+<div id="velaAmbiente" aria-hidden="true"></div>
+
 <div id="vela"><div class="vela-tubo">
   <div class="vela-cera"></div>
   <div class="vela-quemada" id="velaQuemada"></div>
@@ -823,14 +830,12 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <h1 class="saludo" id="saludo">Buenos días</h1>
     <p class="fecha" id="fecha"></p>
 
-    <button class="nivel" id="nivel" aria-label="Tu vela — nivel de práctica">
-      <span class="nivel-vela"><svg class="nivel-svg" viewBox="0 0 40 58" aria-hidden="true">
-        <ellipse class="nivel-glow" id="nivelGlow" cx="20" cy="15" rx="15" ry="17"></ellipse>
-        <path class="nivel-flama" id="nivelFlama" d="M20 5 C25 12 25 19 20 22 C15 19 15 12 20 5 Z"></path>
-        <rect class="nivel-cuerpo" x="13" y="22" width="14" height="30" rx="2"></rect>
-        <rect class="nivel-lleno" id="nivelLleno" x="13" y="52" width="14" height="0" rx="2"></rect>
-      </svg></span>
-      <span class="nivel-txt"><span class="nivel-nom" id="nivelNom">Chispa</span><span class="nivel-sub">tu vela</span></span>
+    <button class="velita" id="velita" aria-label="Tu vela">
+      <svg viewBox="0 0 44 54" aria-hidden="true">
+        <ellipse class="nivel-glow" id="nivelGlow" cx="22" cy="26" rx="19" ry="21"></ellipse>
+        <path class="nivel-flama" id="nivelFlama" d="M22 8 C29.5 19 29.5 30 22 35 C14.5 30 14.5 19 22 8 Z"></path>
+        <rect class="nivel-lleno" id="nivelLleno" x="0" y="0" width="0" height="0"></rect>
+      </svg>
     </button>
 
     <div class="continua oculto" id="continua">
@@ -971,6 +976,15 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <p class="m369-vis-t">Ahora ciérralo con gratitud. Siéntelo como si ya fuera tuyo.</p>
     <button class="m369-listo" id="m369Listo">Listo</button>
   </div>
+</div>
+
+<div class="contempla oculto" id="contempla">
+  <div class="contempla-vela"><svg viewBox="0 0 120 200" aria-hidden="true">
+    <ellipse class="nivel-glow" id="contemplaGlow" cx="60" cy="66" rx="52" ry="58"></ellipse>
+    <path class="nivel-flama" id="contemplaFlama" d="M60 18 C80 52 80 82 60 98 C40 82 40 52 60 18 Z"></path>
+    <rect class="nivel-lleno" id="contemplaLleno" x="0" y="0" width="0" height="0"></rect>
+  </svg></div>
+  <p class="contempla-frase" id="contemplaFrase"></p>
 </div>
 
 <div class="concentra oculto" id="concentra">
@@ -2479,31 +2493,30 @@ function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot){
 }
 function pintarNivel(){
   const g = progresoVela();
-  const nom = $("#nivelNom"); if(nom) nom.textContent = g.nivel.nom;
-  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 22, 52);
-}
-function hojaNivel(){
-  const g = progresoVela();
   const v = VUELTAS[g.vuelta] || VUELTAS[0];
-  const nomVuelta = ["", "Segunda vuelta", "Tercera vuelta"][g.vuelta] || "";
-  let cuerpo = '<div class="nivel-det">' +
-    '<div class="nivel-det-vela"><svg viewBox="0 0 120 200" aria-hidden="true">' +
-      '<ellipse class="nivel-glow" id="nivelDetGlow" cx="60" cy="46" rx="46" ry="52"></ellipse>' +
-      '<path class="nivel-flama" id="nivelDetFlama" d="M60 14 C74 40 74 62 60 72 C46 62 46 40 60 14 Z"></path>' +
-      '<rect class="nivel-cuerpo" x="42" y="72" width="36" height="112" rx="5"></rect>' +
-      '<rect class="nivel-lleno" id="nivelDetLleno" x="42" y="184" width="36" height="0" rx="5"></rect>' +
-    '</svg></div>' +
-    (g.vuelta > 0 ? '<p class="nivel-vuelta">' + esc(nomVuelta) + ' · ' + esc(v.nom) + '</p>' : '') +
-    '<p class="nivel-det-nom">' + esc(g.nivel.nom) + '</p>' +
-    '<p class="nivel-det-desc">' + esc(g.vuelta > 0 && v.desc ? v.desc : g.nivel.desc) + '</p>';
-  cuerpo += '<div class="nivel-escala">' + NIVELES.map((nv,i)=>'<div class="nivel-paso'+(i===g.indice?' actual':'')+(i<g.indice?' pasado':'')+'"><span class="nivel-paso-pt"></span><span class="nivel-paso-nom">'+esc(nv.nom)+'</span></div>').join("") + '</div>';
-  cuerpo += '<p class="campo-ayuda">Tu llama crece con cada ritual y cada pausa. No cuenta días ni rachas — solo tu camino, a tu ritmo.</p></div>';
-  hoja("Tu vela", "", cuerpo + '<div class="acciones"><button class="accion llena" id="nivelCerrar">Listo</button></div>', ()=>{
-    const c=$("#nivelCerrar"); if(c) c.addEventListener("click", cerrarHoja);
-    const glow=$("#nivelDetGlow"), flama=$("#nivelDetFlama"), lleno=$("#nivelDetLleno");
-    velaVisual(glow, flama, lleno, { total:0.06, vuelta:g.vuelta }, 72, 184);   // arranca tenue, en el color de su vuelta
-    setTimeout(()=>{ velaVisual(glow, flama, lleno, g, 72, 184); }, 260);       // y crece ante los ojos
-  });
+  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 35, 54);
+  const amb = $("#velaAmbiente");
+  if(amb){ amb.style.setProperty("--amb-op", (0.028 + g.total * 0.10 + g.vuelta * 0.012).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
+}
+function fraseVela(g){
+  if(g.vuelta >= 2) return "Tu luz, serena.";
+  if(g.vuelta === 1) return "Tu luz es honda ya.";
+  if(g.indice >= 5) return "Tu luz arde plena.";
+  if(g.indice >= 3) return "Tu luz se sostiene.";
+  if(g.indice >= 1) return "Tu luz crece.";
+  return "Tu luz apenas comienza.";
+}
+function hojaNivel(){ abrirContempla(); }
+function abrirContempla(){
+  const g = progresoVela();
+  const ov = $("#contempla"); if(!ov) return;
+  const glow = $("#contemplaGlow"), flama = $("#contemplaFlama"), lleno = $("#contemplaLleno"), fr = $("#contemplaFrase");
+  ov.classList.remove("oculto");
+  velaVisual(glow, flama, lleno, { total:0.06, vuelta:g.vuelta }, 98, 120);   // arranca tenue, en el color de su vuelta
+  setTimeout(()=>{ velaVisual(glow, flama, lleno, g, 98, 120); }, 300);        // y crece
+  if(fr){ fr.textContent = fraseVela(g); fr.classList.remove("visible"); setTimeout(()=>fr.classList.add("visible"), 900); setTimeout(()=>fr.classList.remove("visible"), 5200); }
+  const cerrar = ()=>{ ov.classList.add("oculto"); ov.removeEventListener("click", cerrar); };
+  setTimeout(()=>ov.addEventListener("click", cerrar), 300);
 }
 const APERTURA = {
   manana: ["Hoy es un nuevo día.","Un día nuevo, sin estrenar.","Empieza otra vez. Hoy es tuyo.","Amanece, y con eso basta para empezar.","Hoy no tiene que ser perfecto para ser bueno.","Un nuevo comienzo, y estás en él."],
@@ -4704,7 +4717,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
 (function cablearSOS(){
   const _pfu = $("#pFbUp"); if(_pfu) _pfu.addEventListener("click", ()=>{ if(P.fbLinea){ fbGusta(P.fbLinea, []); _pfu.classList.add("on"); const d=$("#pFbDown"); if(d) d.classList.remove("on"); } });
   const _pfd = $("#pFbDown"); if(_pfd) _pfd.addEventListener("click", ()=>{ if(P.fbLinea){ fbNoGusta(P.fbLinea, []); _pfd.classList.add("on"); const u=$("#pFbUp"); if(u) u.classList.remove("on"); } });
-  const _nv = $("#nivel"); if(_nv) _nv.addEventListener("click", hojaNivel);
+  const _nv = $("#velita"); if(_nv) _nv.addEventListener("click", abrirContempla);
   const _cs = $("#concentraSalir"); if(_cs) _cs.addEventListener("click", detenerPomo);
   const _rc1 = $("#respChipsRitual"), _rc2 = $("#respChipsSos");
   if(_rc1) _rc1.innerHTML = respChipsHTML();
