@@ -3893,20 +3893,31 @@ function hojaAncla(){
 }
 
 let afLista = [], afI = 0;
+const TEMA_AF = { calma:"Calma", confianza:"Confianza", merecer:"Autoestima", disciplina:"Constancia", fe:"Fe", cuerpo:"Cuerpo y salud", relaciones:"Relaciones", mio:"Míos" };
 function hojaAfirmaciones(){
-  afLista = afirmacionesActivas(); afI = 0;
+  const orden = ["merecer","confianza","calma","disciplina","fe","cuerpo","relaciones","mio"];
+  const pres = orden.filter(t => afirmacionesActivas().some(a => a.t === t));
+  let temaSel = "todas";
+  const filtrar = ()=> temaSel === "todas" ? afirmacionesActivas() : afirmacionesActivas().filter(a => a.t === temaSel);
+  afLista = filtrar(); afI = 0;
+  const chips = '<div class="segmento cad-tabs af-temas" id="afTemas"><button type="button" class="seg activo" data-tema="todas">Todas</button>' + pres.map(t=>'<button type="button" class="seg" data-tema="'+t+'">'+esc(TEMA_AF[t]||t)+'</button>').join("") + '</div>';
   hoja("Afirmaciones", "Dilo en voz alta. Repítelo hasta que se sienta verdad.",
-    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(vozAfirmacion(afLista[afI])) + '</p></div>' +
+    chips +
+    '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(afLista[afI] ? vozAfirmacion(afLista[afI]) : "") + '</p></div>' +
     fbHTML() +
     '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
     ()=>{
       const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? vozAfirmacion(afLista[afI]) : ""; };
-      $("#afOtra").addEventListener("click", ()=>{ afI = (afI + 1) % afLista.length; mostrar(); });
+      document.querySelectorAll("#afTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#afTemas .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
+        temaSel = b.dataset.tema; afLista = filtrar(); afI = 0; mostrar();
+      }));
+      $("#afOtra").addEventListener("click", ()=>{ if(afLista.length) afI = (afI + 1) % afLista.length; mostrar(); });
       $("#afRepetir").addEventListener("click", ()=>{ if(afLista[afI]) abrirRepetir(vozAfirmacion(afLista[afI])); });
       document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
         const it = afLista[afI]; if(!it) return;
         if(b.dataset.fb === "up"){ fbGusta(it.x, [it.t]); pulso("#afTxt"); afI = (afI + 1) % afLista.length; setTimeout(mostrar, 260); }
-        else { fbNoGusta(it.x, [it.t]); afLista.splice(afI, 1); if(!afLista.length){ afLista = afirmacionesActivas(); afI = 0; } mostrar(); }
+        else { fbNoGusta(it.x, [it.t]); afLista.splice(afI, 1); if(!afLista.length){ afLista = filtrar(); afI = 0; } mostrar(); }
       }));
       $("#afCerrar").addEventListener("click", cerrarHoja);
     });
@@ -3934,14 +3945,28 @@ function hojaManifestacion(){
       $("#manifCerrar").addEventListener("click", cerrarHoja);
     });
 }
+const TEMA_MAN = { abundancia:"Abundancia", salud:"Salud", relaciones:"Relaciones", proposito:"Propósito", mio:"Míos" };
 function hojaManifestElegir(){
-  const lista = manifestacionesActivas();
+  const orden = ["abundancia","salud","relaciones","proposito","mio"];
+  const pres = orden.filter(t => manifestacionesActivas().some(m => m.t === t));
+  let temaSel = "todas";
+  const filtrar = ()=> temaSel === "todas" ? manifestacionesActivas() : manifestacionesActivas().filter(m => m.t === temaSel);
+  const render = ()=>{
+    const l = filtrar();
+    const cont = $("#manifOpts"); if(!cont) return;
+    cont.innerHTML = l.map((m,i)=>'<button class="manif-opt" data-decl="'+i+'">'+esc(vozManifestacion(m))+'</button>').join("");
+    document.querySelectorAll("#manifOpts .manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = vozManifestacion(l[+b.dataset.decl]); guardar(); hojaManifestacion(); }));
+  };
+  const chips = '<div class="segmento cad-tabs" id="manTemas"><button type="button" class="seg activo" data-tema="todas">Todas</button>' + pres.map(t=>'<button type="button" class="seg" data-tema="'+t+'">'+esc(TEMA_MAN[t]||t)+'</button>').join("") + '</div>';
   hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
-    '<div class="manif-opts">' + lista.map((m,i)=>'<button class="manif-opt" data-decl="'+i+'">'+esc(vozManifestacion(m))+'</button>').join("") + '</div>' +
+    chips + '<div class="manif-opts" id="manifOpts"></div>' +
     '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
     ()=>{
-      const l = manifestacionesActivas();
-      document.querySelectorAll(".manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = vozManifestacion(l[+b.dataset.decl]); guardar(); hojaManifestacion(); }));
+      render();
+      document.querySelectorAll("#manTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#manTemas .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
+        temaSel = b.dataset.tema; render();
+      }));
       $("#manifElegirCerrar").addEventListener("click", cerrarHoja);
     });
 }
