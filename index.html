@@ -619,7 +619,10 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .pref-bloque .onb-chips,.pref-bloque .onb-opts{margin-bottom:0}
 
 /* ── Mensaje de hoy + Ahora mismo (inicio) ── */
-.hoy{background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.hoy{display:flex;align-items:center;gap:15px;background:var(--panel);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.hoy-cont{flex:1;min-width:0}
+.velita{flex-shrink:0;display:block;width:44px;height:56px;margin:0;background:none;border:none;padding:0;transition:opacity .2s}
+.velita:hover,.velita:focus-visible{opacity:.85}
 .continua{border-left:2px solid var(--llama);padding:4px 0 4px 16px;margin-bottom:20px}
 #velaAmbiente{position:fixed;top:0;left:0;width:78vw;height:62vh;max-width:640px;pointer-events:none;z-index:1;
   background:radial-gradient(ellipse at 14% 10%, var(--amb-col,#E0942A) 0%, transparent 62%);
@@ -630,8 +633,6 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .contempla-vela svg{width:150px;height:250px;overflow:visible}
 .contempla-frase{font-family:var(--serif);font-style:italic;font-size:1.4rem;line-height:1.5;color:var(--tinta-baja);text-align:center;max-width:22ch;margin:0;opacity:0;transform:translateY(6px);transition:opacity 1.6s ease,transform 1.6s ease}
 .contempla-frase.visible{opacity:1;transform:none}
-.velita{display:block;width:52px;height:60px;margin:2px 0 20px;background:none;border:none;padding:0;transition:opacity .2s}
-.velita:hover,.velita:focus-visible{opacity:.85}
 .velita:focus-visible{outline:2px solid var(--llama);outline-offset:6px;border-radius:12px}
 .velita svg{width:100%;height:100%;display:block;overflow:visible}
 @property --fl { syntax: "<number>"; inherits: false; initial-value: 0.6; }
@@ -830,23 +831,24 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <h1 class="saludo" id="saludo">Buenos días</h1>
     <p class="fecha" id="fecha"></p>
 
-    <button class="velita" id="velita" aria-label="Tu vela">
-      <svg viewBox="0 0 44 54" aria-hidden="true">
-        <ellipse class="nivel-glow" id="nivelGlow" cx="22" cy="26" rx="19" ry="21"></ellipse>
-        <path class="nivel-flama" id="nivelFlama" d="M22 8 C29.5 19 29.5 30 22 35 C14.5 30 14.5 19 22 8 Z"></path>
-        <rect class="nivel-lleno" id="nivelLleno" x="0" y="0" width="0" height="0"></rect>
-      </svg>
-    </button>
-
     <div class="continua oculto" id="continua">
       <p class="continua-label">La última vez dejaste esto aquí</p>
       <p class="continua-txt" id="continuaTxt"></p>
     </div>
 
     <div class="hoy" id="hoy">
-      <p class="hoy-label">Mensaje de hoy</p>
-      <p class="hoy-txt" id="hoyTxt"></p>
-      <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
+      <button class="velita" id="velita" aria-label="Tu vela">
+        <svg viewBox="0 0 44 54" aria-hidden="true">
+          <ellipse class="nivel-glow" id="nivelGlow" cx="22" cy="26" rx="19" ry="21"></ellipse>
+          <path class="nivel-flama" id="nivelFlama" d="M22 8 C29.5 19 29.5 30 22 35 C14.5 30 14.5 19 22 8 Z"></path>
+          <rect class="nivel-lleno" id="nivelLleno" x="0" y="0" width="0" height="0"></rect>
+        </svg>
+      </button>
+      <div class="hoy-cont">
+        <p class="hoy-label">Mensaje de hoy</p>
+        <p class="hoy-txt" id="hoyTxt"></p>
+        <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
+      </div>
     </div>
 
     <button class="ahora" id="ahoraBtn">
@@ -1481,12 +1483,22 @@ const DECLARACION = {
   universal: {
     yo:["Me abro a lo que este día traiga.","Hoy entro con presencia.","Recibo el día tal como viene.","Elijo estar presente hoy."],
     crist:["Señor, me abro a lo que hoy tengas para mí.","Confío en tu voluntad para este día.","Que se haga tu voluntad en mi día.","Guíame en lo que hoy venga."]
+  },
+  relaciones: {
+    yo:["Hoy me abro a las personas correctas.","Elijo amar sin perderme.","Hoy cuido mis vínculos con presencia.","Me abro a dar y recibir amor."],
+    crist:["Señor, trae a mi vida a quienes me hagan bien.","Ayúdame a amar como tú amas.","Sana mis vínculos, Señor.","Pon paz en mis relaciones hoy."]
+  },
+  cuerpo: {
+    yo:["Hoy cuido mi cuerpo con cariño.","Escucho lo que mi cuerpo me pide.","Hoy me muevo y descanso con equilibrio.","Trato mi cuerpo como a alguien que amo."],
+    crist:["Gracias, Señor, por este cuerpo; ayúdame a cuidarlo.","Dame sabiduría para cuidar mi cuerpo hoy.","Que hoy honre el cuerpo que me diste.","Cuida mi cuerpo conmigo, Señor."]
   }
 };
 
 // Mapea el enfoque permanente (texto libre de la intención) a un tema de Declaración; respaldo universal.
 function temaEnfoque(){
   const t = ((E.perfil && E.perfil.intencion) || "").toLowerCase();
+  if(/amor|pareja|relaci|v[íi]ncul|familia|amistad|perd[óo]n|desamor/.test(t)) return "relaciones";
+  if(/cuerpo|salud|energ|descanso|dormir|sano|movimiento|bienestar/.test(t)) return "cuerpo";
   if(/paz|calma|tranquil|serenidad|descanso|quietud/.test(t)) return "calma";
   if(/fuerza|fuerte|firme|valor|coraje/.test(t)) return "fuerza";
   if(/[áa]nimo|motivaci|impulso|energ|disciplina/.test(t)) return "animo";
@@ -1529,7 +1541,8 @@ function afirmacionesRitual(n, temas){
     l = l.slice().sort(()=>Math.random()-0.5);
     return l.slice(0, n).map(vozAfirmacion);
   }
-  return afirmacionesActivas().slice(0, n).map(vozAfirmacion);
+  // Identidad sin tema: autovalor/presencia. Excluye relaciones y cuerpo (son deseos, no identidad; viven en la Biblioteca).
+  return afirmacionesActivas().filter(a=>a.t !== "relaciones" && a.t !== "cuerpo").slice(0, n).map(vozAfirmacion);
 }
 function manifestacionesRitual(n, temas){
   if(temas && temas.length){
@@ -1873,6 +1886,30 @@ const AFIRMACIONES = [
   { t:"fe", x:"Todo se acomoda cuando dejo de forzar." },
   { t:"fe", x:"Dejo ir el control; el camino se abre solo." },
   { t:"fe", x:"Conf\u00edo en m\u00ed y en lo que viene." },
+{ t:"relaciones", x:"Merezco relaciones que me traten bien." },
+  { t:"relaciones", x:"Doy amor sin perderme a mí." },
+  { t:"relaciones", x:"Soy digno de ser amado tal como soy." },
+  { t:"relaciones", x:"Suelto los vínculos que ya no me hacen bien." },
+  { t:"relaciones", x:"Puedo poner límites y seguir amando." },
+  { t:"relaciones", x:"Me abro a los demás sin miedo." },
+  { t:"relaciones", x:"Sano, poco a poco, las heridas que traigo de antes." },
+  { t:"relaciones", x:"Merezco ser escuchado y cuidado." },
+  { t:"relaciones", x:"El amor sano empieza por cómo me trato." },
+  { t:"relaciones", x:"Elijo a quien también me elige." },
+  { t:"relaciones", x:"Puedo pedir lo que necesito en mis relaciones." },
+  { t:"relaciones", x:"Me rodeo de quienes me suman." },
+  { t:"cuerpo", x:"Cuido mi cuerpo porque me sostiene." },
+  { t:"cuerpo", x:"Escucho lo que mi cuerpo necesita." },
+  { t:"cuerpo", x:"Descanso sin culpa; mi cuerpo lo pide." },
+  { t:"cuerpo", x:"Muevo mi cuerpo con cariño, no con castigo." },
+  { t:"cuerpo", x:"Mi cuerpo merece descanso y alimento bueno." },
+  { t:"cuerpo", x:"Agradezco lo que mi cuerpo hace por mí cada día." },
+  { t:"cuerpo", x:"Trato mi cuerpo con la paciencia que le daría a alguien que amo." },
+  { t:"cuerpo", x:"Mi cuerpo no es un problema a resolver." },
+  { t:"cuerpo", x:"Elijo lo que me da energía y calma." },
+  { t:"cuerpo", x:"Respiro, y vuelvo a habitar mi cuerpo." },
+  { t:"cuerpo", x:"Mi cuerpo y yo estamos del mismo lado." },
+  { t:"cuerpo", x:"Hago las paces con mi cuerpo hoy." }
 ];
 // ── Manifestación (declaraciones en presente) — etiquetadas por tema ──
 const MANIFESTACIONES = [
