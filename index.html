@@ -494,7 +494,9 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .campo-area:focus{border-color:var(--llama)}
 .campo-area::placeholder{color:var(--tinta-tenue)}
 .campo-area.grande{min-height:220px}
-.cad-tabs{margin-bottom:22px}
+.cad-tabs{margin-bottom:22px;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.cad-tabs::-webkit-scrollbar{display:none}
+.cad-tabs .seg{flex:0 0 auto;white-space:nowrap;padding:11px 15px}
 .ver-trad{display:block;margin:-12px 0 20px;padding:4px 0;background:none;border:none;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--oro);opacity:.85;transition:opacity .2s}
 .ver-trad:hover,.ver-trad:focus-visible{opacity:1}
 #histTabs{overflow-x:auto;scrollbar-width:none}
@@ -732,6 +734,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-skip{margin-top:16px;padding:8px;font-size:13px;color:var(--tinta-tenue);transition:color .2s}
 .sos-skip:hover,.sos-skip:focus-visible{color:var(--tinta-baja)}
 .sos-espacio{font-family:var(--serif);font-size:1.45rem;color:var(--tinta);text-align:center;margin:0 0 26px;line-height:1.4}
+.sos-ancla{font-family:var(--serif);font-style:italic;font-size:1.15rem;line-height:1.5;color:var(--tinta-baja);text-align:center;margin:2px auto 4px;max-width:24ch}
 .sos-comparo{font-family:var(--mono);font-size:15px;color:var(--oro);text-align:center;margin:16px 0 0;letter-spacing:.03em}
 .sos-preg-sug{margin-top:32px}
 .sos-sug{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;margin-bottom:2px;max-width:34ch}
@@ -967,6 +970,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   </div>
   <div class="sos-paso oculto" id="sosP3">
     <p class="sos-espacio">Creaste un poco de espacio.</p>
+    <p class="sos-ancla oculto" id="sosAncla"></p>
     <div id="sosDespuesInt">
       <p class="sos-preg">¿Cómo se siente ahora?</p>
       <div class="sos-slider-wrap">
@@ -3954,7 +3958,8 @@ function hojaAfirmaciones(){
     '<div class="segmento cad-tabs af-temas" id="afTemas">' + chipsHTML() + '</div>' + toggleHTML +
     '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(afLista[afI] ? vozAfirmacion(afLista[afI]) : "") + '</p></div>' +
     fbHTML() +
-    '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afEditar">Crear las mías</button><button class="accion" id="afCerrar">Cerrar</button></div>',
+    '<button class="rito-editar" id="afEditar"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Mi contenido</button>' +
+    '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
     ()=>{
       const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? vozAfirmacion(afLista[afI]) : ""; };
       const wireChips = ()=> document.querySelectorAll("#afTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
@@ -4021,7 +4026,8 @@ function hojaManifestElegir(){
   const toggleHTML = puedeExpandir ? '<button type="button" class="ver-trad" id="manVerTrad">Ver también otras tradiciones</button>' : '';
   hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
     chips + toggleHTML + '<div class="manif-opts" id="manifOpts"></div>' +
-    '<div class="acciones"><button class="accion" id="manifCrear">Crear la mía</button><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
+    '<button class="rito-editar" id="manifCrear"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Mi contenido</button>' +
+    '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
     ()=>{
       render();
       document.querySelectorAll("#manTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
@@ -4331,10 +4337,31 @@ function hojaRitualesElegir(){
     '<div class="nav-cards">' + ["manana","nucleo","noche"].map(id=>{
       const r = RITUALES[id];
       return '<button class="nav-card" data-rit="'+id+'"><span class="nav-card-tx"><span class="nav-card-t">'+r.nombre+'</span><span class="nav-card-s">'+esc(r.sub)+'</span></span><span class="nav-card-ch">›</span></button>';
-    }).join("") + '</div><div class="acciones"><button class="accion" id="ritElegirCerrar">Cerrar</button></div>',
+    }).join("") + '<button class="nav-card" data-ahora="1"><span class="nav-card-tx"><span class="nav-card-t">Ahora mismo</span><span class="nav-card-s">Respiración por defecto y tu ancla personal</span></span><span class="nav-card-ch">›</span></button></div><div class="acciones"><button class="accion" id="ritElegirCerrar">Cerrar</button></div>',
     ()=>{
       document.querySelectorAll("[data-rit]").forEach(b=>b.addEventListener("click", ()=>hojaEditarRitual(b.dataset.rit)));
+      const ah = document.querySelector("[data-ahora]"); if(ah) ah.addEventListener("click", hojaEditarAhora);
       $("#ritElegirCerrar").addEventListener("click", cerrarHoja);
+    });
+}
+
+function hojaEditarAhora(){
+  const patAct = E.ajustes.respiroPatron || "serena";
+  const chips = RESP_ORDEN.map(k=>'<button type="button" class="seg'+(k===patAct?' activo':'')+'" data-rp="'+k+'">'+RESPIROS[k].nom+'</button>').join("");
+  hoja("Ahora mismo", "Ajusta cómo entras a la calma. La secuencia que te acompaña se mantiene como está — pensada para cuidarte en un momento difícil.",
+    '<div class="campo"><label class="campo-et">Respiración por defecto</label><div class="segmento cad-tabs" id="ahResp">' + chips + '</div><p class="campo-ayuda">Con la que empieza tu pausa. Dentro puedes cambiarla también.</p></div>' +
+    '<div class="campo"><label class="campo-et" for="ahAncla">Tu ancla personal</label><textarea class="campo-in" id="ahAncla" rows="2" placeholder="Una frase tuya que te devuelva a ti (ej. «Esto también pasa»)" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px;resize:none;width:100%">' + esc(E.ajustes.anclaSos || "") + '</textarea><p class="campo-ayuda">Aparece al final, cuando ya creaste un poco de espacio. Escríbela en positivo — algo que te sostenga.</p></div>' +
+    '<div class="acciones"><button class="accion llena" id="ahGuardar">Guardar</button><button class="accion" id="ahCerrar">Cerrar</button></div>',
+    ()=>{
+      document.querySelectorAll("#ahResp .seg").forEach(b=>b.addEventListener("click", ()=>{
+        document.querySelectorAll("#ahResp .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
+        E.ajustes.respiroPatron = b.dataset.rp; guardar(); try{ respMarcarChips(); }catch(e){}
+      }));
+      $("#ahGuardar").addEventListener("click", ()=>{
+        E.ajustes.anclaSos = (($("#ahAncla")||{}).value || "").trim().slice(0,140); guardar();
+        const g = $("#ahGuardar"); if(g){ g.textContent = "Guardado"; setTimeout(()=>{ const g2=$("#ahGuardar"); if(g2) g2.textContent = "Guardar"; }, 1400); }
+      });
+      $("#ahCerrar").addEventListener("click", cerrarHoja);
     });
 }
 
@@ -4715,6 +4742,8 @@ function abrirSOS(){
   if($("#sosValB")) $("#sosValB").textContent = "—";
   const cmp = $("#sosComparo"); if(cmp){ cmp.classList.add("oculto"); cmp.textContent = ""; }
   sosPaso(1);
+  const _anc = $("#sosAncla"); const _at = (E.ajustes.anclaSos||"").trim();
+  if(_anc){ if(_at){ _anc.textContent = _at; _anc.classList.remove("oculto"); } else _anc.classList.add("oculto"); }
   $("#sos").classList.remove("oculto");
   document.body.classList.add("encendida");
   padBed = false;
