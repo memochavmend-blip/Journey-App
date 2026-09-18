@@ -133,7 +133,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 
 /* ─── ESTRUCTURA ─── */
-#appShell{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;height:var(--vh,100dvh);display:flex;flex-direction:column;overflow:hidden;z-index:2}
+#appShell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:2}
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   width:100%;max-width:640px;margin:0 auto;
@@ -595,10 +595,10 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
-.tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:flex-end;
-  padding:9px 4px calc(env(safe-area-inset-bottom) + 9px);
+.tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:center;
+  padding:7px 4px calc(env(safe-area-inset-bottom) + 7px);
   background:var(--panel);border-top:1px solid var(--linea-fuerte)}
-.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:9px 0;color:var(--tinta-tenue);transition:color .2s ease}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:7px 0;min-height:44px;color:var(--tinta-tenue);transition:color .2s ease}
 .tab.activo{color:var(--tinta)}
 .tab-ic{width:23px;height:23px}
 .tab-ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -2472,6 +2472,26 @@ const NECESITAS_RIT = {
   ]
 };
 const NEC_PREG = { manana:"¿Qué necesitas hoy?", nucleo:"¿Qué traes ahora?" };
+function sonarRitual(car){
+  if(E.ajustes && E.ajustes.ambienteApp === false) return;
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    if(!_uiCtx) _uiCtx = new AC();
+    const c = _uiCtx; if(c.state === "suspended"){ try{ c.resume(); }catch(e){} }
+    const t = c.currentTime;
+    // ABRIR asciende · VOLVER se asienta en el centro · SOLTAR desciende
+    const notas = car === "abrir" ? [[329.63,0],[493.88,0.14]] : car === "soltar" ? [[493.88,0],[329.63,0.14]] : [[392.0,0],[392.0,0.14]];
+    notas.forEach(([f,d])=>{
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t + d);
+      g.gain.exponentialRampToValueAtTime(0.075, t + d + 0.16);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d + 2.3);
+      o.connect(g).connect(c.destination);
+      o.start(t + d); o.stop(t + d + 2.4);
+    });
+  }catch(e){}
+}
 function abrirRitual(id){
   const p = RITUALES[id]; if(!p) return;
   P.pendId = id;
@@ -2479,6 +2499,7 @@ function abrirRitual(id){
   document.body.classList.toggle("tema-noche", p.tema === "noche");
   document.body.classList.add("encendida");
   const car = { manana:"abrir", nucleo:"volver", noche:"soltar" }[id] || "abrir";   // el alma de cada ritual: ABRIR · VOLVER · SOLTAR
+  sonarRitual(car);
   const pr = $("#practica");
   pr.classList.remove("rito-abrir","rito-volver","rito-soltar");
   void pr.offsetWidth;                                     // reinicia la animación de entrada
@@ -4764,10 +4785,6 @@ function terminarOnb(){
   $("#onboarding").classList.add("oculto");
   render();
 }
-function fijarAltoShell(){ try{ document.documentElement.style.setProperty("--vh", window.innerHeight + "px"); }catch(e){} }
-fijarAltoShell();
-window.addEventListener("resize", fijarAltoShell);
-window.addEventListener("orientationchange", ()=>setTimeout(fijarAltoShell, 120));
 try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portrait").catch(()=>{}); }catch(e){}
 function mostrarOnboarding(){
   onbSeq = onbConstruirSeq(); onbIdx = 0;
