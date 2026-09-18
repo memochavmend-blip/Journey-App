@@ -4025,8 +4025,9 @@ function hojaManifestElegir(){
   const chips = '<div class="segmento cad-tabs" id="manTemas"><button type="button" class="seg activo" data-tema="todas">Todas</button>' + pres.map(t=>'<button type="button" class="seg" data-tema="'+t+'">'+esc(TEMA_MAN[t]||t)+'</button>').join("") + '</div>';
   const toggleHTML = puedeExpandir ? '<button type="button" class="ver-trad" id="manVerTrad">Ver también otras tradiciones</button>' : '';
   hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
-    chips + toggleHTML + '<div class="manif-opts" id="manifOpts"></div>' +
-    '<button class="rito-editar" id="manifCrear"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Mi contenido</button>' +
+    chips + toggleHTML +
+    '<button class="rito-editar" id="manifCrear" style="margin:2px 0 18px"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4z"/></svg>Mi contenido</button>' +
+    '<div class="manif-opts" id="manifOpts"></div>' +
     '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
     ()=>{
       render();
