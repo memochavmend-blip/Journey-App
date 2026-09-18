@@ -133,7 +133,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 
 /* ─── ESTRUCTURA ─── */
-#appShell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:2}
+#appShell{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;z-index:2}
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   width:100%;max-width:640px;margin:0 auto;
@@ -214,25 +214,25 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 
 /* ─── PRÁCTICA ─── */
 #practica{
-  position:fixed;inset:0;z-index:40;display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:40;display:flex;flex-direction:column;
   background:var(--noche);
   padding:calc(env(safe-area-inset-top) + 22px) 24px calc(env(safe-area-inset-bottom) + 20px) 52px;
 }
 #practica::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0}
 #practica > *{position:relative;z-index:1}
 /* El alma de cada ritual, sentida antes de leer una palabra: ABRIR sube y se abre · VOLVER se recoge al centro · SOLTAR desciende y se asienta */
-.rito-abrir{animation:entraAbrir 1.1s cubic-bezier(.2,.7,.3,1)}
-.rito-volver{animation:entraVolver 1.1s cubic-bezier(.34,.7,.3,1)}
-.rito-soltar{animation:entraSoltar 1.3s cubic-bezier(.3,.5,.2,1)}
-@keyframes entraAbrir{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
-@keyframes entraVolver{from{opacity:0;transform:scale(1.045)}to{opacity:1;transform:none}}
-@keyframes entraSoltar{from{opacity:0;transform:translateY(-9px)}to{opacity:1;transform:none}}
-.rito-abrir::before{background:radial-gradient(120% 90% at 50% 22%, color-mix(in srgb,var(--llama) 12%,transparent) 0%, transparent 60%);animation:glowAbrir 3.4s ease-out forwards}
-.rito-volver::before{background:radial-gradient(70% 70% at 50% 50%, color-mix(in srgb,var(--llama) 11%,transparent) 0%, transparent 58%);animation:glowVolver 3.4s ease forwards}
-.rito-soltar::before{background:radial-gradient(120% 100% at 50% 82%, color-mix(in srgb,var(--llama) 10%,transparent) 0%, transparent 62%);animation:glowSoltar 4s ease forwards}
-@keyframes glowAbrir{0%{opacity:0;transform:translateY(30px) scale(.9)}100%{opacity:1;transform:none}}
-@keyframes glowVolver{0%{opacity:0;transform:scale(1.5)}100%{opacity:1;transform:none}}
-@keyframes glowSoltar{0%{opacity:0;transform:translateY(-24px) scale(1.1)}100%{opacity:.9;transform:none}}
+.rito-abrir{animation:entraAbrir 1.2s cubic-bezier(.2,.7,.3,1)}
+.rito-volver{animation:entraVolver 1.2s cubic-bezier(.34,.7,.3,1)}
+.rito-soltar{animation:entraSoltar 1.5s cubic-bezier(.3,.5,.2,1)}
+@keyframes entraAbrir{from{opacity:0;transform:translateY(26px) scale(.965)}to{opacity:1;transform:none}}
+@keyframes entraVolver{from{opacity:0;transform:scale(1.09)}to{opacity:1;transform:none}}
+@keyframes entraSoltar{from{opacity:0;transform:translateY(-20px) scale(1.02)}to{opacity:1;transform:none}}
+.rito-abrir::before{background:radial-gradient(130% 95% at 50% 20%, color-mix(in srgb,var(--llama) 20%,transparent) 0%, transparent 62%);animation:glowAbrir 3.6s ease-out forwards}
+.rito-volver::before{background:radial-gradient(75% 75% at 50% 50%, color-mix(in srgb,var(--llama) 19%,transparent) 0%, transparent 60%);animation:glowVolver 3.6s ease forwards}
+.rito-soltar::before{background:radial-gradient(130% 105% at 50% 84%, color-mix(in srgb,var(--llama) 17%,transparent) 0%, transparent 64%);animation:glowSoltar 4.2s ease forwards}
+@keyframes glowAbrir{0%{opacity:0;transform:translateY(50px) scale(.82)}100%{opacity:1;transform:none}}
+@keyframes glowVolver{0%{opacity:0;transform:scale(1.8)}100%{opacity:1;transform:none}}
+@keyframes glowSoltar{0%{opacity:0;transform:translateY(-42px) scale(1.18)}100%{opacity:.92;transform:none}}
 .p-alto{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:22px}
 .p-mov{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--tinta-tenue)}
 .p-salir{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-baja);padding:6px 0 6px 12px}
@@ -351,7 +351,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 
 /* ─── HOJAS (modales) ─── */
 .hoja{
-  position:fixed;inset:0;z-index:70;background:rgba(6,5,4,.86);
+  position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:70;background:rgba(6,5,4,.86);
   display:flex;align-items:flex-end;justify-content:center;
   animation:vela-in .3s ease;
 }
@@ -543,7 +543,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 
 .version-sello{text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--tinta-tenue);margin:18px 0 4px}
 /* ── Sonido (hub + pomodoro) ── */
-.concentra{position:fixed;inset:0;z-index:96;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px)}
+.concentra{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:96;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;padding:40px 26px calc(env(safe-area-inset-bottom) + 40px)}
 .concentra-fase{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--tinta-tenue);margin:0}
 .concentra-aro{position:relative;width:158px;height:158px;display:flex;align-items:center;justify-content:center}
 .concentra-svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
@@ -579,6 +579,12 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .app-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 26px 10px 52px}
+.rotar{display:none}
+@media (orientation:landscape) and (max-height:540px){
+  .rotar{display:flex;position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:200;background:var(--noche);flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:30px;color:var(--tinta-baja);font-family:var(--serif);font-size:1.25rem;line-height:1.5}
+  .rotar-ic svg{width:40px;height:40px;fill:none;stroke:var(--llama);stroke-width:1.6;stroke-linecap:round;animation:rotarGiro 2.4s ease-in-out infinite}
+}
+@keyframes rotarGiro{0%,60%{transform:rotate(0)}80%,100%{transform:rotate(-90deg)}}
 .app-header{display:none}
 .gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.72;transition:opacity .2s}
 #recibimiento{margin-bottom:6px}
@@ -601,15 +607,15 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 body.encendida .tabbar,body.encendida .gear{display:none}
 
 /* ── Onboarding ── */
-.onb{position:fixed;inset:0;z-index:90;background:var(--noche);display:flex;flex-direction:column;
+.onb{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:90;background:var(--noche);display:flex;flex-direction:column;
   padding:calc(env(safe-area-inset-top) + 40px) 30px calc(env(safe-area-inset-bottom) + 30px)}
 .onb-dots{display:flex;gap:7px;justify-content:center}
 .onb-dot{width:7px;height:7px;border-radius:50%;background:var(--linea-fuerte);transition:background .3s ease}
 .onb-dot.on{background:var(--llama)}
-.onb-flama{display:flex;justify-content:center;align-items:flex-end;height:56px;margin:4px 0 18px;transition:height .6s cubic-bezier(.2,.7,.3,1),margin .6s ease}
-.onb-flama.grande{height:120px;margin:20px 0 30px}
+.onb-flama{display:flex;justify-content:center;align-items:flex-end;height:68px;margin:4px 0 20px;transition:height .6s cubic-bezier(.2,.7,.3,1),margin .6s ease}
+.onb-flama.grande{height:168px;margin:24px 0 34px}
 .onb-flama svg{height:100%;width:auto;overflow:visible}
-.onb-cont{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:440px;margin:0 auto;width:100%}
+.onb-cont{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:safe center;max-width:440px;margin:0 auto;width:100%}
 .onb-cont h1,.onb-cont p{animation:onbIn .35s ease}
 @keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .onb-mark{font-size:2.4rem;color:var(--llama);margin-bottom:18px;line-height:1}
@@ -653,13 +659,13 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .velita{flex-shrink:0;display:block;width:44px;height:56px;margin:0;background:none;border:none;padding:0;transition:opacity .2s}
 .velita:hover,.velita:focus-visible{opacity:.85}
 .continua{border-left:2px solid var(--llama);padding:4px 0 4px 16px;margin-bottom:20px}
-#velaAmbiente{position:fixed;top:0;left:0;width:78vw;height:62vh;max-width:640px;pointer-events:none;z-index:1;
-  background:radial-gradient(ellipse at 14% 10%, var(--amb-col,#E0942A) 0%, transparent 62%);
+#velaAmbiente{position:fixed;top:0;left:0;width:100vw;height:70vh;max-width:820px;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse at 16% 8%, var(--amb-col,#E0942A) 0%, transparent 58%);
   opacity:var(--amb-op,0);transition:opacity 1.8s ease, background 2.2s ease}
-.contempla{position:fixed;inset:0;z-index:97;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;cursor:pointer;animation:contIn .9s ease}
+.contempla{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:97;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;cursor:pointer;animation:contIn .9s ease}
 @keyframes contIn{from{opacity:0}to{opacity:1}}
 .contempla-vela{display:flex;justify-content:center}
-.contempla-vela svg{width:150px;height:250px;overflow:visible}
+.contempla-vela svg{width:200px;height:330px;overflow:visible}
 .contempla-frase{font-family:var(--serif);font-style:italic;font-size:1.4rem;line-height:1.5;color:var(--tinta-baja);text-align:center;max-width:22ch;margin:0;opacity:0;transform:translateY(6px);transition:opacity 1.6s ease,transform 1.6s ease}
 .contempla-frase.visible{opacity:1;transform:none}
 .velita:focus-visible{outline:2px solid var(--llama);outline-offset:6px;border-radius:12px}
@@ -710,7 +716,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .ahora-s{font-size:12.5px;color:var(--tinta-baja)}
 
 /* ── SOS · Ahora mismo ── */
-.sos{position:fixed;inset:0;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+.sos{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:calc(env(safe-area-inset-top) + 30px) 32px calc(env(safe-area-inset-bottom) + 30px);gap:0}
 .sos-respira{width:180px;height:180px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-bottom:38px;
   background:radial-gradient(circle at 50% 45%, color-mix(in srgb,var(--llama) 22%,transparent), transparent 70%);
@@ -723,7 +729,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   86%{transform:scale(.72)}
   100%{transform:scale(.72)}
 }
-.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:24px 0 34px;min-height:4.5rem;transition:opacity .5s ease}
+.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:24px 0 34px;min-height:4.5rem;transition:opacity .4s ease}
 .sos-paso{display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px}
 .sos-intro{font-family:var(--serif);font-size:1.4rem;color:var(--tinta);text-align:center;margin:0 0 30px;line-height:1.4}
 .sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
@@ -750,7 +756,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-salir{border-color:transparent;color:var(--tinta-tenue)}
 
 /* ── Afirmaciones · repetir + Manifestación · 369 (overlays) ── */
-.rep,.m369{position:fixed;inset:0;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+.rep,.m369{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:calc(env(safe-area-inset-top) + 40px) 32px calc(env(safe-area-inset-bottom) + 34px)}
 .rep-txt,.m369-decl{font-family:var(--serif);font-size:1.9rem;line-height:1.4;color:var(--tinta);text-align:center;max-width:26ch;margin:0 0 20px}
 .rep-count,.m369-count{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 28px;min-height:1.2em}
@@ -844,6 +850,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 <body>
 
 <div id="velaAmbiente" aria-hidden="true"></div>
+<div class="rotar" id="rotar" aria-hidden="true"><div class="rotar-ic"><svg viewBox="0 0 24 24"><rect x="7" y="3" width="10" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/></svg></div><p>Práctica se vive en vertical.<br>Gira tu teléfono.</p></div>
 
 <div id="vela"><div class="vela-tubo">
   <div class="vela-cera"></div>
@@ -2580,7 +2587,7 @@ function pintarNivel(){
   const v = VUELTAS[g.vuelta] || VUELTAS[0];
   velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 35, 54);
   const amb = $("#velaAmbiente");
-  if(amb){ amb.style.setProperty("--amb-op", (0.028 + g.total * 0.10 + g.vuelta * 0.012).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
+  if(amb){ amb.style.setProperty("--amb-op", (0.05 + g.total * 0.17 + g.vuelta * 0.02).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
 }
 function fraseVela(g){
   if(g.vuelta >= 2) return "Tu luz, serena.";
@@ -3565,7 +3572,7 @@ function hojaTemporizador(){
 
 function hojaConcentracion(){
   let cuerpo = '<p class="pomo-sub">Bloques de enfoque con descansos. Elige tu método y empieza.</p>' +
-    '<div class="campo"><label class="campo-et">Método</label><div class="segmento" id="pomoCiclo">' +
+    '<div class="campo"><label class="campo-et">Método</label><div class="segmento cad-tabs" id="pomoCiclo">' +
       METODOS.map(mt=>'<button type="button" class="seg'+((Pomo.foco===mt.foco)?' activo':'')+'" data-foco="'+mt.foco+'" data-desc="'+mt.descanso+'">'+mt.nom+' · '+mt.desc+'</button>').join("") +
     '</div></div>' +
     '<div class="campo"><label class="campo-et" for="pomoEsc">Sonido de enfoque</label><select class="campo-sel" id="pomoEsc">' +
@@ -4717,7 +4724,7 @@ function onbRender(){
   const p = onbPantalla(onbSeq[onbIdx]);
   const cont = $("#onbCont"); cont.innerHTML = p.html; cont.scrollTop = 0;
   const fl = $("#onbFlama"); if(fl) fl.classList.toggle("grande", onbSeq[onbIdx] === "bienvenida");
-  try{ velaVisual($("#onbGlow"), $("#onbFlamaP"), null, { total: onbSeq[onbIdx] === "bienvenida" ? 0.6 : 0.4, vuelta:0 }, 35, 54); }catch(e){}
+  try{ velaVisual($("#onbGlow"), $("#onbFlamaP"), null, { total: onbSeq[onbIdx] === "bienvenida" ? 0.75 : 0.42, vuelta:0 }, 35, 54); }catch(e){}
   $("#onbDots").innerHTML = onbSeq.map((_,i)=>'<span class="onb-dot'+(i<=onbIdx?" on":"")+'"></span>').join("");
   const at = $("#onbAtras"); if(at) at.classList.toggle("oculto", onbIdx === 0);
   if(p.wire) p.wire();
@@ -4737,6 +4744,7 @@ function terminarOnb(){
   $("#onboarding").classList.add("oculto");
   render();
 }
+try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portrait").catch(()=>{}); }catch(e){}
 function mostrarOnboarding(){
   onbSeq = onbConstruirSeq(); onbIdx = 0;
   $("#onboarding").classList.remove("oculto");
@@ -4931,7 +4939,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
       P.sosIdx = (P.sosIdx||0) + 1;
       l.innerHTML = P.sosCalma[P.sosIdx % P.sosCalma.length];
       l.style.opacity = "1";
-    }, 320);
+    }, 430);
   });
   const sc = $("#sosCompartir"); if(sc) sc.addEventListener("click", ()=>{
     const txt = ($("#sosLinea").textContent || "").trim(); if(!txt) return;
