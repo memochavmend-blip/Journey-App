@@ -606,6 +606,9 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-dots{display:flex;gap:7px;justify-content:center}
 .onb-dot{width:7px;height:7px;border-radius:50%;background:var(--linea-fuerte);transition:background .3s ease}
 .onb-dot.on{background:var(--llama)}
+.onb-flama{display:flex;justify-content:center;align-items:flex-end;height:56px;margin:4px 0 18px;transition:height .6s cubic-bezier(.2,.7,.3,1),margin .6s ease}
+.onb-flama.grande{height:120px;margin:20px 0 30px}
+.onb-flama svg{height:100%;width:auto;overflow:visible}
 .onb-cont{flex:1;display:flex;flex-direction:column;justify-content:center;max-width:440px;margin:0 auto;width:100%}
 .onb-cont h1,.onb-cont p{animation:onbIn .35s ease}
 @keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -942,6 +945,12 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <div class="onb-top">
     <button class="onb-back oculto" id="onbAtras" aria-label="Atrás">←</button>
     <div class="onb-dots" id="onbDots"></div>
+  </div>
+  <div class="onb-flama" id="onbFlama" aria-hidden="true">
+    <svg viewBox="0 0 44 54">
+      <ellipse class="nivel-glow" id="onbGlow" cx="22" cy="26" rx="19" ry="21"></ellipse>
+      <path class="nivel-flama" id="onbFlamaP" d="M22 8 C29.5 19 29.5 30 22 35 C14.5 30 14.5 19 22 8 Z"></path>
+    </svg>
   </div>
   <div class="onb-cont" id="onbCont"></div>
   <button class="onb-saltar" id="onbSaltar">Saltar por ahora</button>
@@ -4660,7 +4669,7 @@ function onbConstruirSeq(){
 }
 function onbPantalla(tipo){
   const nom = (E.ajustes.nombre||"").trim();
-  if(tipo === "bienvenida") return { html:'<div class="onb-mark" aria-hidden="true">◦</div><h1 class="onb-t">Práctica</h1><p class="onb-p">Un lugar para tu oración, tu silencio y tu día. En un minuto lo ajustamos a ti.</p>' + onbBtn("Empezar") };
+  if(tipo === "bienvenida") return { html:'<h1 class="onb-t">Práctica</h1><p class="onb-p">Esta pequeña luz es tuya. Te acompaña en tu oración, tu silencio y tu día — y crece contigo mientras practicas. En un minuto preparamos tu espacio.</p>' + onbBtn("Empezar") };
   if(tipo === "privacidad") return { html:'<div class="onb-candado" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><h1 class="onb-t">Esto es solo tuyo.</h1><p class="onb-p">Lo que escribas y practiques vive solo en tu teléfono. Nadie más lo ve —ni nosotros—. Tú decides si algún día lo exportas.</p>' + onbBtn("Entendido") };
   if(tipo === "nombre") return {
     html:'<h1 class="onb-t">¿Cómo te llamas?</h1><p class="onb-p">Para saludarte cada día.</p><input class="onb-input" id="onbNombre" type="text" placeholder="Tu nombre" value="'+esc(E.ajustes.nombre||"")+'" autocomplete="given-name">' + onbBtn("Continuar"),
@@ -4707,6 +4716,8 @@ function onbPantalla(tipo){
 function onbRender(){
   const p = onbPantalla(onbSeq[onbIdx]);
   const cont = $("#onbCont"); cont.innerHTML = p.html; cont.scrollTop = 0;
+  const fl = $("#onbFlama"); if(fl) fl.classList.toggle("grande", onbSeq[onbIdx] === "bienvenida");
+  try{ velaVisual($("#onbGlow"), $("#onbFlamaP"), null, { total: onbSeq[onbIdx] === "bienvenida" ? 0.6 : 0.4, vuelta:0 }, 35, 54); }catch(e){}
   $("#onbDots").innerHTML = onbSeq.map((_,i)=>'<span class="onb-dot'+(i<=onbIdx?" on":"")+'"></span>').join("");
   const at = $("#onbAtras"); if(at) at.classList.toggle("oculto", onbIdx === 0);
   if(p.wire) p.wire();
