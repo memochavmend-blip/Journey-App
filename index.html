@@ -137,7 +137,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   width:100%;max-width:640px;margin:0 auto;
-  padding:18px 26px 40px 52px;
+  padding:calc(env(safe-area-inset-top) + 10px) 26px 40px 52px;
 }
 .oculto{display:none !important}
 
@@ -560,11 +560,13 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .app-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 26px 10px 52px}
-.tabs-sup{display:flex;gap:20px;align-items:baseline}
-.tab-sup{font-family:var(--serif);font-size:1.5rem;color:var(--tinta-tenue);background:none;border:none;padding:0;line-height:1;transition:color .25s}
-.tab-sup.activo{color:var(--tinta)}
+.app-header{display:none}
+.gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.72;transition:opacity .2s}
+#recibimiento{margin-bottom:6px}
+.tabs-sup{position:sticky;top:0;z-index:20;display:flex;gap:26px;justify-content:center;align-items:baseline;margin:0 -26px 14px -52px;padding:13px 0 15px;background:color-mix(in srgb, var(--noche) 78%, transparent);backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}
+.tab-sup{font-family:var(--serif);font-size:1.32rem;color:var(--tinta-tenue);background:none;border:none;padding:0;line-height:1;transition:color .25s,opacity .25s;opacity:.7}
+.tab-sup.activo{color:var(--tinta);opacity:1}
 .tab-sup:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:6px}
-.gear{flex:0 0 auto;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.75;transition:opacity .2s}
 .gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
@@ -828,24 +830,13 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <!-- ══════ INICIO ══════ -->
 <div id="appShell">
-<div class="app-header" id="appHeader">
-  <div class="tabs-sup" id="tabsSup">
-    <button class="tab-sup activo" data-vista="inicio">Hoy</button>
-    <button class="tab-sup" data-vista="explorar">Explorar</button>
-  </div>
-  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
-</div>
 <main class="lienzo" id="inicio">
+  <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
 
-  <div class="panel" id="panelInicio">
+  <div id="recibimiento">
     <p class="rubrica" id="rubricaHora">Antes de empezar</p>
     <h1 class="saludo" id="saludo">Buenos días</h1>
     <p class="fecha" id="fecha"></p>
-
-    <div class="continua oculto" id="continua">
-      <p class="continua-label">La última vez dejaste esto aquí</p>
-      <p class="continua-txt" id="continuaTxt"></p>
-    </div>
 
     <div class="hoy" id="hoy">
       <button class="velita" id="velita" aria-label="Tu vela">
@@ -860,6 +851,18 @@ body.encendida .tabbar,body.encendida .gear{display:none}
         <p class="hoy-txt" id="hoyTxt"></p>
         <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
       </div>
+    </div>
+  </div>
+
+  <div class="tabs-sup" id="tabsSup">
+    <button class="tab-sup activo" data-vista="inicio">Hoy</button>
+    <button class="tab-sup" data-vista="explorar">Explorar</button>
+  </div>
+
+  <div class="panel" id="panelInicio">
+    <div class="continua oculto" id="continua">
+      <p class="continua-label">La última vez dejaste esto aquí</p>
+      <p class="continua-txt" id="continuaTxt"></p>
     </div>
 
     <button class="ahora" id="ahoraBtn">
@@ -4424,6 +4427,7 @@ function mostrarTab(tab){
     if(p) p.classList.toggle("oculto", t !== tab);
   });
   const esVistaSup = (tab === "inicio" || tab === "explorar");
+  const rec = $("#recibimiento"); if(rec) rec.classList.toggle("oculto", !esVistaSup);
   const ts = $("#tabsSup"); if(ts) ts.classList.toggle("oculto", !esVistaSup);
   if(esVistaSup){ vistaSup = tab; document.querySelectorAll("#tabsSup .tab-sup").forEach(b=>b.classList.toggle("activo", b.dataset.vista === tab)); }
   const barTab = esVistaSup ? "inicio" : tab;
