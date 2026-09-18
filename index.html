@@ -137,7 +137,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   width:100%;max-width:640px;margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 44px) 26px 40px 52px;
+  padding:18px 26px 40px 52px;
 }
 .oculto{display:none !important}
 
@@ -559,14 +559,19 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-t{font-family:var(--serif);font-size:1.18rem;color:var(--tinta)}
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
-.gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.75;transition:opacity .2s}
+.app-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 26px 10px 52px}
+.tabs-sup{display:flex;gap:20px;align-items:baseline}
+.tab-sup{font-family:var(--serif);font-size:1.5rem;color:var(--tinta-tenue);background:none;border:none;padding:0;line-height:1;transition:color .25s}
+.tab-sup.activo{color:var(--tinta)}
+.tab-sup:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:6px}
+.gear{flex:0 0 auto;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.75;transition:opacity .2s}
 .gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
 .tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:flex-end;
   padding:9px 4px calc(env(safe-area-inset-bottom) + 9px);
   background:var(--panel);border-top:1px solid var(--linea-fuerte)}
-.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 0;color:var(--tinta-tenue);transition:color .2s ease}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:9px 0;color:var(--tinta-tenue);transition:color .2s ease}
 .tab.activo{color:var(--tinta)}
 .tab-ic{width:23px;height:23px}
 .tab-ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -823,8 +828,14 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <!-- ══════ INICIO ══════ -->
 <div id="appShell">
-<main class="lienzo" id="inicio">
+<div class="app-header" id="appHeader">
+  <div class="tabs-sup" id="tabsSup">
+    <button class="tab-sup activo" data-vista="inicio">Hoy</button>
+    <button class="tab-sup" data-vista="explorar">Explorar</button>
+  </div>
   <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+</div>
+<main class="lienzo" id="inicio">
 
   <div class="panel" id="panelInicio">
     <p class="rubrica" id="rubricaHora">Antes de empezar</p>
@@ -863,27 +874,26 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   </div>
 
   <div class="panel oculto" id="panelExplorar">
-    <h1 class="panel-titulo">Explorar</h1>
     <p class="nav-grupo">Tu práctica</p>
     <div class="nav-cards">
-      <button class="nav-card" data-abrir="afirmaciones"><span class="nav-card-tx"><span class="nav-card-t">Afirmaciones</span><span class="nav-card-s">Dilo hasta que se sienta verdad</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="manifestacion"><span class="nav-card-tx"><span class="nav-card-t">Manifestación</span><span class="nav-card-s">Método 369 · lo que llamas a tu vida</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="meditacion"><span class="nav-card-tx"><span class="nav-card-t">Meditación</span><span class="nav-card-s">Guiadas, con voz y ambiente</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="afirmaciones"><span class="nav-card-tx"><span class="nav-card-t">Afirmaciones</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="manifestacion"><span class="nav-card-tx"><span class="nav-card-t">Manifestación</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="meditacion"><span class="nav-card-tx"><span class="nav-card-t">Meditación</span></span><span class="nav-card-ch">›</span></button>
     </div>
     <p class="nav-grupo">Para leer y reflexionar</p>
     <div class="nav-cards">
-      <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span><span class="nav-card-s">Estudio, una vez por semana</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span><span class="nav-card-s">Relatos para reflexionar</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="ancla"><span class="nav-card-tx"><span class="nav-card-t">Ancla</span><span class="nav-card-s">Una frase para volver al centro</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="ancla"><span class="nav-card-tx"><span class="nav-card-t">Ancla</span></span><span class="nav-card-ch">›</span></button>
     </div>
   </div>
 
   <div class="panel oculto" id="panelSonido">
     <h1 class="panel-titulo">Sonido</h1>
     <div class="nav-cards">
-      <button class="nav-card" data-abrir="paisajes"><span class="nav-card-tx"><span class="nav-card-t">Paisajes de sonido</span><span class="nav-card-s">Relajación · concentración · enfoque</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="concentracion"><span class="nav-card-tx"><span class="nav-card-t">Concentración</span><span class="nav-card-s">Enfoque por tiempo · método Pomodoro</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="temporizador"><span class="nav-card-tx"><span class="nav-card-t">Temporizador y alarma</span><span class="nav-card-s">Para dormir y despertar con sonido</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="paisajes"><span class="nav-card-tx"><span class="nav-card-t">Paisajes de sonido</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="concentracion"><span class="nav-card-tx"><span class="nav-card-t">Concentración</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" data-abrir="temporizador"><span class="nav-card-tx"><span class="nav-card-t">Temporizador y alarma</span></span><span class="nav-card-ch">›</span></button>
     </div>
   </div>
 
@@ -899,10 +909,9 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 </main>
 
 <nav class="tabbar" id="tabbar" aria-label="Navegación">
-  <button class="tab activo" data-tab="inicio" aria-label="Inicio"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6 10v9h12v-9"/></svg></span><span class="tab-lb">Inicio</span></button>
-  <button class="tab" data-tab="explorar" aria-label="Explorar"><span class="tab-ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/></svg></span><span class="tab-lb">Explorar</span></button>
-  <button class="tab" data-tab="sonido" aria-label="Sonido"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-15 3 18 2-9h3"/></svg></span><span class="tab-lb">Sonido</span></button>
-  <button class="tab" data-tab="diario" aria-label="Diario"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></svg></span><span class="tab-lb">Diario</span></button>
+  <button class="tab activo" data-tab="inicio" aria-label="Inicio"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 11l8-7 8 7M6 10v9h12v-9"/></svg></span></button>
+  <button class="tab" data-tab="sonido" aria-label="Sonido"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M3 12h2l2-6 3 12 3-15 3 18 2-9h3"/></svg></span></button>
+  <button class="tab" data-tab="diario" aria-label="Diario"><span class="tab-ic"><svg viewBox="0 0 24 24"><path d="M4 20l1-4L16 5l3 3L8 19l-4 1zM14 7l3 3"/></svg></span></button>
 </nav>
 </div>
 
@@ -4408,17 +4417,41 @@ document.addEventListener("click", e=>{
   else if(k === "rituales") hojaRitualesElegir();
   else if(k === "preferencias") hojaPreferenciasContenido();
 });
+let vistaSup = "inicio";   // última pestaña superior activa (inicio/explorar)
 function mostrarTab(tab){
   ["inicio","explorar","sonido","diario"].forEach(t=>{
     const p = $("#panel" + t.charAt(0).toUpperCase() + t.slice(1));
     if(p) p.classList.toggle("oculto", t !== tab);
   });
-  document.querySelectorAll("#tabbar .tab").forEach(b=>b.classList.toggle("activo", b.dataset.tab === tab));
+  const esVistaSup = (tab === "inicio" || tab === "explorar");
+  const ts = $("#tabsSup"); if(ts) ts.classList.toggle("oculto", !esVistaSup);
+  if(esVistaSup){ vistaSup = tab; document.querySelectorAll("#tabsSup .tab-sup").forEach(b=>b.classList.toggle("activo", b.dataset.vista === tab)); }
+  const barTab = esVistaSup ? "inicio" : tab;
+  document.querySelectorAll("#tabbar .tab").forEach(b=>b.classList.toggle("activo", b.dataset.tab === barTab));
   try{ $("#inicio").scrollTop = 0; window.scrollTo(0,0); }catch(e){}
 }
 document.querySelectorAll("#tabbar .tab").forEach(b=>{
-  b.addEventListener("click", ()=>mostrarTab(b.dataset.tab));
+  b.addEventListener("click", ()=>mostrarTab(b.dataset.tab === "inicio" ? vistaSup : b.dataset.tab));
 });
+document.querySelectorAll("#tabsSup .tab-sup").forEach(b=>{
+  b.addEventListener("click", ()=>mostrarTab(b.dataset.vista));
+});
+// Deslizar entre Hoy y Explorar (estilo Instagram), solo dentro de esa vista.
+(function swipeVistas(){
+  let x0 = null, y0 = null;
+  const cont = $("#inicio"); if(!cont) return;
+  cont.addEventListener("touchstart", e=>{ if(e.touches.length===1){ x0=e.touches[0].clientX; y0=e.touches[0].clientY; } }, {passive:true});
+  cont.addEventListener("touchend", e=>{
+    if(x0===null) return;
+    const t=e.changedTouches[0], dx=t.clientX-x0, dy=t.clientY-y0;
+    x0=null;
+    if(Math.abs(dx) < 70 || Math.abs(dy) > Math.abs(dx)*0.7) return;   // solo swipe horizontal claro
+    const enVista = !$("#panelSonido").classList.contains("oculto") ? null : (!$("#panelDiario").classList.contains("oculto") ? null : true);
+    if(!enVista) return;   // el swipe solo aplica en Hoy/Explorar
+    if(dx < 0 && vistaSup === "inicio") mostrarTab("explorar");
+    else if(dx > 0 && vistaSup === "explorar") mostrarTab("inicio");
+  }, {passive:true});
+})();
 $("#pPlay").addEventListener("click", ()=>{
   if($("#pPlay").textContent === "Terminar" || $("#pPlay").textContent === "Silencio"){ cerrarPractica(); return; }
   alternarPlay(); despertarCtrl();
