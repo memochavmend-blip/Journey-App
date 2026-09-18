@@ -133,7 +133,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 
 /* ─── ESTRUCTURA ─── */
-#appShell{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden;z-index:2}
+#appShell{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;height:var(--vh,100dvh);display:flex;flex-direction:column;overflow:hidden;z-index:2}
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
   width:100%;max-width:640px;margin:0 auto;
@@ -221,18 +221,18 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 #practica::before{content:"";position:absolute;inset:0;pointer-events:none;z-index:0;opacity:0}
 #practica > *{position:relative;z-index:1}
 /* El alma de cada ritual, sentida antes de leer una palabra: ABRIR sube y se abre · VOLVER se recoge al centro · SOLTAR desciende y se asienta */
-.rito-abrir{animation:entraAbrir 1.2s cubic-bezier(.2,.7,.3,1)}
-.rito-volver{animation:entraVolver 1.2s cubic-bezier(.34,.7,.3,1)}
-.rito-soltar{animation:entraSoltar 1.5s cubic-bezier(.3,.5,.2,1)}
-@keyframes entraAbrir{from{opacity:0;transform:translateY(26px) scale(.965)}to{opacity:1;transform:none}}
-@keyframes entraVolver{from{opacity:0;transform:scale(1.09)}to{opacity:1;transform:none}}
-@keyframes entraSoltar{from{opacity:0;transform:translateY(-20px) scale(1.02)}to{opacity:1;transform:none}}
-.rito-abrir::before{background:radial-gradient(130% 95% at 50% 20%, color-mix(in srgb,var(--llama) 20%,transparent) 0%, transparent 62%);animation:glowAbrir 3.6s ease-out forwards}
-.rito-volver::before{background:radial-gradient(75% 75% at 50% 50%, color-mix(in srgb,var(--llama) 19%,transparent) 0%, transparent 60%);animation:glowVolver 3.6s ease forwards}
-.rito-soltar::before{background:radial-gradient(130% 105% at 50% 84%, color-mix(in srgb,var(--llama) 17%,transparent) 0%, transparent 64%);animation:glowSoltar 4.2s ease forwards}
-@keyframes glowAbrir{0%{opacity:0;transform:translateY(50px) scale(.82)}100%{opacity:1;transform:none}}
-@keyframes glowVolver{0%{opacity:0;transform:scale(1.8)}100%{opacity:1;transform:none}}
-@keyframes glowSoltar{0%{opacity:0;transform:translateY(-42px) scale(1.18)}100%{opacity:.92;transform:none}}
+.rito-abrir{animation:entraAbrir 1.4s cubic-bezier(.2,.7,.3,1)}
+.rito-volver{animation:entraVolver 1.4s cubic-bezier(.34,.7,.3,1)}
+.rito-soltar{animation:entraSoltar 1.7s cubic-bezier(.3,.5,.2,1)}
+@keyframes entraAbrir{from{opacity:0;transform:translateY(48px) scale(.93)}to{opacity:1;transform:none}}
+@keyframes entraVolver{from{opacity:0;transform:scale(1.16)}to{opacity:1;transform:none}}
+@keyframes entraSoltar{from{opacity:0;transform:translateY(-38px) scale(1.05)}to{opacity:1;transform:none}}
+.rito-abrir::before{background:radial-gradient(130% 95% at 50% 20%, color-mix(in srgb,var(--llama) 30%,transparent) 0%, transparent 60%);animation:glowAbrir 4s ease-out forwards}
+.rito-volver::before{background:radial-gradient(75% 75% at 50% 50%, color-mix(in srgb,var(--llama) 28%,transparent) 0%, transparent 58%);animation:glowVolver 4s ease forwards}
+.rito-soltar::before{background:radial-gradient(130% 105% at 50% 84%, color-mix(in srgb,var(--llama) 26%,transparent) 0%, transparent 62%);animation:glowSoltar 4.6s ease forwards}
+@keyframes glowAbrir{0%{opacity:0;transform:translateY(80px) scale(.7)}60%{opacity:1}100%{opacity:.85;transform:none}}
+@keyframes glowVolver{0%{opacity:0;transform:scale(2.2)}60%{opacity:1}100%{opacity:.85;transform:none}}
+@keyframes glowSoltar{0%{opacity:0;transform:translateY(-70px) scale(1.3)}60%{opacity:.95}100%{opacity:.8;transform:none}}
 .p-alto{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:22px}
 .p-mov{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--tinta-tenue)}
 .p-salir{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-baja);padding:6px 0 6px 12px}
@@ -607,7 +607,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 body.encendida .tabbar,body.encendida .gear{display:none}
 
 /* ── Onboarding ── */
-.onb{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:90;background:var(--noche);display:flex;flex-direction:column;
+.onb{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:90;background:var(--noche);display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;
   padding:calc(env(safe-area-inset-top) + 40px) 30px calc(env(safe-area-inset-bottom) + 30px)}
 .onb-dots{display:flex;gap:7px;justify-content:center}
 .onb-dot{width:7px;height:7px;border-radius:50%;background:var(--linea-fuerte);transition:background .3s ease}
@@ -615,7 +615,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-flama{display:flex;justify-content:center;align-items:flex-end;height:68px;margin:4px 0 20px;transition:height .6s cubic-bezier(.2,.7,.3,1),margin .6s ease}
 .onb-flama.grande{height:168px;margin:24px 0 34px}
 .onb-flama svg{height:100%;width:auto;overflow:visible}
-.onb-cont{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;justify-content:safe center;max-width:440px;margin:0 auto;width:100%}
+.onb-cont{flex:1 0 auto;min-height:0;overflow:visible;display:flex;flex-direction:column;justify-content:safe center;max-width:440px;margin:0 auto;width:100%}
 .onb-cont h1,.onb-cont p{animation:onbIn .35s ease}
 @keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .onb-mark{font-size:2.4rem;color:var(--llama);margin-bottom:18px;line-height:1}
@@ -659,8 +659,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .velita{flex-shrink:0;display:block;width:44px;height:56px;margin:0;background:none;border:none;padding:0;transition:opacity .2s}
 .velita:hover,.velita:focus-visible{opacity:.85}
 .continua{border-left:2px solid var(--llama);padding:4px 0 4px 16px;margin-bottom:20px}
-#velaAmbiente{position:fixed;top:0;left:0;width:100vw;height:70vh;max-width:820px;pointer-events:none;z-index:1;
-  background:radial-gradient(ellipse at 16% 8%, var(--amb-col,#E0942A) 0%, transparent 58%);
+#velaAmbiente{position:fixed;top:0;left:0;width:100vw;height:78vh;max-width:900px;pointer-events:none;z-index:1;
+  background:radial-gradient(ellipse 90% 70% at 18% 4%, var(--amb-col,#E0942A) 0%, transparent 52%);
   opacity:var(--amb-op,0);transition:opacity 1.8s ease, background 2.2s ease}
 .contempla{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:97;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:36px;cursor:pointer;animation:contIn .9s ease}
 @keyframes contIn{from{opacity:0}to{opacity:1}}
@@ -675,8 +675,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .nivel-glow{fill:var(--llama);filter:blur(6px);transition:--go 1.2s ease,fill 1.6s ease;animation:brilloVivo var(--fdur,2.6s) ease-in-out infinite}
 .nivel-flama{fill:var(--llama);transition:--fl 1.2s cubic-bezier(.3,.8,.3,1),fill 1.6s ease;animation:llamaViva var(--fdur,2.6s) ease-in-out infinite}
 .nivel-lleno{fill:none}
-@keyframes llamaViva{0%,100%{transform:scale(var(--fl,.6))}44%{transform:scale(calc(var(--fl,.6) * 1.06)) translateY(-.4px)}70%{transform:scale(calc(var(--fl,.6) * .985))}}
-@keyframes brilloVivo{0%,100%{opacity:var(--go,.3)}50%{opacity:calc(var(--go,.3) * 1.3)}}
+@keyframes llamaViva{0%,100%{transform:scale(var(--fl,.6))}28%{transform:scale(calc(var(--fl,.6) * 1.09)) translateY(-.9px)}52%{transform:scale(calc(var(--fl,.6) * .965)) translateX(.5px)}76%{transform:scale(calc(var(--fl,.6) * 1.045)) translateX(-.4px) translateY(-.3px)}}
+@keyframes brilloVivo{0%,100%{opacity:var(--go,.3)}50%{opacity:calc(var(--go,.3) * 1.42)}}
 .nivel-det{text-align:center;padding:8px 0}
 .nivel-det-vela{display:flex;justify-content:center;margin:0 0 20px}
 .nivel-det-vela svg{width:110px;height:184px}
@@ -729,7 +729,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   86%{transform:scale(.72)}
   100%{transform:scale(.72)}
 }
-.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:24px 0 34px;min-height:4.5rem;transition:opacity .4s ease}
+.sos-linea{font-family:var(--serif);font-size:1.5rem;line-height:1.5;color:var(--tinta);text-align:center;max-width:30ch;margin:24px 0 34px;min-height:6.6rem;display:flex;align-items:center;justify-content:center;transition:opacity .34s ease}
 .sos-paso{display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px}
 .sos-intro{font-family:var(--serif);font-size:1.4rem;color:var(--tinta);text-align:center;margin:0 0 30px;line-height:1.4}
 .sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
@@ -2587,7 +2587,7 @@ function pintarNivel(){
   const v = VUELTAS[g.vuelta] || VUELTAS[0];
   velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 35, 54);
   const amb = $("#velaAmbiente");
-  if(amb){ amb.style.setProperty("--amb-op", (0.05 + g.total * 0.17 + g.vuelta * 0.02).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
+  if(amb){ amb.style.setProperty("--amb-op", (0.10 + g.total * 0.22 + g.vuelta * 0.03).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
 }
 function fraseVela(g){
   if(g.vuelta >= 2) return "Tu luz, serena.";
@@ -2598,9 +2598,29 @@ function fraseVela(g){
   return "Tu luz apenas comienza.";
 }
 function hojaNivel(){ abrirContempla(); }
+let _uiCtx = null;
+function sonarVela(){
+  if(E.ajustes && E.ajustes.ambienteApp === false) return;   // respeta el silencio elegido
+  try{
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+    if(!_uiCtx) _uiCtx = new AC();
+    const c = _uiCtx; if(c.state === "suspended"){ try{ c.resume(); }catch(e){} }
+    const t = c.currentTime;
+    [[392.0, 0.0], [587.33, 0.09]].forEach(([f, d])=>{
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = "sine"; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t + d);
+      g.gain.exponentialRampToValueAtTime(0.085, t + d + 0.18);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d + 2.6);
+      o.connect(g).connect(c.destination);
+      o.start(t + d); o.stop(t + d + 2.7);
+    });
+  }catch(e){}
+}
 function abrirContempla(){
   const g = progresoVela();
   const ov = $("#contempla"); if(!ov) return;
+  sonarVela();
   const glow = $("#contemplaGlow"), flama = $("#contemplaFlama"), lleno = $("#contemplaLleno"), fr = $("#contemplaFrase");
   ov.classList.remove("oculto");
   velaVisual(glow, flama, lleno, { total:0.06, vuelta:g.vuelta }, 98, 120);   // arranca tenue, en el color de su vuelta
@@ -4744,6 +4764,10 @@ function terminarOnb(){
   $("#onboarding").classList.add("oculto");
   render();
 }
+function fijarAltoShell(){ try{ document.documentElement.style.setProperty("--vh", window.innerHeight + "px"); }catch(e){} }
+fijarAltoShell();
+window.addEventListener("resize", fijarAltoShell);
+window.addEventListener("orientationchange", ()=>setTimeout(fijarAltoShell, 120));
 try{ if(screen.orientation && screen.orientation.lock) screen.orientation.lock("portrait").catch(()=>{}); }catch(e){}
 function mostrarOnboarding(){
   onbSeq = onbConstruirSeq(); onbIdx = 0;
@@ -4933,13 +4957,16 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   const rp = $("#sosRespirar"); if(rp) rp.addEventListener("click", sosBreath);
   const si = $("#sosSaltarInt"); if(si) si.addEventListener("click", ()=>{ pausaAntes = null; sosBreath(); });
   const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
-    const l = $("#sosLinea"); l.style.opacity = "0";
+    const l = $("#sosLinea"); if(!l) return;
+    l.style.transition = "opacity .34s ease";
+    l.style.opacity = "0";
     setTimeout(()=>{
       if(!P.sosCalma || !P.sosCalma.length) P.sosCalma = calmaSecuencia(pausaAntes);
       P.sosIdx = (P.sosIdx||0) + 1;
-      l.innerHTML = P.sosCalma[P.sosIdx % P.sosCalma.length];
+      l.textContent = P.sosCalma[P.sosIdx % P.sosCalma.length];
+      void l.offsetWidth;
       l.style.opacity = "1";
-    }, 430);
+    }, 380);
   });
   const sc = $("#sosCompartir"); if(sc) sc.addEventListener("click", ()=>{
     const txt = ($("#sosLinea").textContent || "").trim(); if(!txt) return;
