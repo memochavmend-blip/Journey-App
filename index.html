@@ -495,6 +495,8 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .campo-area::placeholder{color:var(--tinta-tenue)}
 .campo-area.grande{min-height:220px}
 .cad-tabs{margin-bottom:22px}
+.ver-trad{display:block;margin:-12px 0 20px;padding:4px 0;background:none;border:none;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--oro);opacity:.85;transition:opacity .2s}
+.ver-trad:hover,.ver-trad:focus-visible{opacity:1}
 #histTabs{overflow-x:auto;scrollbar-width:none}
 #histTabs::-webkit-scrollbar{display:none}
 #histTabs .seg{flex:0 0 auto;white-space:nowrap}
@@ -3655,7 +3657,8 @@ function doctrinaTodas(){
   if(!base.length) base = DOCTRINA;
   return base.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
 }
-function histTemasActivos(){
+function histTemasActivos(verTodo){
+  if(verTodo) return HIST_TEMAS;
   const perm = tradPermitidas();
   const tradDe = { amor:"universal", abundancia:"universal", biblia:"cristiano", budismo:"budista", estoicismo:"universal" };
   const l = HIST_TEMAS.filter(t => perm[tradDe[t[0]] || "universal"]);
@@ -3810,8 +3813,8 @@ function vozForzada(x){
 function vozAfirmacion(a){ return _vozRitual ? vozForzada(a.x) : vozLinea(a.x); }
 function vozManifestacion(m){ return _vozRitual ? vozForzada(m.x) : vozLinea(m.x); }
 
-function afirmacionesActivas(){
-  const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = tradPermitidas();
+function afirmacionesActivas(verTodo){
+  const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = verTodo ? {cristiano:1,universal:1,budista:1} : tradPermitidas();
   const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>DIALOGO[a.x] || perm[esCristiano(a.x)?"cristiano":"universal"]);
   const bud = perm.budista ? AFIRMACIONES_BUD.slice() : [];
   const mios = (E.contenido.afirmaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
@@ -3820,8 +3823,8 @@ function afirmacionesActivas(){
   if(!l.length) l = AFIRMACIONES.slice();
   return l.sort((a,b)=>(fbPeso([b.t]) + (b.t==="mio"?1.4:0) + Math.random()*0.7) - (fbPeso([a.t]) + (a.t==="mio"?1.4:0) + Math.random()*0.7));
 }
-function manifestacionesActivas(){
-  const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = tradPermitidas();
+function manifestacionesActivas(verTodo){
+  const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = verTodo ? {cristiano:1,universal:1,budista:1} : tradPermitidas();
   const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>DIALOGO[m.x] || perm[esCristiano(m.x)?"cristiano":"universal"]);
   const mios = (E.contenido.manifestaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(mios).filter(m=>!fbOculto(m.x));
@@ -3831,23 +3834,31 @@ function manifestacionesActivas(){
 }
 
 function hojaHistorias(){
-  const temas = histTemasActivos();
-  const temaInicial = temas[0][0];
+  let verTodo = false;
+  const puedeExpandir = ((E.perfil && E.perfil.tono) || "mezcla") !== "mezcla";
+  const tabsHTML = ()=> histTemasActivos(verTodo).map((t,i)=>'<button type="button" class="seg'+(i===0?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("");
+  const toggleHTML = puedeExpandir ? '<button type="button" class="ver-trad" id="histVerTrad">Ver también otras tradiciones</button>' : '';
   hoja("Historias", "Relatos para reflexionar. Amor, abundancia y tradiciones.",
-    '<div class="segmento cad-tabs" id="histTabs">' +
-      temas.map(t=>'<button type="button" class="seg'+(t[0]===temaInicial?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("") +
-    '</div>' +
+    '<div class="segmento cad-tabs" id="histTabs">' + tabsHTML() + '</div>' + toggleHTML +
     '<div id="histCont"></div>' +
     '<div class="acciones"><button class="accion" id="histCerrar">Cerrar</button></div>',
     ()=>{
       const cont = $("#histCont");
-      renderHistorias(temaInicial, cont);
-      document.querySelectorAll("#histTabs .seg").forEach(b=>{
+      renderHistorias(histTemasActivos(verTodo)[0][0], cont);
+      const wireTabs = ()=> document.querySelectorAll("#histTabs .seg").forEach(b=>{
         b.addEventListener("click", ()=>{
           document.querySelectorAll("#histTabs .seg").forEach(x=>x.classList.remove("activo"));
           b.classList.add("activo");
           renderHistorias(b.dataset.tema, cont);
         });
+      });
+      wireTabs();
+      const vt = $("#histVerTrad");
+      if(vt) vt.addEventListener("click", ()=>{
+        verTodo = !verTodo;
+        const tc = $("#histTabs"); if(tc){ tc.innerHTML = tabsHTML(); wireTabs(); }
+        vt.textContent = verTodo ? "Ver solo mi tradición" : "Ver también otras tradiciones";
+        renderHistorias(histTemasActivos(verTodo)[0][0], cont);
       });
       $("#histCerrar").addEventListener("click", cerrarHoja);
     });
@@ -3926,25 +3937,38 @@ function hojaAncla(){
 }
 
 let afLista = [], afI = 0;
-const TEMA_AF = { calma:"Calma", confianza:"Confianza", merecer:"Autoestima", disciplina:"Constancia", fe:"Fe", cuerpo:"Cuerpo y salud", relaciones:"Relaciones", mio:"Míos" };
+const TEMA_AF = { calma:"Calma", confianza:"Confianza", merecer:"Autoestima", disciplina:"Constancia", fe:"Fe", cuerpo:"Cuerpo y salud", relaciones:"Relaciones", budista:"Budismo", mio:"Míos" };
 function hojaAfirmaciones(){
-  const orden = ["merecer","confianza","calma","disciplina","fe","cuerpo","relaciones","mio"];
-  const pres = orden.filter(t => afirmacionesActivas().some(a => a.t === t));
-  let temaSel = "todas";
-  const filtrar = ()=> temaSel === "todas" ? afirmacionesActivas() : afirmacionesActivas().filter(a => a.t === temaSel);
+  const orden = ["merecer","confianza","calma","disciplina","fe","cuerpo","relaciones","budista","mio"];
+  let verTodo = false, temaSel = "todas";
+  const puedeExpandir = ((E.perfil && E.perfil.tono) || "mezcla") !== "mezcla";
+  const pool = ()=> afirmacionesActivas(verTodo);
+  const filtrar = ()=> temaSel === "todas" ? pool() : pool().filter(a => a.t === temaSel);
   afLista = filtrar(); afI = 0;
-  const chips = '<div class="segmento cad-tabs af-temas" id="afTemas"><button type="button" class="seg activo" data-tema="todas">Todas</button>' + pres.map(t=>'<button type="button" class="seg" data-tema="'+t+'">'+esc(TEMA_AF[t]||t)+'</button>').join("") + '</div>';
+  const chipsHTML = ()=>{
+    const pres = orden.filter(t => pool().some(a => a.t === t));
+    return '<button type="button" class="seg'+(temaSel==="todas"?" activo":"")+'" data-tema="todas">Todas</button>' + pres.map(t=>'<button type="button" class="seg'+(temaSel===t?" activo":"")+'" data-tema="'+t+'">'+esc(TEMA_AF[t]||t)+'</button>').join("");
+  };
+  const toggleHTML = puedeExpandir ? '<button type="button" class="ver-trad" id="afVerTrad">Ver también otras tradiciones</button>' : '';
   hoja("Afirmaciones", "Dilo en voz alta. Repítelo hasta que se sienta verdad.",
-    chips +
+    '<div class="segmento cad-tabs af-temas" id="afTemas">' + chipsHTML() + '</div>' + toggleHTML +
     '<div class="ancla-caja"><p class="ancla-txt" id="afTxt">' + esc(afLista[afI] ? vozAfirmacion(afLista[afI]) : "") + '</p></div>' +
     fbHTML() +
-    '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afCerrar">Cerrar</button></div>',
+    '<div class="acciones"><button class="accion llena" id="afRepetir">Repetir en voz alta</button><button class="accion" id="afOtra">Otra</button><button class="accion" id="afEditar">Crear las mías</button><button class="accion" id="afCerrar">Cerrar</button></div>',
     ()=>{
       const mostrar = ()=>{ if(afI >= afLista.length) afI = 0; $("#afTxt").textContent = afLista[afI] ? vozAfirmacion(afLista[afI]) : ""; };
-      document.querySelectorAll("#afTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
+      const wireChips = ()=> document.querySelectorAll("#afTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
         document.querySelectorAll("#afTemas .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
         temaSel = b.dataset.tema; afLista = filtrar(); afI = 0; mostrar();
       }));
+      wireChips();
+      const vt = $("#afVerTrad");
+      if(vt) vt.addEventListener("click", ()=>{
+        verTodo = !verTodo; temaSel = "todas";
+        const cont = $("#afTemas"); if(cont){ cont.innerHTML = chipsHTML(); wireChips(); }
+        vt.textContent = verTodo ? "Ver solo mi tradición" : "Ver también otras tradiciones";
+        afLista = filtrar(); afI = 0; mostrar();
+      });
       $("#afOtra").addEventListener("click", ()=>{ if(afLista.length) afI = (afI + 1) % afLista.length; mostrar(); });
       $("#afRepetir").addEventListener("click", ()=>{ if(afLista[afI]) abrirRepetir(vozAfirmacion(afLista[afI])); });
       document.querySelectorAll("#hojaFondo .fb-btn").forEach(b=>b.addEventListener("click", ()=>{
@@ -3952,6 +3976,7 @@ function hojaAfirmaciones(){
         if(b.dataset.fb === "up"){ fbGusta(it.x, [it.t]); pulso("#afTxt"); afI = (afI + 1) % afLista.length; setTimeout(mostrar, 260); }
         else { fbNoGusta(it.x, [it.t]); afLista.splice(afI, 1); if(!afLista.length){ afLista = filtrar(); afI = 0; } mostrar(); }
       }));
+      $("#afEditar").addEventListener("click", ()=>hojaEditor("afirmaciones"));
       $("#afCerrar").addEventListener("click", cerrarHoja);
     });
 }
@@ -3981,9 +4006,11 @@ function hojaManifestacion(){
 const TEMA_MAN = { abundancia:"Abundancia", salud:"Salud", relaciones:"Relaciones", proposito:"Propósito", mio:"Míos" };
 function hojaManifestElegir(){
   const orden = ["abundancia","salud","relaciones","proposito","mio"];
-  const pres = orden.filter(t => manifestacionesActivas().some(m => m.t === t));
-  let temaSel = "todas";
-  const filtrar = ()=> temaSel === "todas" ? manifestacionesActivas() : manifestacionesActivas().filter(m => m.t === temaSel);
+  let verTodo = false, temaSel = "todas";
+  const puedeExpandir = ((E.perfil && E.perfil.tono) || "mezcla") !== "mezcla";
+  const pool = ()=> manifestacionesActivas(verTodo);
+  const filtrar = ()=> temaSel === "todas" ? pool() : pool().filter(m => m.t === temaSel);
+  const pres = orden.filter(t => manifestacionesActivas(true).some(m => m.t === t));
   const render = ()=>{
     const l = filtrar();
     const cont = $("#manifOpts"); if(!cont) return;
@@ -3991,15 +4018,19 @@ function hojaManifestElegir(){
     document.querySelectorAll("#manifOpts .manif-opt").forEach(b=>b.addEventListener("click", ()=>{ E.manifestacion.decl = vozManifestacion(l[+b.dataset.decl]); guardar(); hojaManifestacion(); }));
   };
   const chips = '<div class="segmento cad-tabs" id="manTemas"><button type="button" class="seg activo" data-tema="todas">Todas</button>' + pres.map(t=>'<button type="button" class="seg" data-tema="'+t+'">'+esc(TEMA_MAN[t]||t)+'</button>').join("") + '</div>';
+  const toggleHTML = puedeExpandir ? '<button type="button" class="ver-trad" id="manVerTrad">Ver también otras tradiciones</button>' : '';
   hoja("Elige tu declaración", "Lo que quieres llamar a tu vida. Puedes cambiarla cuando quieras.",
-    chips + '<div class="manif-opts" id="manifOpts"></div>' +
-    '<div class="acciones"><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
+    chips + toggleHTML + '<div class="manif-opts" id="manifOpts"></div>' +
+    '<div class="acciones"><button class="accion" id="manifCrear">Crear la mía</button><button class="accion" id="manifElegirCerrar">Cerrar</button></div>',
     ()=>{
       render();
       document.querySelectorAll("#manTemas .seg").forEach(b=>b.addEventListener("click", ()=>{
         document.querySelectorAll("#manTemas .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
         temaSel = b.dataset.tema; render();
       }));
+      const vt = $("#manVerTrad");
+      if(vt) vt.addEventListener("click", ()=>{ verTodo = !verTodo; vt.textContent = verTodo ? "Ver solo mi tradición" : "Ver también otras tradiciones"; render(); });
+      $("#manifCrear").addEventListener("click", ()=>hojaEditor("manifestaciones"));
       $("#manifElegirCerrar").addEventListener("click", cerrarHoja);
     });
 }
@@ -4307,7 +4338,8 @@ function hojaRitualesElegir(){
     });
 }
 
-function hojaEditor(){
+function hojaEditor(tipo){
+  if(tipo) edTipo = tipo;
   edEditando = null;
   hoja("Mi contenido", "Crea lo tuyo. Aparece junto al contenido incluido en cada sección.",
     '<div class="segmento" id="edTabs">' + ED_TIPOS.map(t=>'<button type="button" class="seg'+(t[0]===edTipo?' activo':'')+'" data-ed-tipo="'+t[0]+'">'+t[1]+'</button>').join("") + '</div>' +
