@@ -136,8 +136,8 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 #appShell{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden;z-index:2}
 .lienzo{
   flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;
-  width:100%;max-width:640px;margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 10px) 26px 40px 52px;
+  width:100%;max-width:600px;margin:0 auto;
+  padding:calc(env(safe-area-inset-top) + 10px) 26px 40px;
 }
 .oculto{display:none !important}
 
@@ -588,7 +588,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .app-header{display:none}
 .gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.72;transition:opacity .2s}
 #recibimiento{margin-bottom:6px}
-.tabs-sup{position:sticky;top:0;z-index:20;display:flex;gap:26px;justify-content:center;align-items:baseline;margin:0 -26px 14px -52px;padding:13px 0 15px;background:color-mix(in srgb, var(--noche) 78%, transparent);backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}
+.tabs-sup{position:sticky;top:0;z-index:20;display:flex;gap:26px;justify-content:center;align-items:baseline;margin:0 -26px 14px;padding:13px 0 15px;background:color-mix(in srgb, var(--noche) 78%, transparent);backdrop-filter:blur(16px) saturate(1.15);-webkit-backdrop-filter:blur(16px) saturate(1.15)}
 .tab-sup{font-family:var(--serif);font-size:1.32rem;color:var(--tinta-tenue);background:none;border:none;padding:0;line-height:1;transition:color .25s,opacity .25s;opacity:.7}
 .tab-sup.activo{color:var(--tinta);opacity:1}
 .tab-sup:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:6px}
@@ -2473,24 +2473,7 @@ const NECESITAS_RIT = {
 };
 const NEC_PREG = { manana:"¿Qué necesitas hoy?", nucleo:"¿Qué traes ahora?" };
 function sonarRitual(car){
-  if(E.ajustes && E.ajustes.ambienteApp === false) return;
-  try{
-    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
-    if(!_uiCtx) _uiCtx = new AC();
-    const c = _uiCtx; if(c.state === "suspended"){ try{ c.resume(); }catch(e){} }
-    const t = c.currentTime;
-    // ABRIR asciende · VOLVER se asienta en el centro · SOLTAR desciende
-    const notas = car === "abrir" ? [[329.63,0],[493.88,0.14]] : car === "soltar" ? [[493.88,0],[329.63,0.14]] : [[392.0,0],[392.0,0.14]];
-    notas.forEach(([f,d])=>{
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = "sine"; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t + d);
-      g.gain.exponentialRampToValueAtTime(0.075, t + d + 0.16);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + d + 2.3);
-      o.connect(g).connect(c.destination);
-      o.start(t + d); o.stop(t + d + 2.4);
-    });
-  }catch(e){}
+  sonarLlama(car === "abrir" ? 1 : car === "soltar" ? -1 : 0);
 }
 function abrirRitual(id){
   const p = RITUALES[id]; if(!p) return;
@@ -2620,24 +2603,37 @@ function fraseVela(g){
 }
 function hojaNivel(){ abrirContempla(); }
 let _uiCtx = null;
-function sonarVela(){
-  if(E.ajustes && E.ajustes.ambienteApp === false) return;   // respeta el silencio elegido
+function sonarLlama(dir){   // dir: 0 neutro · 1 asciende (abrir) · -1 desciende (soltar)
+  if(E.ajustes && E.ajustes.ambienteApp === false) return;
   try{
     const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
     if(!_uiCtx) _uiCtx = new AC();
     const c = _uiCtx; if(c.state === "suspended"){ try{ c.resume(); }catch(e){} }
-    const t = c.currentTime;
-    [[392.0, 0.0], [587.33, 0.09]].forEach(([f, d])=>{
-      const o = c.createOscillator(), g = c.createGain();
-      o.type = "sine"; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t + d);
-      g.gain.exponentialRampToValueAtTime(0.085, t + d + 0.18);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + d + 2.6);
-      o.connect(g).connect(c.destination);
-      o.start(t + d); o.stop(t + d + 2.7);
-    });
+    const t = c.currentTime, dur = 1.7;
+    const buf = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate);
+    const data = buf.getChannelData(0);
+    for(let i=0;i<data.length;i++){ const e = 1 - i/data.length; data[i] = (Math.random()*2-1) * e * e; }
+    const src = c.createBufferSource(); src.buffer = buf;
+    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.7;
+    const f0 = dir < 0 ? 1000 : 460, f1 = dir < 0 ? 300 : (dir > 0 ? 1500 : 760);
+    lp.frequency.setValueAtTime(f0, t);
+    lp.frequency.exponentialRampToValueAtTime(f1, t + 1.25);
+    const gn = c.createGain();
+    gn.gain.setValueAtTime(0.0001, t);
+    gn.gain.exponentialRampToValueAtTime(0.055, t + 0.13);
+    gn.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(lp).connect(gn).connect(c.destination);
+    src.start(t); src.stop(t + dur);
+    const o = c.createOscillator(), og = c.createGain();
+    o.type = "sine"; o.frequency.value = dir < 0 ? 146.83 : 174.61;
+    og.gain.setValueAtTime(0.0001, t);
+    og.gain.exponentialRampToValueAtTime(0.04, t + 0.22);
+    og.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
+    o.connect(og).connect(c.destination);
+    o.start(t); o.stop(t + 1.9);
   }catch(e){}
 }
+function sonarVela(){ sonarLlama(0); }
 function abrirContempla(){
   const g = progresoVela();
   const ov = $("#contempla"); if(!ov) return;
