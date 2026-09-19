@@ -596,9 +596,9 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
 .tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:center;
-  padding:7px 4px calc(env(safe-area-inset-bottom) + 7px);
+  padding:6px 4px max(env(safe-area-inset-bottom), 8px);
   background:var(--panel);border-top:1px solid var(--linea-fuerte)}
-.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:7px 0;min-height:44px;color:var(--tinta-tenue);transition:color .2s ease}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;color:var(--tinta-tenue);transition:color .2s ease}
 .tab.activo{color:var(--tinta)}
 .tab-ic{width:23px;height:23px}
 .tab-ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -734,6 +734,10 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-intro{font-family:var(--serif);font-size:1.4rem;color:var(--tinta);text-align:center;margin:0 0 30px;line-height:1.4}
 .sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
 .sos-slider-wrap{width:100%;margin-bottom:32px}
+.sos-nivel{display:flex;gap:9px;width:100%;max-width:360px;margin:0 auto 30px;flex-wrap:wrap;justify-content:center}
+.sos-niv{flex:1 1 calc(50% - 9px);min-width:130px;padding:15px 10px;border:1px solid var(--linea-fuerte);border-radius:14px;font-family:var(--serif);font-size:1.08rem;color:var(--tinta-baja);background:none;transition:border-color .2s,background .2s,color .2s,transform .12s}
+.sos-niv.activo{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 15%,transparent);color:var(--tinta)}
+.sos-niv:active{transform:scale(.97)}
 .sos-slider{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:var(--linea-fuerte);outline:none}
 .sos-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;background:var(--llama);cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.15)}
 .sos-slider::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:var(--llama);cursor:pointer;border:none}
@@ -915,7 +919,6 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     </div>
     <p class="nav-grupo">Para leer y reflexionar</p>
     <div class="nav-cards">
-      <button class="nav-card" data-abrir="doctrina"><span class="nav-card-tx"><span class="nav-card-t">Doctrina</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="historias"><span class="nav-card-tx"><span class="nav-card-t">Historias</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="ancla"><span class="nav-card-tx"><span class="nav-card-t">Ancla</span></span><span class="nav-card-ch">›</span></button>
     </div>
@@ -967,9 +970,11 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   <div class="sos-paso" id="sosP1">
     <p class="sos-intro">Vamos a crear un poco de espacio.</p>
     <p class="sos-preg">¿Qué tan fuerte se siente ahora?</p>
-    <div class="sos-slider-wrap">
-      <input type="range" min="1" max="10" value="5" class="sos-slider" id="sosSlA" aria-label="Intensidad">
-      <div class="sos-escala-num"><span>Suave</span><span class="sos-val" id="sosValA">—</span><span>Fuerte</span></div>
+    <div class="sos-nivel" id="sosNivelA">
+      <button type="button" class="sos-niv" data-int="3">Suave</button>
+      <button type="button" class="sos-niv" data-int="5">Medio</button>
+      <button type="button" class="sos-niv" data-int="7">Fuerte</button>
+      <button type="button" class="sos-niv" data-int="9">Muy fuerte</button>
     </div>
     <button class="m369-listo" id="sosRespirar">Respira conmigo</button>
     <button class="sos-skip" id="sosSaltarInt">Prefiero no decir</button>
@@ -986,12 +991,13 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   </div>
   <div class="sos-paso oculto" id="sosP3">
     <p class="sos-espacio">Creaste un poco de espacio.</p>
-    <p class="sos-ancla oculto" id="sosAncla"></p>
     <div id="sosDespuesInt">
       <p class="sos-preg">¿Cómo se siente ahora?</p>
-      <div class="sos-slider-wrap">
-        <input type="range" min="1" max="10" value="5" class="sos-slider" id="sosSlB" aria-label="Intensidad ahora">
-        <div class="sos-escala-num"><span>Suave</span><span class="sos-val" id="sosValB">—</span><span>Fuerte</span></div>
+      <div class="sos-nivel" id="sosNivelB">
+        <button type="button" class="sos-niv" data-int="3">Suave</button>
+        <button type="button" class="sos-niv" data-int="5">Medio</button>
+        <button type="button" class="sos-niv" data-int="7">Fuerte</button>
+        <button type="button" class="sos-niv" data-int="9">Muy fuerte</button>
       </div>
       <p class="sos-comparo oculto" id="sosComparo"></p>
     </div>
@@ -1734,10 +1740,10 @@ const DOCTRINA = [
     <p>No es un premio por ser perfecto. Es el punto de partida. Que estés en paz. Que seas feliz. Empieza ahí, contigo, hoy.</p>` }
 ];
 const ARQUITECTO = [
-  "Decido sin pedir permiso",
-  "Opero dentro de una estructura clara",
-  "Acepto el poder y el dinero como parte de mi camino",
-  "Protejo mi foco emocional con límites firmes"
+  "Elegí mi prioridad y la sostuve",
+  "Trabajé dentro de una estructura clara",
+  "Cuidé mi energía y mi enfoque",
+  "Puse límites sanos donde hacían falta"
 ];
 const MENSUAL_HITOS = [
   "Consistencia — sostuve la práctica la mayoría de los días",
@@ -3715,11 +3721,16 @@ function doctrinaTodas(){
   return base.concat((E.contenido.doctrina.usuario||[]).map(u=>({ t:u.t||"", e:(u.texto||"").split("\n").filter(p=>p.trim()).map(p=>'<p>'+esc(p)+'</p>').join("") })));
 }
 function histTemasActivos(verTodo){
-  if(verTodo) return HIST_TEMAS;
-  const perm = tradPermitidas();
-  const tradDe = { amor:"universal", abundancia:"universal", biblia:"cristiano", budismo:"budista", estoicismo:"universal" };
-  const l = HIST_TEMAS.filter(t => perm[tradDe[t[0]] || "universal"]);
-  return l.length ? l : HIST_TEMAS;
+  let base;
+  if(verTodo){ base = HIST_TEMAS.slice(); }
+  else {
+    const perm = tradPermitidas();
+    const tradDe = { amor:"universal", abundancia:"universal", biblia:"cristiano", budismo:"budista", estoicismo:"universal" };
+    const l = HIST_TEMAS.filter(t => perm[tradDe[t[0]] || "universal"]);
+    base = l.length ? l : HIST_TEMAS.slice();
+  }
+  if(doctrinaTodas().length) base = base.concat([["doctrina","Doctrina"]]);
+  return base;
 }
 // Voz "hacia ti": lo divino te habla en 2ª persona. c = cristiano (tú-divino directo), u = universal.
 const DIALOGO = {
@@ -3895,7 +3906,7 @@ function hojaHistorias(){
   const puedeExpandir = ((E.perfil && E.perfil.tono) || "mezcla") !== "mezcla";
   const tabsHTML = ()=> histTemasActivos(verTodo).map((t,i)=>'<button type="button" class="seg'+(i===0?' activo':'')+'" data-tema="'+t[0]+'">'+t[1]+'</button>').join("");
   const toggleHTML = puedeExpandir ? '<button type="button" class="ver-trad" id="histVerTrad">Ver también otras tradiciones</button>' : '';
-  hoja("Historias", "Relatos para reflexionar. Amor, abundancia y tradiciones.",
+  hoja("Historias", "Para leer y reflexionar — relatos, tradiciones y estudio.",
     '<div class="segmento cad-tabs" id="histTabs">' + tabsHTML() + '</div>' + toggleHTML +
     '<div id="histCont"></div>' +
     '<div class="acciones"><button class="accion" id="histCerrar">Cerrar</button></div>',
@@ -3920,7 +3931,28 @@ function hojaHistorias(){
       $("#histCerrar").addEventListener("click", cerrarHoja);
     });
 }
+function renderDoctrinaEn(cont){
+  const docs = doctrinaTodas();
+  cont.innerHTML = '<div class="doctrina-lista">' +
+    docs.map((t,i)=>
+      '<div class="doctrina-item">' +
+      '<button class="doctrina-cab" data-hd="'+i+'" aria-expanded="false"><span>'+esc(t.t)+'</span><span class="doctrina-mas" aria-hidden="true">+</span></button>' +
+      '<div class="doctrina-cuerpo" id="histD'+i+'"><button class="leer-btn" data-lbl="Escuchar" data-hd-leer="'+i+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H3v6h3l5 4V5zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/></svg>Escuchar</button>'+t.e+'</div>' +
+      '</div>').join("") +
+    '</div>';
+  document.querySelectorAll("#histCont .doctrina-cab[data-hd]").forEach(b=>{
+    b.addEventListener("click", ()=>{
+      const cuerpo = $("#histD"+b.dataset.hd);
+      const abierto = b.getAttribute("aria-expanded") === "true";
+      b.setAttribute("aria-expanded", String(!abierto));
+      b.classList.toggle("abierto", !abierto);
+      cuerpo.classList.toggle("abierto", !abierto);
+    });
+  });
+  document.querySelectorAll("#histCont [data-hd-leer]").forEach(b=>b.addEventListener("click", (e)=>{ e.stopPropagation(); const t = docs[+b.dataset.hdLeer]; if(t) leerAlto(textoPlano(t.e), b); }));
+}
 function renderHistorias(tema, cont){
+  if(tema === "doctrina"){ renderDoctrinaEn(cont); return; }
   const lista = historiasTodas().filter(h=>h.tema===tema);
   cont.innerHTML = '<div class="doctrina-lista">' +
     lista.map((h,i)=>
@@ -4404,17 +4436,12 @@ function hojaEditarAhora(){
   const chips = RESP_ORDEN.map(k=>'<button type="button" class="seg'+(k===patAct?' activo':'')+'" data-rp="'+k+'">'+RESPIROS[k].nom+'</button>').join("");
   hoja("Ahora mismo", "Ajusta cómo entras a la calma. La secuencia que te acompaña se mantiene como está — pensada para cuidarte en un momento difícil.",
     '<div class="campo"><label class="campo-et">Respiración por defecto</label><div class="segmento cad-tabs" id="ahResp">' + chips + '</div><p class="campo-ayuda">Con la que empieza tu pausa. Dentro puedes cambiarla también.</p></div>' +
-    '<div class="campo"><label class="campo-et" for="ahAncla">Tu ancla personal</label><textarea class="campo-in" id="ahAncla" rows="2" placeholder="Una frase tuya que te devuelva a ti (ej. «Esto también pasa»)" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px;resize:none;width:100%">' + esc(E.ajustes.anclaSos || "") + '</textarea><p class="campo-ayuda">Aparece al final, cuando ya creaste un poco de espacio. Escríbela en positivo — algo que te sostenga.</p></div>' +
-    '<div class="acciones"><button class="accion llena" id="ahGuardar">Guardar</button><button class="accion" id="ahCerrar">Cerrar</button></div>',
+    '<div class="acciones"><button class="accion" id="ahCerrar">Listo</button></div>',
     ()=>{
       document.querySelectorAll("#ahResp .seg").forEach(b=>b.addEventListener("click", ()=>{
         document.querySelectorAll("#ahResp .seg").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
         E.ajustes.respiroPatron = b.dataset.rp; guardar(); try{ respMarcarChips(); }catch(e){}
       }));
-      $("#ahGuardar").addEventListener("click", ()=>{
-        E.ajustes.anclaSos = (($("#ahAncla")||{}).value || "").trim().slice(0,140); guardar();
-        const g = $("#ahGuardar"); if(g){ g.textContent = "Guardado"; setTimeout(()=>{ const g2=$("#ahGuardar"); if(g2) g2.textContent = "Guardar"; }, 1400); }
-      });
       $("#ahCerrar").addEventListener("click", cerrarHoja);
     });
 }
@@ -4546,7 +4573,6 @@ document.addEventListener("click", e=>{
   else if(k === "paisajes") hojaPaisajes();
   else if(k === "concentracion") hojaConcentracion();
   else if(k === "temporizador") hojaTemporizador();
-  else if(k === "doctrina") hojaDoctrina();
   else if(k === "historias") hojaHistorias();
   else if(k === "ancla") hojaAncla();
   else if(k === "ajustes") hojaAjustes();
@@ -4793,14 +4819,11 @@ let sosTimer = null, sosT0 = 0, pausaAntes = null, pausaDespues = null;
 function sosPaso(n){ ["sosP1","sosP2","sosP3"].forEach((id,i)=>{ const el = $("#"+id); if(el) el.classList.toggle("oculto", i !== n-1); }); }
 function abrirSOS(){
   pausaAntes = null; pausaDespues = null;
-  const sa = $("#sosSlA"); if(sa) sa.value = 5;
-  const sb = $("#sosSlB"); if(sb) sb.value = 5;
+  document.querySelectorAll("#sosNivelA .sos-niv, #sosNivelB .sos-niv").forEach(b=>b.classList.remove("activo"));
   if($("#sosValA")) $("#sosValA").textContent = "—";
   if($("#sosValB")) $("#sosValB").textContent = "—";
   const cmp = $("#sosComparo"); if(cmp){ cmp.classList.add("oculto"); cmp.textContent = ""; }
   sosPaso(1);
-  const _anc = $("#sosAncla"); const _at = (E.ajustes.anclaSos||"").trim();
-  if(_anc){ if(_at){ _anc.textContent = _at; _anc.classList.remove("oculto"); } else _anc.classList.add("oculto"); }
   $("#sos").classList.remove("oculto");
   document.body.classList.add("encendida");
   padBed = false;
@@ -4966,7 +4989,10 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   const rg = $("#reflGuardar"); if(rg) rg.addEventListener("click", guardarReflexion);
   const ro = $("#reflOtra"); if(ro) ro.addEventListener("click", reflexionOtra);
   const rlz = $("#reflLuego"); if(rlz) rlz.addEventListener("click", cerrarPractica);
-  const slA = $("#sosSlA"); if(slA) slA.addEventListener("input", ()=>{ pausaAntes = +slA.value; $("#sosValA").textContent = slA.value; });
+  document.querySelectorAll("#sosNivelA .sos-niv").forEach(b=>b.addEventListener("click", ()=>{
+    document.querySelectorAll("#sosNivelA .sos-niv").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
+    pausaAntes = +b.dataset.int;
+  }));
   const rp = $("#sosRespirar"); if(rp) rp.addEventListener("click", sosBreath);
   const si = $("#sosSaltarInt"); if(si) si.addEventListener("click", ()=>{ pausaAntes = null; sosBreath(); });
   const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
@@ -4990,11 +5016,13 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
     });
   });
   const li = $("#sosListo"); if(li) li.addEventListener("click", sosIrDespues);
-  const slB = $("#sosSlB"); if(slB) slB.addEventListener("input", ()=>{
-    pausaDespues = +slB.value; $("#sosValB").textContent = slB.value;
+  const INT_LBL = {3:"suave", 5:"medio", 7:"fuerte", 9:"muy fuerte"};
+  document.querySelectorAll("#sosNivelB .sos-niv").forEach(b=>b.addEventListener("click", ()=>{
+    document.querySelectorAll("#sosNivelB .sos-niv").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
+    pausaDespues = +b.dataset.int;
     const cmp = $("#sosComparo");
-    if(pausaAntes !== null && cmp){ cmp.textContent = "Antes " + pausaAntes + "  →  ahora " + pausaDespues; cmp.classList.remove("oculto"); }
-  });
+    if(pausaAntes !== null && cmp){ cmp.textContent = "Antes " + (INT_LBL[pausaAntes]||pausaAntes) + "  →  ahora " + (INT_LBL[pausaDespues]||pausaDespues); cmp.classList.remove("oculto"); }
+  }));
   const gp = $("#sosOtraPractica"); if(gp) gp.addEventListener("click", ()=>{ cerrarSOS(); mostrarTab("explorar"); });
   const cc = $("#sosCerrar"); if(cc) cc.addEventListener("click", cerrarSOS);
   const hs = $("#hoyShare"); if(hs) hs.addEventListener("click", compartirHoy);
