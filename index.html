@@ -733,7 +733,19 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-paso{display:flex;flex-direction:column;align-items:center;width:100%;max-width:420px}
 .sos-intro{font-family:var(--serif);font-size:1.4rem;color:var(--tinta);text-align:center;margin:0 0 30px;line-height:1.4}
 .sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
-.sos-slider-wrap{width:100%;margin-bottom:32px}
+.sos-ayuda-link{display:block;margin:16px auto 0;padding:6px 10px;background:none;border:none;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--tinta-tenue);text-decoration:underline;text-underline-offset:3px;opacity:.85;transition:opacity .2s}
+.sos-ayuda-link:hover,.sos-ayuda-link:focus-visible{opacity:1;color:var(--tinta-baja)}
+.ayuda-lista{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
+.ayuda-linea{display:flex;flex-direction:column;gap:3px;padding:15px 17px;border:1px solid var(--linea-fuerte);border-radius:14px;text-decoration:none;transition:border-color .2s,background .2s}
+.ayuda-linea:hover,.ayuda-linea:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
+.ayuda-pais{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--oro)}
+.ayuda-nom{font-family:var(--serif);font-size:1.08rem;color:var(--tinta);line-height:1.25}
+.ayuda-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:2px}
+.ayuda-tel{font-family:var(--sans);font-size:1.15rem;font-weight:600;color:var(--llama);letter-spacing:.02em}
+.ayuda-nota{font-family:var(--sans);font-size:12.5px;color:var(--tinta-tenue)}
+.ayuda-emergencia{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--tinta-baja);margin:0 0 6px;padding:12px 14px;background:color-mix(in srgb,var(--tinta) 5%,transparent);border-radius:12px}
+.disclaimer-gen{font-family:var(--sans);font-size:12px;line-height:1.6;color:var(--tinta-tenue);text-align:center;max-width:34ch;margin:26px auto 10px}
+.disclaimer-link{background:none;border:none;padding:0;font:inherit;color:var(--oro);text-decoration:underline;text-underline-offset:2px;cursor:pointer}
 .sos-nivel{display:flex;gap:9px;width:100%;max-width:360px;margin:0 auto 30px;flex-wrap:wrap;justify-content:center}
 .sos-niv{flex:1 1 calc(50% - 9px);min-width:130px;padding:15px 10px;border:1px solid var(--linea-fuerte);border-radius:14px;font-family:var(--serif);font-size:1.08rem;color:var(--tinta-baja);background:none;transition:border-color .2s,background .2s,color .2s,transform .12s}
 .sos-niv.activo{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 15%,transparent);color:var(--tinta)}
@@ -978,6 +990,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     </div>
     <button class="m369-listo" id="sosRespirar">Respira conmigo</button>
     <button class="sos-skip" id="sosSaltarInt">Prefiero no decir</button>
+    <button class="sos-ayuda-link" id="sosAyuda1">¿Necesitas ayuda ahora?</button>
   </div>
   <div class="sos-paso oculto" id="sosP2">
     <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span><span class="sos-num" id="sosNum"></span></div>
@@ -1010,8 +1023,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     </div>
     <div class="sos-acc sos-acc-cierre">
       <button class="sos-btn" id="sosOtraPractica">Otra práctica</button>
-      <button class="sos-btn sos-salir" id="sosCerrar">Cerrar</button>
-    </div>
+      <button class="sos-btn sos-salir" id="sosCerrar">Cerrar</button>    </div>
+    <button class="sos-ayuda-link" id="sosAyuda3">¿Necesitas ayuda ahora?</button>
   </div>
 </div>
 
@@ -4445,6 +4458,19 @@ function hojaRitualesElegir(){
     });
 }
 
+const LINEAS_AYUDA = [
+  { pais:"México", nom:"Línea de la Vida", tel:"8009112000", telMuestra:"800 911 2000", nota:"24 h · gratuita" },
+  { pais:"México", nom:"SAPTEL", tel:"5552598121", telMuestra:"55 5259 8121", nota:"24 h" },
+  { pais:"Estados Unidos", nom:"988 Suicide & Crisis Lifeline", tel:"988", telMuestra:"988", nota:"llamada o SMS · 24 h" },
+  { pais:"Brasil", nom:"CVV — Centro de Valorização da Vida", tel:"188", telMuestra:"188", nota:"24 h · gratuito" }
+];
+function hojaAyuda(){
+  hoja("Ayuda ahora", "Práctica te acompaña, pero no es un servicio de emergencia ni de salud. Si estás en peligro o pensando en hacerte daño, habla con alguien ahora — es gratis y confidencial.",
+    '<div class="ayuda-lista">' + LINEAS_AYUDA.map(l=>'<a class="ayuda-linea" href="tel:'+l.tel+'"><span class="ayuda-pais">'+esc(l.pais)+'</span><span class="ayuda-nom">'+esc(l.nom)+'</span><span class="ayuda-row"><span class="ayuda-tel">'+esc(l.telMuestra)+'</span><span class="ayuda-nota">'+esc(l.nota)+'</span></span></a>').join("") + '</div>' +
+    '<p class="ayuda-emergencia">Si es una emergencia inmediata, llama a los servicios de emergencia de tu país (911 en México y EE. UU.; 192 en Brasil).</p>' +
+    '<div class="acciones"><button class="accion" id="ayudaCerrar">Cerrar</button></div>',
+    ()=>{ const c=$("#ayudaCerrar"); if(c) c.addEventListener("click", cerrarHoja); });
+}
 function hojaEditarAhora(){
   const patAct = E.ajustes.respiroPatron || "serena";
   const chips = RESP_ORDEN.map(k=>'<button type="button" class="seg'+(k===patAct?' activo':'')+'" data-rp="'+k+'">'+RESPIROS[k].nom+'</button>').join("");
@@ -4526,6 +4552,7 @@ function hojaAjustes(){
       '<div class="acciones" style="margin-top:0"><button class="accion" id="sExportar">Exportar datos</button>' +
       '<label class="accion" for="sImportar" style="cursor:pointer">Importar datos<input type="file" id="sImportar" accept="application/json,.json" style="display:none"></label></div>' +
       '<p class="campo-ayuda">Descarga una copia de tu progreso, oraciones y ajustes. Guárdala en Drive o Dropbox. Impórtala para restaurar en otro dispositivo o si reinstalas.</p></div>' +
+    '<p class="disclaimer-gen">Práctica es una herramienta de bienestar contemplativo. No sustituye atención médica, psicológica ni de crisis. <button type="button" class="disclaimer-link" id="ajAyuda">Líneas de ayuda</button></p>' +
     '<p class="version-sello">Práctica · ' + APP_VER + '</p>' +
     '<div class="acciones"><button class="accion llena" id="sCerrar">Listo</button></div>',
     ()=>{
@@ -4558,6 +4585,7 @@ function hojaAjustes(){
       [["rMan","manana"],["rNuc","nucleo"],["rNoc","noche"]].forEach(p=>{ const el = $("#"+p[0]); if(el) el.addEventListener("change", ()=>{ E.ajustes.recordatorios = E.ajustes.recordatorios||{on:true,manana:"07:00",nucleo:"13:00",noche:"21:00"}; E.ajustes.recordatorios[p[1]] = el.value; guardar(); }); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
       $("#sExportar").addEventListener("click", exportarDatos);
+      const _aja = $("#ajAyuda"); if(_aja) _aja.addEventListener("click", hojaAyuda);
       const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
       document.querySelectorAll("[data-audio]").forEach(inp=>{
         inp.addEventListener("change", ()=>{
@@ -5009,6 +5037,8 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   }));
   const rp = $("#sosRespirar"); if(rp) rp.addEventListener("click", sosBreath);
   const si = $("#sosSaltarInt"); if(si) si.addEventListener("click", ()=>{ pausaAntes = null; sosBreath(); });
+  const ay1 = $("#sosAyuda1"); if(ay1) ay1.addEventListener("click", hojaAyuda);
+  const ay3 = $("#sosAyuda3"); if(ay3) ay3.addEventListener("click", hojaAyuda);
   const ot = $("#sosOtra"); if(ot) ot.addEventListener("click", ()=>{
     const l = $("#sosLinea"); if(!l) return;
     l.style.transition = "opacity .34s ease";
