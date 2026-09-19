@@ -596,9 +596,9 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .gear:hover,.gear:focus-visible{opacity:1}
 .gear:focus-visible{outline:2px solid var(--llama);outline-offset:2px;border-radius:50%}
 .tabbar{flex:0 0 auto;display:flex;justify-content:space-around;align-items:center;
-  padding:6px 4px max(env(safe-area-inset-bottom), 8px);
+  padding:8px 4px calc(env(safe-area-inset-bottom) * 0.5 + 8px);
   background:var(--panel);border-top:1px solid var(--linea-fuerte)}
-.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:10px 0;color:var(--tinta-tenue);transition:color .2s ease}
+.tab{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 0;color:var(--tinta-tenue);transition:color .2s ease}
 .tab.activo{color:var(--tinta)}
 .tab-ic{width:23px;height:23px}
 .tab-ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
@@ -2609,34 +2609,48 @@ function fraseVela(g){
 }
 function hojaNivel(){ abrirContempla(); }
 let _uiCtx = null;
-function sonarLlama(dir){   // dir: 0 neutro · 1 asciende (abrir) · -1 desciende (soltar)
+function sonarLlama(dir){   // encendido de vela: chispa breve + whoomph suave de la llama que prende
   if(E.ajustes && E.ajustes.ambienteApp === false) return;
   try{
     const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
     if(!_uiCtx) _uiCtx = new AC();
     const c = _uiCtx; if(c.state === "suspended"){ try{ c.resume(); }catch(e){} }
-    const t = c.currentTime, dur = 1.7;
-    const buf = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate);
-    const data = buf.getChannelData(0);
-    for(let i=0;i<data.length;i++){ const e = 1 - i/data.length; data[i] = (Math.random()*2-1) * e * e; }
-    const src = c.createBufferSource(); src.buffer = buf;
-    const lp = c.createBiquadFilter(); lp.type = "lowpass"; lp.Q.value = 0.7;
-    const f0 = dir < 0 ? 1000 : 460, f1 = dir < 0 ? 300 : (dir > 0 ? 1500 : 760);
-    lp.frequency.setValueAtTime(f0, t);
-    lp.frequency.exponentialRampToValueAtTime(f1, t + 1.25);
-    const gn = c.createGain();
-    gn.gain.setValueAtTime(0.0001, t);
-    gn.gain.exponentialRampToValueAtTime(0.055, t + 0.13);
-    gn.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    src.connect(lp).connect(gn).connect(c.destination);
-    src.start(t); src.stop(t + dur);
-    const o = c.createOscillator(), og = c.createGain();
-    o.type = "sine"; o.frequency.value = dir < 0 ? 146.83 : 174.61;
-    og.gain.setValueAtTime(0.0001, t);
-    og.gain.exponentialRampToValueAtTime(0.04, t + 0.22);
-    og.gain.exponentialRampToValueAtTime(0.0001, t + 1.8);
-    o.connect(og).connect(c.destination);
-    o.start(t); o.stop(t + 1.9);
+    const t = c.currentTime;
+    const ruido = (dur)=>{ const b = c.createBuffer(1, Math.max(1,Math.floor(c.sampleRate*dur)), c.sampleRate); const d = b.getChannelData(0); for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1; return b; };
+
+    // 1) chispa/fósforo: ráfaga muy breve y aguda, con crepitar
+    const spark = c.createBufferSource(); spark.buffer = ruido(0.18);
+    const sHi = c.createBiquadFilter(); sHi.type = "highpass"; sHi.frequency.value = 2600;
+    const sG = c.createGain();
+    sG.gain.setValueAtTime(0.0001, t);
+    sG.gain.exponentialRampToValueAtTime(0.05, t + 0.008);
+    sG.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    spark.connect(sHi).connect(sG).connect(c.destination);
+    spark.start(t); spark.stop(t + 0.18);
+
+    // 2) whoomph: la llama que prende — ruido grave/medio con barrido de filtro (aire encendiéndose)
+    const air = c.createBufferSource(); air.buffer = ruido(1.6); air.loop = false;
+    const aLp = c.createBiquadFilter(); aLp.type = "lowpass"; aLp.Q.value = 0.9;
+    const f0 = 240, f1 = dir < 0 ? 420 : (dir > 0 ? 1000 : 680);
+    aLp.frequency.setValueAtTime(f0, t + 0.04);
+    aLp.frequency.linearRampToValueAtTime(f1, t + 0.38);
+    aLp.frequency.exponentialRampToValueAtTime(320, t + 1.5);
+    const aG = c.createGain();
+    aG.gain.setValueAtTime(0.0001, t + 0.04);
+    aG.gain.exponentialRampToValueAtTime(0.06, t + 0.24);
+    aG.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+    air.connect(aLp).connect(aG).connect(c.destination);
+    air.start(t + 0.04); air.stop(t + 1.7);
+
+    // 3) crepitar tenue sostenido (la llama viva) — muy bajo
+    const cre = c.createBufferSource(); cre.buffer = ruido(1.3);
+    const cBp = c.createBiquadFilter(); cBp.type = "bandpass"; cBp.frequency.value = 1500; cBp.Q.value = 0.6;
+    const cG = c.createGain();
+    cG.gain.setValueAtTime(0.0001, t + 0.1);
+    cG.gain.exponentialRampToValueAtTime(0.018, t + 0.4);
+    cG.gain.exponentialRampToValueAtTime(0.0001, t + 1.3);
+    cre.connect(cBp).connect(cG).connect(c.destination);
+    cre.start(t + 0.1); cre.stop(t + 1.4);
   }catch(e){}
 }
 function sonarVela(){ sonarLlama(0); }
