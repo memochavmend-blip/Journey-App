@@ -30,6 +30,7 @@ try{
   --tinta-tenue:#777066;
   --cera:#C9B896;
   --llama:#BD7D23;
+  --llama-texto:#7A5C33;
   --brasa:#B4491C;
   --oro:#8A6A3E;
   --linea:rgba(43,38,33,.10);
@@ -47,6 +48,7 @@ html:not([data-modo="oscuro"]) body.tema-noche{
   --tinta-baja:#655A4C;
   --tinta-tenue:#70695F;
   --llama:#BE7127;
+  --llama-texto:#7A5C33;
   --brasa:#A9451B;
   --oro:#7E5F37;
   --linea:rgba(49,39,32,.11);
@@ -61,6 +63,7 @@ html[data-modo="oscuro"]{
   --tinta-tenue:#847C6F;
   --cera:#CFC0A0;
   --llama:#F0A63C;
+  --llama-texto:#F0A63C;
   --brasa:#C56A3C;
   --oro:#B79366;
   --linea:rgba(236,230,219,.08);
@@ -75,6 +78,7 @@ html[data-modo="oscuro"] body.tema-noche{
   --tinta-tenue:#84796C;
   --cera:#B9A783;
   --llama:#E4903A;
+  --llama-texto:#E4903A;
   --brasa:#C56A3C;
   --oro:#B08A5C;
   --linea:rgba(228,198,160,.08);
@@ -735,13 +739,16 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .sos-preg{font-size:14px;color:var(--tinta-baja);text-align:center;margin:0 0 18px;letter-spacing:.02em}
 .sos-ayuda-link{display:block;margin:16px auto 0;padding:6px 10px;background:none;border:none;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--tinta-tenue);text-decoration:underline;text-underline-offset:3px;opacity:.85;transition:opacity .2s}
 .sos-ayuda-link:hover,.sos-ayuda-link:focus-visible{opacity:1;color:var(--tinta-baja)}
+.sos-ayuda-link.destacado{opacity:1;color:var(--llama-texto);font-size:14px;text-decoration:none;border:1px solid var(--llama);border-radius:12px;padding:12px 18px;margin-top:22px;background:color-mix(in srgb,var(--llama) 8%,transparent)}
+.ayuda-otro{display:block;text-align:center;margin:0 0 8px;padding:8px;font-family:var(--sans);font-size:13px;color:var(--llama-texto);text-decoration:none}
+.ayuda-otro:hover{text-decoration:underline}
 .ayuda-lista{display:flex;flex-direction:column;gap:12px;margin-bottom:20px}
 .ayuda-linea{display:flex;flex-direction:column;gap:3px;padding:15px 17px;border:1px solid var(--linea-fuerte);border-radius:14px;text-decoration:none;transition:border-color .2s,background .2s}
 .ayuda-linea:hover,.ayuda-linea:focus-visible{border-color:var(--llama);background:color-mix(in srgb,var(--llama) 8%,transparent)}
 .ayuda-pais{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--oro)}
 .ayuda-nom{font-family:var(--serif);font-size:1.08rem;color:var(--tinta);line-height:1.25}
 .ayuda-row{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:2px}
-.ayuda-tel{font-family:var(--sans);font-size:1.15rem;font-weight:600;color:var(--llama);letter-spacing:.02em}
+.ayuda-tel{font-family:var(--sans);font-size:1.15rem;font-weight:700;color:var(--llama-texto);letter-spacing:.02em}
 .ayuda-nota{font-family:var(--sans);font-size:12.5px;color:var(--tinta-tenue)}
 .ayuda-emergencia{font-family:var(--sans);font-size:13px;line-height:1.55;color:var(--tinta-baja);margin:0 0 6px;padding:12px 14px;background:color-mix(in srgb,var(--tinta) 5%,transparent);border-radius:12px}
 .disclaimer-gen{font-family:var(--sans);font-size:12px;line-height:1.6;color:var(--tinta-tenue);text-align:center;max-width:34ch;margin:26px auto 10px}
@@ -926,7 +933,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <p class="nav-grupo">Tu práctica</p>
     <div class="nav-cards">
       <button class="nav-card" data-abrir="afirmaciones"><span class="nav-card-tx"><span class="nav-card-t">Afirmaciones</span></span><span class="nav-card-ch">›</span></button>
-      <button class="nav-card" data-abrir="manifestacion"><span class="nav-card-tx"><span class="nav-card-t">Manifestación</span></span><span class="nav-card-ch">›</span></button>
+      <button class="nav-card" id="cardManifestacion" data-abrir="manifestacion"><span class="nav-card-tx"><span class="nav-card-t">Manifestación</span></span><span class="nav-card-ch">›</span></button>
       <button class="nav-card" data-abrir="meditacion"><span class="nav-card-tx"><span class="nav-card-t">Meditación</span></span><span class="nav-card-ch">›</span></button>
     </div>
     <p class="nav-grupo">Para leer y reflexionar</p>
@@ -1225,11 +1232,6 @@ async function cargar(){
     if(g.arquitecto && g.arquitecto.semana && Array.isArray(g.arquitecto.marcas) && !E.registro.semanal[g.arquitecto.semana]){
       E.registro.semanal[g.arquitecto.semana] = { marcas: g.arquitecto.marcas.slice(), nota:"" };
     }
-    if(!g.v){
-      const af = E.contenido.afirmaciones.usuario, man = E.contenido.manifestaciones.usuario;
-      (L.identidad||[]).forEach(t=>{ if(!af.some(u=>(u.texto||"")===t)) af.push({ texto:t, id:Date.now()+Math.floor(Math.random()*1e6) }); });
-      (L.permiso||[]).concat(L.recepcion||[]).forEach(t=>{ if(!man.some(u=>(u.texto||"")===t)) man.push({ texto:t, id:Date.now()+Math.floor(Math.random()*1e6) }); });
-    }
     E.v = 2;
   }
 }
@@ -1239,6 +1241,13 @@ const mqOscuro = window.matchMedia("(prefers-color-scheme: dark)");
 function modoResuelto(){
   const t = (E.ajustes && E.ajustes.tema) || "sistema";
   return t === "sistema" ? (mqOscuro.matches ? "oscuro" : "claro") : t;
+}
+function aplicarVisibilidadContenido(){
+  // Manifestación (método 369, «Yo Soy» creador) es Nuevo Pensamiento; se oculta en el perfil cristiano
+  // para no chocar con la doctrina. Disponible en espiritual, budista y mezcla.
+  const esCrist = (E.perfil && E.perfil.tono) === "cristiano";
+  const card = document.getElementById("cardManifestacion");
+  if(card) card.classList.toggle("oculto", esCrist);
 }
 function aplicarTema(){
   const m = modoResuelto();
@@ -1268,73 +1277,6 @@ const DIAS_L=["domingo","lunes","martes","miércoles","jueves","viernes","sábad
 const MESES_L=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
 
 /* ════════════════ LITURGIA ════════════════ */
-const L = {
-  entrega:[
-    "Querido Dios:",
-    "Elimina cualquier pereza o dilación de mi mente y cuerpo.",
-    "Empújame a mi máximo potencial.",
-    "Trae paz a mi confusión, alegría a mis tristezas y esperanza a mi corazón.",
-    "Si no es para mí, quítalo.",
-    "Si no son para mí, revélalo.",
-    "Acaba con cualquier cosa que no sea para mi vida.",
-    "Señor, protege el camino en el que estoy y no me dejes renunciar nunca.",
-    "Dios, calma mi mente, sana mi corazón y quita mis preocupaciones.",
-    "Espíritu Santo, ayúdame a ver esto de una manera distinta:",
-    "aquello que me preocupa es tan pequeño, y aquello que me sostiene es tan inmenso.",
-    "Gracias, Señor, por cargar en tus hombros mi carga, mi cruz.",
-    "Mi corazón te lo entrego completamente a Ti."
-  ],
-  palabra:[
-    "El Señor es mi pastor, y nada me faltará.",
-    "Todo lo puedo en Cristo que me fortalece.",
-    "Si Dios está conmigo, ¿quién contra mí?",
-    "Aunque camine por valle de sombra de muerte, no temeré mal alguno, porque Tú, Señor, caminas conmigo.",
-    "Señor, una palabra tuya me ha bendecido y me ha sanado.",
-    "Cuando abres tu mano, sacias el hambre y la sed de todo ser viviente.",
-    "El Señor es justo en todo lo que hace y está lleno de bondad.",
-    "El Señor escucha a todos los que lo invocan de verdad.",
-    "Yo soy la luz del mundo; una ciudad asentada sobre un monte no se puede esconder."
-  ],
-  permiso:[
-    "Dios me dio abundancia ilimitada.",
-    "El poder y el dinero son parte esencial de mi propósito superior.",
-    "El dinero y el poder son herramientas con las que Dios me bendijo para guiar a sus hijos.",
-    "El dinero y el poder son parte del destino que Dios escribió para mí.",
-    "El dinero y el poder son parte de mi camino."
-  ],
-  identidad:[
-    "Yo soy amor.",
-    "Yo soy la fuerza creadora del universo.",
-    "Yo soy mensajero de Dios en el mundo.",
-    "Yo soy el elegido. Desde antes de ser concebido, Dios lo escribió en mi destino.",
-    "Ahora, y siempre lo he sido.",
-    "Yo soy abundante en dinero y poder.",
-    "Yo tengo toda la abundancia del universo en mis manos.",
-    "Yo soy el mejor inversionista.",
-    "Yo soy el mejor productor musical y DJ del mundo.",
-    "Yo soy el mejor y más famoso DJ y productor musical de la historia.",
-    "Yo soy la luz del mundo."
-  ],
-  recepcion:[
-    "Hoy me permito recibir cosas maravillosas en mi vida,",
-    "y también permito recibir más de lo que jamás soñé.",
-    "Yo recibo cosas maravillosas en mi vida, y recibo más de lo que jamás soñé.",
-    "Todo lo que pasa en mi vida es a mi favor.",
-    "Ahora es mi tiempo."
-  ],
-  sello:[
-    "Dios, confío en Ti.",
-    "Jesucristo, confío en Ti.",
-    "Espíritu Santo, confío en Ti.",
-    "Yo confío en mí.",
-    "Todo está bien.",
-    "Todo en el universo funciona para mi mayor y más alto bien.",
-    "De toda experiencia solo salen cosas a mi favor.",
-    "Estoy a salvo.",
-    "Gracias, Dios.",
-    "Te amo, Dios."
-  ]
-};
 
 function bloqueVision(){
   const v = E.vision;
@@ -2162,7 +2104,7 @@ Lo que nos pesa casi nunca es lo que pasó, sino lo que seguimos cargando despu�
   { tema:"biblia", titulo:"La creación", texto:"Al principio no había nada, y sobre el vacío se movía el Espíritu de Dios. «Que haya luz», dijo, y hubo luz. Separó el día de la noche, el mar de la tierra; llenó el cielo de estrellas y la tierra de árboles, aves y animales. Y al final formó al ser humano a su imagen, y le entregó todo. Miró lo hecho y dijo que era bueno. No fuiste un accidente: fuiste la última palabra de algo llamado bueno." }
 ];
 const AUDIO_MED = [
-  { id:"m1", titulo:"Anclaje matutino", dur:"~4 min", src:"audio/med-01.mp3",
+  { trad:"cristiano", id:"m1", titulo:"Anclaje matutino", dur:"~4 min", src:"audio/med-01.mp3",
     texto:`Antes de que el día te reclame… quédate un momento aquí. Solo aquí.
 Cierra los ojos si puedes… y deja que tus hombros bajen.
 Respira hondo por la nariz… y suelta despacio por la boca.
@@ -2177,7 +2119,7 @@ Piensa en una sola cosa que quieres llevar hoy. No una lista. Una. Una intenció
 Sostenla un momento, como quien sostiene una llama pequeña sin apagarla.
 Cuando estés listo… respira hondo una última vez… y abre los ojos.
 El día ya no te espera con miedo. Te espera contigo listo.` },
-  { id:"m2", titulo:"Soltar la noche", dur:"~6 min", src:"audio/med-02.mp3",
+  { trad:"cristiano", id:"m2", titulo:"Soltar la noche", dur:"~6 min", src:"audio/med-02.mp3",
     texto:`El día terminó… y ya no te pertenece. Puedes soltarlo.
 Acomódate. Deja que la cama te reciba por completo. Nada que cargar hasta mañana.
 Respira lento… y con cada exhalación, imagina que algo pesado se desprende de tus hombros.
@@ -2196,7 +2138,7 @@ Estoy a salvo.
 No hay nada más que hacer hoy. Nada.
 Descansa. Estás cuidado.
 Te amo, Dios.` },
-  { id:"m3", titulo:"Volver al centro", dur:"~4 min", src:"audio/med-03.mp3",
+  { trad:"cristiano", id:"m3", titulo:"Volver al centro", dur:"~4 min", src:"audio/med-03.mp3",
     texto:`Para. Solo un momento. Donde estés.
 No tienes que ir a ningún lado en los próximos minutos. Este tiempo es tuyo.
 Respira… y siente el aire entrar. Frío al entrar… tibio al salir.
@@ -3217,7 +3159,7 @@ function hojaVision(){
     '<div class="campo"><label class="campo-et" for="vSer">Yo soy</label><input class="campo-in" id="vSer" placeholder="quién" value="'+esc(v.ser)+'"></div>' +
     '<div class="campo"><label class="campo-et" for="vHacer">Yo hago</label><input class="campo-in" id="vHacer" placeholder="qué construyo" value="'+esc(v.hacer)+'"></div>' +
     '<div class="campo"><label class="campo-et" for="vTener">Yo tengo</label><input class="campo-in" id="vTener" placeholder="qué se manifiesta" value="'+esc(v.tener)+'"></div>' +
-    '<p class="campo-ayuda">Si una línea se siente falsa al decirla, no la suavices — acompáñala con un compromiso de proceso. «Yo soy el mejor inversionista» aterriza mejor seguido de «y por eso mi stop-loss es sagrado».</p>' +
+    '<p class="campo-ayuda">Si una línea se siente falsa al decirla, no la suavices — acompáñala con un compromiso de proceso. «Merezco cosas buenas» aterriza mejor seguido de «y hoy doy un paso hacia ellas».</p>' +
     '<div class="acciones"><button class="accion" id="vCancel">Cancelar</button><button class="accion llena" id="vGuardar">Guardar</button></div>',
     ()=>{
       $("#vCancel").addEventListener("click", cerrarHoja);
@@ -3910,7 +3852,7 @@ function vozManifestacion(m){ return _vozRitual ? vozForzada(m.x) : vozLinea(m.x
 
 function afirmacionesActivas(verTodo){
   const sel = (E.perfil.sub && E.perfil.sub.afirmaciones) || [], perm = verTodo ? {cristiano:1,universal:1,budista:1} : tradPermitidas();
-  const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>DIALOGO[a.x] || perm[esCristiano(a.x)?"cristiano":"universal"]);
+  const base = (sel.length ? AFIRMACIONES.filter(a=>sel.indexOf(a.t)>=0) : AFIRMACIONES.slice()).filter(a=>perm[esCristiano(a.x)?"cristiano":"universal"]);
   const bud = perm.budista ? AFIRMACIONES_BUD.slice() : [];
   const mios = (E.contenido.afirmaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(bud).concat(mios).filter(a=>!fbOculto(a.x));
@@ -3920,7 +3862,7 @@ function afirmacionesActivas(verTodo){
 }
 function manifestacionesActivas(verTodo){
   const sel = (E.perfil.sub && E.perfil.sub.manifestacion) || [], perm = verTodo ? {cristiano:1,universal:1,budista:1} : tradPermitidas();
-  const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>DIALOGO[m.x] || perm[esCristiano(m.x)?"cristiano":"universal"]);
+  const base = (sel.length ? MANIFESTACIONES.filter(m=>sel.indexOf(m.t)>=0) : MANIFESTACIONES.slice()).filter(m=>perm[esCristiano(m.x)?"cristiano":"universal"]);
   const mios = (E.contenido.manifestaciones.usuario||[]).map(u=>({ t:"mio", x:(u.texto||u.x||"").trim() })).filter(u=>u.x);
   let l = base.concat(mios).filter(m=>!fbOculto(m.x));
   if(!l.length) l = MANIFESTACIONES.concat(mios).filter(m=>!fbOculto(m.x));
@@ -4000,14 +3942,20 @@ function renderHistorias(tema, cont){
   document.querySelectorAll("#histCont [data-h-leer]").forEach(b=>b.addEventListener("click", (e)=>{ e.stopPropagation(); const h = lista[+b.dataset.hLeer]; if(h) leerAlto(h.texto.replace(/\n/g," "), b); }));
 }
 
-function medsActivas(){ const l = AUDIO_MED.filter(m=>!fbOculto(m.id)); return l.length ? l : AUDIO_MED; }
+function medsActivas(){
+  const perm = tradPermitidas();
+  return AUDIO_MED.filter(m => !fbOculto(m.id) && perm[m.trad || "universal"]);
+}
 function hojaMeditacion(){
   let lista = medsActivas();
   const svg = '<svg viewBox="0 0 24 24"><path d="M7 21V9l4.5-7c1.3 0 2 .9 2 2.2V8h4.6c1 0 1.8.9 1.6 1.9l-1.3 6.5c-.2 1-1 1.6-1.9 1.6H7zM7 9H4v12h3"/></svg>';
   const fila = m => '<div class="med-item"><button class="med-play" data-med="'+m.id+'"><span class="med-nom">'+esc(m.titulo)+'</span><span class="med-dur">'+esc(m.dur)+'</span></button>' +
     '<div class="fb-med"><button class="fb-btn" data-medfb="up|'+m.id+'" aria-label="Me gusta">'+svg+'</button><button class="fb-btn fb-abajo" data-medfb="down|'+m.id+'" aria-label="No es para mí">'+svg+'</button></div></div>';
+  const cuerpoMed = lista.length
+    ? '<div class="med-lista" id="medLista">' + lista.map(fila).join("") + '</div>'
+    : '<p class="campo-ayuda" style="text-align:center;padding:30px 10px">Pronto habrá meditaciones guiadas para tu práctica. Por ahora, prueba la respiración en cualquier ritual o en «Ahora mismo».</p>';
   hoja("Meditación", "Guiadas, con voz. Ponte cómodo y toca una.",
-    '<div class="med-lista" id="medLista">' + lista.map(fila).join("") + '</div>' +
+    cuerpoMed +
     '<div class="acciones"><button class="accion" id="medCerrar">Cerrar</button></div>',
     ()=>{
       const cablear = ()=>{
@@ -4460,14 +4408,15 @@ function hojaRitualesElegir(){
 
 const LINEAS_AYUDA = [
   { pais:"México", nom:"Línea de la Vida", tel:"8009112000", telMuestra:"800 911 2000", nota:"24 h · gratuita" },
-  { pais:"México", nom:"SAPTEL", tel:"5552598121", telMuestra:"55 5259 8121", nota:"24 h" },
-  { pais:"Estados Unidos", nom:"988 Suicide & Crisis Lifeline", tel:"988", telMuestra:"988", nota:"llamada o SMS · 24 h" },
-  { pais:"Brasil", nom:"CVV — Centro de Valorização da Vida", tel:"188", telMuestra:"188", nota:"24 h · gratuito" }
+  { pais:"México", nom:"SAPTEL", tel:"5552598121", telMuestra:"55 5259 8121", nota:"apoyo psicológico" },
+  { pais:"Estados Unidos", nom:"988 Suicide & Crisis Lifeline", tel:"988", telMuestra:"988", nota:"en español: marca 988 y elige la opción 2 · 24 h" },
+  { pais:"Brasil", nom:"CVV — Centro de Valorização da Vida", tel:"188", telMuestra:"188", nota:"24 h · gratuita" }
 ];
 function hojaAyuda(){
-  hoja("Ayuda ahora", "Práctica te acompaña, pero no es un servicio de emergencia ni de salud. Si estás en peligro o pensando en hacerte daño, habla con alguien ahora — es gratis y confidencial.",
+  hoja("Ayuda ahora", "Práctica te acompaña, pero no es un servicio de emergencia ni de salud. Si estás en peligro o pensando en hacerte daño, habla con alguien ahora. Estas líneas son gratuitas y atendidas por personas.",
     '<div class="ayuda-lista">' + LINEAS_AYUDA.map(l=>'<a class="ayuda-linea" href="tel:'+l.tel+'"><span class="ayuda-pais">'+esc(l.pais)+'</span><span class="ayuda-nom">'+esc(l.nom)+'</span><span class="ayuda-row"><span class="ayuda-tel">'+esc(l.telMuestra)+'</span><span class="ayuda-nota">'+esc(l.nota)+'</span></span></a>').join("") + '</div>' +
     '<p class="ayuda-emergencia">Si es una emergencia inmediata, llama a los servicios de emergencia de tu país (911 en México y EE. UU.; 192 en Brasil).</p>' +
+    '<a class="ayuda-otro" href="https://findahelpline.com" target="_blank" rel="noopener">¿En otro país? Encuentra una línea de ayuda →</a>' +
     '<div class="acciones"><button class="accion" id="ayudaCerrar">Cerrar</button></div>',
     ()=>{ const c=$("#ayudaCerrar"); if(c) c.addEventListener("click", cerrarHoja); });
 }
@@ -4624,6 +4573,7 @@ document.addEventListener("click", e=>{
 });
 let vistaSup = "inicio";   // última pestaña superior activa (inicio/explorar)
 function mostrarTab(tab){
+  try{ aplicarVisibilidadContenido(); }catch(e){}
   ["inicio","explorar","sonido","diario"].forEach(t=>{
     const p = $("#panel" + t.charAt(0).toUpperCase() + t.slice(1));
     if(p) p.classList.toggle("oculto", t !== tab);
@@ -4844,6 +4794,7 @@ function onbSig(){
 }
 function onbAtras(){ if(onbIdx > 0){ try{ Pad.detener(1); }catch(e){} onbIdx--; onbRender(); } }
 function terminarOnb(){
+  try{ aplicarVisibilidadContenido(); }catch(e){}
   try{ Pad.detener(1); }catch(e){}
   E.ajustes.onboarded = true; E.perfil.hecho = true; guardar();
   $("#onboarding").classList.add("oculto");
@@ -5034,6 +4985,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   document.querySelectorAll("#sosNivelA .sos-niv").forEach(b=>b.addEventListener("click", ()=>{
     document.querySelectorAll("#sosNivelA .sos-niv").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
     pausaAntes = +b.dataset.int;
+    const ay = $("#sosAyuda1"); if(ay) ay.classList.toggle("destacado", pausaAntes >= 9);
   }));
   const rp = $("#sosRespirar"); if(rp) rp.addEventListener("click", sosBreath);
   const si = $("#sosSaltarInt"); if(si) si.addEventListener("click", ()=>{ pausaAntes = null; sosBreath(); });
@@ -5066,6 +5018,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
     pausaDespues = +b.dataset.int;
     const cmp = $("#sosComparo");
     if(pausaAntes !== null && cmp){ cmp.textContent = "Antes " + (INT_LBL[pausaAntes]||pausaAntes) + "  →  ahora " + (INT_LBL[pausaDespues]||pausaDespues); cmp.classList.remove("oculto"); }
+    const ay = $("#sosAyuda3"); if(ay) ay.classList.toggle("destacado", pausaDespues >= 7);
   }));
   const gp = $("#sosOtraPractica"); if(gp) gp.addEventListener("click", ()=>{ cerrarSOS(); mostrarTab("explorar"); });
   const cc = $("#sosCerrar"); if(cc) cc.addEventListener("click", cerrarSOS);
