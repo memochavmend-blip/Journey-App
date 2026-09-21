@@ -583,6 +583,8 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .app-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 26px 10px 52px}
+.toast-aviso{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 78px);transform:translate(-50%,20px);z-index:150;max-width:min(88vw,420px);padding:13px 18px;border-radius:14px;background:var(--tinta);color:var(--noche);font-family:var(--sans);font-size:13.5px;line-height:1.5;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+.toast-aviso.visible{opacity:1;transform:translate(-50%,0)}
 .rotar{display:none}
 @media (orientation:landscape) and (max-height:540px){
   .rotar{display:flex;position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:200;background:var(--noche);flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;padding:30px;color:var(--tinta-baja);font-family:var(--serif);font-size:1.25rem;line-height:1.5}
@@ -1178,7 +1180,7 @@ const Guardado = (() => {
       catch(e){ memoria[clave]=valor; return false; }
     }
     try{ localStorage.setItem(clave, JSON.stringify(valor)); return true; }
-    catch(e){ memoria[clave]=valor; return true; }
+    catch(e){ memoria[clave]=valor; return false; }
   }
   return { leer, escribir };
 })();
@@ -1259,9 +1261,20 @@ function aplicarTema(){
 try{ mqOscuro.addEventListener("change", ()=>{ if(((E.ajustes&&E.ajustes.tema)||"sistema")==="sistema") aplicarTema(); }); }
 catch(e){ try{ mqOscuro.addListener(()=>{ if(((E.ajustes&&E.ajustes.tema)||"sistema")==="sistema") aplicarTema(); }); }catch(_){} }
 let guardarPendiente = null;
+let _avisadoGuardado = false;
+function avisar(msg, ms){
+  let t = document.getElementById("toastAviso");
+  if(!t){ t = document.createElement("div"); t.id = "toastAviso"; t.className = "toast-aviso"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("visible");
+  clearTimeout(avisar._t); avisar._t = setTimeout(()=>t.classList.remove("visible"), ms || 5200);
+}
 function guardar(){
   clearTimeout(guardarPendiente);
-  guardarPendiente = setTimeout(()=>{ Guardado.escribir(CLAVE, E); }, 220);
+  guardarPendiente = setTimeout(()=>{
+    Promise.resolve(Guardado.escribir(CLAVE, E)).then(ok=>{
+      if(ok === false && !_avisadoGuardado){ _avisadoGuardado = true; avisar("Este navegador no está guardando tus datos. Exporta un respaldo (Ajustes) para no perder tus notas."); }
+    }).catch(()=>{});
+  }, 220);
 }
 
 /* ════════════════ TIEMPO ════════════════ */
@@ -3387,10 +3400,23 @@ function importarDatos(file){
     try{
       const datos = JSON.parse(r.result);
       if(!datos || typeof datos !== "object") throw new Error("formato");
+      if(!confirm("Restaurar este respaldo reemplazará tus preferencias y progreso actuales con los del archivo. Tus reflexiones y diario se combinarán (no se borran). ¿Continuar?")) return;
+      // fusiona el contenido que solo crece (reflexiones, entradas de diario), uniéndolo por fecha/id
+      const fusionArr = (actual, entrante, clave)=>{
+        const a = Array.isArray(actual) ? actual.slice() : [];
+        const vistos = new Set(a.map(x=>JSON.stringify(x[clave] || x)));
+        (Array.isArray(entrante) ? entrante : []).forEach(x=>{ const k = JSON.stringify(x[clave] || x); if(!vistos.has(k)){ a.push(x); vistos.add(k); } });
+        return a;
+      };
+      const regActual = E.registro || {}, regNuevo = datos.registro || {};
       E = Object.assign({}, E, datos);
       E.ajustes = Object.assign({}, E.ajustes, datos.ajustes || {});
+      E.registro = Object.assign({}, regNuevo, regActual, {
+        reflexiones: fusionArr(regActual.reflexiones, regNuevo.reflexiones, "fecha"),
+        diario: fusionArr(regActual.diario, regNuevo.diario, "fecha")
+      });
       guardar(); aplicarTema(); cerrarHoja(); render();
-      alert("Respaldo restaurado.");
+      avisar("Respaldo restaurado. Tus reflexiones se conservaron.");
     }catch(e){ alert("Ese archivo no es un respaldo válido de Práctica."); }
   };
   r.onerror = ()=>alert("No se pudo leer el archivo.");
@@ -4486,6 +4512,8 @@ function hojaAjustes(){
       '<div class="campo campo-rec"><label class="campo-et">Mañana</label><input class="campo-in campo-time" type="time" id="rMan" value="'+((a.recordatorios&&a.recordatorios.manana)||"07:00")+'"></div>' +
       '<div class="campo campo-rec"><label class="campo-et">Núcleo</label><input class="campo-in campo-time" type="time" id="rNuc" value="'+((a.recordatorios&&a.recordatorios.nucleo)||"13:00")+'"></div>' +
       '<div class="campo campo-rec"><label class="campo-et">Noche</label><input class="campo-in campo-time" type="time" id="rNoc" value="'+((a.recordatorios&&a.recordatorios.noche)||"21:00")+'"></div>' +
+      '<button class="rito-editar" id="rIcs" style="margin-top:6px"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>Agregar a mi calendario</button>' +
+      '<p class="campo-ayuda">Crea 3 recordatorios diarios en el calendario de tu teléfono. Es la forma más confiable de que te lleguen los avisos.</p>' +
       '<p class="campo-ayuda">Con la app instalada, te avisa cuando la abres cerca de la hora. Para avisos con la app cerrada hace falta un paso extra (notificaciones push); tu configuración queda guardada y lista para cuando se active.</p>' +
     '</div>' +
     '<div class="campo"><label class="campo-et" for="sDormir">Temporizador de sueño</label><select class="campo-sel" id="sDormir">' +
@@ -4534,6 +4562,7 @@ function hojaAjustes(){
       [["rMan","manana"],["rNuc","nucleo"],["rNoc","noche"]].forEach(p=>{ const el = $("#"+p[0]); if(el) el.addEventListener("change", ()=>{ E.ajustes.recordatorios = E.ajustes.recordatorios||{on:true,manana:"07:00",nucleo:"13:00",noche:"21:00"}; E.ajustes.recordatorios[p[1]] = el.value; guardar(); }); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
       $("#sExportar").addEventListener("click", exportarDatos);
+      const _ics = $("#rIcs"); if(_ics) _ics.addEventListener("click", ()=>{ const rm=$("#rMan"),rn=$("#rNuc"),ro=$("#rNoc"); if(rm&&rn&&ro){ E.ajustes.recordatorios=E.ajustes.recordatorios||{}; E.ajustes.recordatorios.manana=rm.value; E.ajustes.recordatorios.nucleo=rn.value; E.ajustes.recordatorios.noche=ro.value; guardar(); } exportarRecordatorios(); });
       const _aja = $("#ajAyuda"); if(_aja) _aja.addEventListener("click", hojaAyuda);
       const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
       document.querySelectorAll("[data-audio]").forEach(inp=>{
@@ -4681,7 +4710,9 @@ if("serviceWorker" in navigator && location.protocol.startsWith("http")){
   let _recargando = false;
   navigator.serviceWorker.addEventListener("controllerchange", ()=>{
     if(_recargando || !_teniaCtrl) return;   // no recargar en la primera instalación ni en bucle
-    _recargando = true; location.reload();
+    const enPractica = ()=> !$("#practica").classList.contains("oculto") || !$("#sos").classList.contains("oculto") || document.body.classList.contains("encendida");
+    const recargarSeguro = ()=>{ if(enPractica()){ setTimeout(recargarSeguro, 4000); return; } _recargando = true; location.reload(); };   // nunca cortar un ritual o «Ahora mismo»
+    recargarSeguro();
   });
 }
 
@@ -4927,6 +4958,30 @@ function chequearAlarma(){
     alarmaFired[key] = 1;
     sonarAlarma();
   }
+}
+function icsFecha(hhmm){
+  const [h,m] = (hhmm || "07:00").split(":");
+  const d = new Date(); d.setHours(+h, +m, 0, 0);
+  const p = n=>String(n).padStart(2,"0");
+  return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+"T"+p(+h)+p(+m)+"00";
+}
+function exportarRecordatorios(){
+  const r = E.ajustes.recordatorios || {};
+  const url = location.origin + location.pathname;
+  const ev = (id, hora, titulo, desc)=>["BEGIN:VEVENT","UID:practica-"+id+"-"+Date.now()+"@practica","DTSTAMP:"+icsFecha("00:00"),"DTSTART:"+icsFecha(hora),"RRULE:FREQ=DAILY","SUMMARY:Práctica · "+titulo,"DESCRIPTION:"+desc+"\\n"+url,"END:VEVENT"].join("\r\n");
+  const cal = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Practica//ES","CALSCALE:GREGORIAN",
+    ev("manana", r.manana||"07:00", "Mañana", "Abrir el día."),
+    ev("nucleo", r.nucleo||"13:00", "Núcleo", "Volver al centro."),
+    ev("noche", r.noche||"21:00", "Noche", "Soltar y descansar."),
+    "END:VCALENDAR"].join("\r\n");
+  try{
+    const blob = new Blob([cal], { type:"text/calendar" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = "practica-recordatorios.ics";
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+    avisar("Ábrelo para agregar tus 3 recordatorios diarios al calendario.");
+  }catch(e){ avisar("No se pudo crear el archivo de calendario."); }
 }
 function chequearRecordatorios(){
   const r = E.ajustes.recordatorios;
