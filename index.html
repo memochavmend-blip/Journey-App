@@ -583,6 +583,36 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .app-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 26px 10px 52px}
+.hoy-acc{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hoy-armar{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border:1px solid var(--llama);border-radius:100px;background:color-mix(in srgb,var(--llama) 10%,transparent);color:var(--llama-texto);font-family:var(--sans);font-size:13px;font-weight:600;transition:background .2s,transform .12s}
+.hoy-armar:hover{background:color-mix(in srgb,var(--llama) 18%,transparent)}
+.hoy-armar:active{transform:scale(.97)}
+.hoy-armar-ic{font-size:12px;color:var(--llama)}
+.constructor{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:95;background:var(--noche);display:flex;flex-direction:column;padding:calc(env(safe-area-inset-top) + 20px) 26px calc(env(safe-area-inset-bottom) + 24px);animation:contIn .5s ease}
+.cn-cerrar{position:absolute;top:calc(env(safe-area-inset-top) + 16px);right:20px;width:36px;height:36px;font-size:17px;color:var(--tinta-tenue);background:none;border:none}
+.cn-top{flex:0 0 auto;text-align:center;margin:18px 0 8px}
+.cn-rubrica{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--oro);margin:0 0 20px}
+.cn-frase{font-family:var(--serif);font-size:clamp(1.7rem,7vw,2.5rem);line-height:1.3;color:var(--tinta);margin:0;max-width:16ch;margin:0 auto;text-wrap:balance}
+.cn-hueco{color:var(--tinta-tenue);border-bottom:2px dashed var(--linea-fuerte);padding-bottom:2px;transition:color .3s}
+.cn-hueco.lleno{color:var(--llama-texto);border-bottom-color:transparent}
+.cn-banco{flex:1;min-height:0;display:flex;flex-wrap:wrap;gap:11px;align-content:center;justify-content:center;overflow-y:auto;padding:20px 0}
+.cn-chip{padding:13px 20px;border-radius:100px;border:none;font-family:var(--serif);font-size:1.12rem;color:#fff;transition:transform .14s,box-shadow .2s;box-shadow:0 3px 12px rgba(0,0,0,.10)}
+.cn-chip:active{transform:scale(.95)}
+.cn-chip.elegida{transform:scale(1.06);box-shadow:0 5px 20px rgba(0,0,0,.18);outline:2.5px solid var(--noche);outline-offset:-4px}
+.cn-c0{background:#C68A3E}
+.cn-c1{background:#B26B4C}
+.cn-c2{background:#A98B44}
+.cn-c3{background:#7E9070}
+.cn-c4{background:#BC7A5E}
+.cn-pie{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:16px}
+.cn-mezcla{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;background:none;border:none;font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--tinta-tenue);transition:color .2s}
+.cn-mezcla:hover{color:var(--tinta-baja)}
+.cn-mezcla svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.cn-acc{display:flex;gap:10px;width:100%;max-width:400px;flex-wrap:wrap;justify-content:center;animation:sube .4s ease}
+.cn-usar{flex:1 1 100%;padding:15px;border-radius:14px;background:var(--llama);color:var(--noche);font-family:var(--sans);font-weight:700;font-size:15px;border:none;transition:transform .12s}
+.cn-usar:active{transform:scale(.98)}
+.cn-guardar,.cn-compartir{flex:1;min-width:120px;padding:13px;border-radius:14px;background:none;border:1px solid var(--linea-fuerte);color:var(--tinta-baja);font-family:var(--sans);font-size:14px;transition:border-color .2s}
+.cn-guardar:active,.cn-compartir:active{border-color:var(--llama)}
 .toast-aviso{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 78px);transform:translate(-50%,20px);z-index:150;max-width:min(88vw,420px);padding:13px 18px;border-radius:14px;background:var(--tinta);color:var(--noche);font-family:var(--sans);font-size:13.5px;line-height:1.5;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.25);opacity:0;pointer-events:none;transition:opacity .3s ease,transform .3s ease}
 .toast-aviso.visible{opacity:1;transform:translate(-50%,0)}
 .rotar{display:none}
@@ -902,9 +932,12 @@ body.encendida .tabbar,body.encendida .gear{display:none}
         </svg>
       </button>
       <div class="hoy-cont">
-        <p class="hoy-label">Mensaje de hoy</p>
+        <p class="hoy-label" id="hoyLabel">Mensaje de hoy</p>
         <p class="hoy-txt" id="hoyTxt"></p>
-        <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
+        <div class="hoy-acc">
+          <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
+          <button class="hoy-armar" id="hoyArmar"><span class="hoy-armar-ic">✦</span>Arma la tuya</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1064,6 +1097,23 @@ body.encendida .tabbar,body.encendida .gear{display:none}
     <rect class="nivel-lleno" id="contemplaLleno" x="0" y="0" width="0" height="0"></rect>
   </svg></div>
   <p class="contempla-frase" id="contemplaFrase"></p>
+</div>
+
+<div class="constructor oculto" id="constructor">
+  <button class="cn-cerrar" id="cnCerrar" aria-label="Cerrar">✕</button>
+  <div class="cn-top">
+    <p class="cn-rubrica">Tu frase de hoy</p>
+    <p class="cn-frase" id="cnFrase"><span class="cn-tallo" id="cnTallo"></span> <span class="cn-hueco" id="cnHueco">…</span></p>
+  </div>
+  <div class="cn-banco" id="cnBanco"></div>
+  <div class="cn-pie">
+    <button class="cn-mezcla" id="cnMezcla"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>Otras palabras</button>
+    <div class="cn-acc oculto" id="cnAcc">
+      <button class="cn-usar" id="cnUsar">Usar hoy</button>
+      <button class="cn-guardar" id="cnGuardar">Guardar</button>
+      <button class="cn-compartir" id="cnCompartir">Compartir</button>
+    </div>
+  </div>
 </div>
 
 <div class="concentra oculto" id="concentra">
@@ -3076,7 +3126,7 @@ function render(){
   const nom = (E.ajustes.nombre || "").trim();
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
-  const _hoy = $("#hoyTxt"); if(_hoy) _hoy.textContent = mensajeDelMomento();
+  const _hoy = $("#hoyTxt"); if(_hoy){ const th = textoHoy(); _hoy.textContent = th.texto; const _lb = $("#hoyLabel"); if(_lb) _lb.textContent = th.propia ? "Tu frase de hoy" : "Mensaje de hoy"; }
   const _cont = $("#continua");
   if(_cont){
     const _r = (E.registro.reflexiones || []), _u = _r.length ? _r[_r.length-1] : null;
@@ -3679,6 +3729,18 @@ const MENSAJES_DIA = {
 };
 
 // Mensaje de hoy según el momento del día (hora del sistema) y el tono. Banco grande para no repetir.
+// Constructor de la frase del día: tallos (verbos que toman objeto directo) + palabras (frases nominales)
+// que encajan gramaticalmente y respetan la tradición. La frase se siente co-creada, no impuesta.
+const FRASE_TALLOS = {
+  universal: ["Hoy elijo", "Hoy recibo", "Agradezco", "Celebro", "Hoy abrazo", "Hoy honro"],
+  cristiano: ["Gracias, Señor, por", "Hoy recibo", "Celebro", "Hoy honro", "Descanso en", "Hoy abrazo"]
+};
+const FRASE_PALABRAS = {
+  universal: ["la calma","mi fuerza","este día","lo que viene","mi paz","lo bueno","mi camino","el presente","mi cuerpo","cada paso","lo que soy","mi voz","mi luz","lo simple"],
+  cristiano: ["tu paz","tu fuerza","este día","tu presencia","tu amor","tu guía","tu cuidado","tu luz","tu tiempo","mi fe","tu voz","tu gracia","tu palabra","tu descanso"]
+};
+function fraseSet(){ return ((E.perfil && E.perfil.tono) === "cristiano") ? "cristiano" : "universal"; }
+function mezclar(a){ return a.slice().sort(()=>Math.random()-0.5); }
 function mensajeDelMomento(){
   const h = new Date().getHours();
   const banco = MENSAJES_DIA[h < 12 ? "manana" : h < 19 ? "dia" : "noche"];
@@ -4913,6 +4975,67 @@ function compartirTexto(txt){
   if(navigator.share){ navigator.share({ title: APP_NOMBRE, text: mensaje, url: APP_URL }).catch(()=>{}); }
   else { try{ navigator.clipboard.writeText(mensaje + "\n" + APP_URL); const b = $("#hoyShare"); if(b){ const o = b.innerHTML; b.textContent = "Copiado"; setTimeout(()=>{ b.innerHTML = o; }, 1600); } }catch(e){} }
 }
+function textoHoy(){
+  const f = E.registro && E.registro.fraseHoy;
+  if(f && f.fecha === hoyISO() && f.texto) return { texto: f.texto, propia: true };
+  return { texto: mensajeDelMomento(), propia: false };
+}
+let cnTallo = "", cnPalabra = "";
+function abrirConstructor(){
+  const set = fraseSet();
+  cnTallo = mezclar(FRASE_TALLOS[set])[0]; cnPalabra = "";
+  const t = $("#cnTallo"); if(t) t.textContent = cnTallo;
+  const h = $("#cnHueco"); if(h){ h.textContent = "…"; h.classList.remove("lleno"); }
+  const acc = $("#cnAcc"); if(acc) acc.classList.add("oculto");
+  cnRenderBanco(mezclar(FRASE_PALABRAS[set]).slice(0, 8));
+  $("#constructor").classList.remove("oculto");
+}
+function cnRenderBanco(palabras){
+  const cont = $("#cnBanco"); if(!cont) return;
+  cont.innerHTML = palabras.map((p,i)=>'<button type="button" class="cn-chip cn-c'+(i%5)+'" data-p="'+esc(p)+'">'+esc(p)+'</button>').join("");
+  cont.querySelectorAll(".cn-chip").forEach(b=>b.addEventListener("click", ()=>{
+    cnPalabra = b.dataset.p;
+    cont.querySelectorAll(".cn-chip").forEach(x=>x.classList.remove("elegida")); b.classList.add("elegida");
+    const h = $("#cnHueco"); if(h){ h.textContent = cnPalabra; h.classList.add("lleno"); }
+    const acc = $("#cnAcc"); if(acc) acc.classList.remove("oculto");
+    try{ sonarLlama(0); }catch(e){}
+  }));
+}
+function cnTexto(){ return (cnTallo + " " + cnPalabra).replace(/\s+/g," ").trim() + "."; }
+function cnMezclaPalabras(){
+  cnPalabra = "";
+  const h = $("#cnHueco"); if(h){ h.textContent = "…"; h.classList.remove("lleno"); }
+  const acc = $("#cnAcc"); if(acc) acc.classList.add("oculto");
+  cnRenderBanco(mezclar(FRASE_PALABRAS[fraseSet()]).slice(0, 8));
+}
+function cnCompartir(){
+  if(!cnPalabra) return;
+  const txt = cnTexto();
+  dibujarTarjeta(txt, (blob)=>{
+    const archivo = blob ? new File([blob], "practica.png", { type:"image/png" }) : null;
+    if(archivo && navigator.canShare && navigator.canShare({ files:[archivo] })){
+      navigator.share({ files:[archivo], title: APP_NOMBRE }).catch(()=>compartirTexto(txt));
+    } else { compartirTexto(txt); }
+  });
+}
+function cnUsarHoy(){
+  if(!cnPalabra) return;
+  E.registro = E.registro || {}; E.registro.fraseHoy = { fecha: hoyISO(), texto: cnTexto() };
+  guardar();
+  const _hoy = $("#hoyTxt"); if(_hoy) _hoy.textContent = cnTexto();
+  const _lb = $("#hoyLabel"); if(_lb) _lb.textContent = "Tu frase de hoy";
+  $("#constructor").classList.add("oculto");
+  try{ avisar("Tu frase te acompaña hoy."); }catch(e){}
+}
+function cnGuardarMia(){
+  if(!cnPalabra) return;
+  const txt = cnTexto();
+  E.contenido.afirmaciones.usuario = E.contenido.afirmaciones.usuario || [];
+  if(!E.contenido.afirmaciones.usuario.some(u=>(u.texto||u.x||"")===txt)){
+    E.contenido.afirmaciones.usuario.push({ texto: txt, id: Date.now() }); guardar();
+    try{ avisar("Guardada en tus afirmaciones."); }catch(e){}
+  } else { try{ avisar("Ya la tienes guardada."); }catch(e){} }
+}
 function compartirHoy(){
   const txt = ($("#hoyTxt").textContent || "").trim(); if(!txt) return;
   dibujarTarjeta(txt, (blob)=>{
@@ -5078,6 +5201,12 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   const gp = $("#sosOtraPractica"); if(gp) gp.addEventListener("click", ()=>{ cerrarSOS(); mostrarTab("explorar"); });
   const cc = $("#sosCerrar"); if(cc) cc.addEventListener("click", cerrarSOS);
   const hs = $("#hoyShare"); if(hs) hs.addEventListener("click", compartirHoy);
+  const _ha = $("#hoyArmar"); if(_ha) _ha.addEventListener("click", abrirConstructor);
+  const _cc = $("#cnCerrar"); if(_cc) _cc.addEventListener("click", ()=>$("#constructor").classList.add("oculto"));
+  const _cm = $("#cnMezcla"); if(_cm) _cm.addEventListener("click", cnMezclaPalabras);
+  const _cu = $("#cnUsar"); if(_cu) _cu.addEventListener("click", cnUsarHoy);
+  const _cg = $("#cnGuardar"); if(_cg) _cg.addEventListener("click", cnGuardarMia);
+  const _cp = $("#cnCompartir"); if(_cp) _cp.addEventListener("click", cnCompartir);
   setInterval(chequearRecordatorios, 30000);
   const rd = $("#repDecir"); if(rd) rd.addEventListener("click", ()=>{
     repN++; $("#repCount").textContent = repN + (repN === 1 ? " vez" : " veces");
