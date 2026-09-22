@@ -1212,6 +1212,61 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 "use strict";
 const APP_VER = "v6";  // subir junto con VERSION en sw.js en cada despliegue
 
+/* ════════════════ IDIOMA (i18n) ════════════════ */
+// Fase 0: la infraestructura. El texto de interfaz vive en TXT; el contenido se externaliza en la fase 0b.
+// en/pt caen a es hasta que se traduzcan. NUNCA se traduce copiando el español: cada idioma usa su convención nativa.
+const IDIOMAS = ["es", "en", "pt"];
+const IDIOMA_NOM = { es:"Español", en:"English", pt:"Português" };
+function detectarIdioma(){
+  try{ const l = (navigator.language || "es").slice(0,2).toLowerCase(); return IDIOMAS.indexOf(l) >= 0 ? l : "es"; }catch(e){ return "es"; }
+}
+let LANG = "es";
+const TXT = {
+  es: {
+    // Navegación
+    nav_inicio:"Inicio", nav_sonido:"Sonido", nav_diario:"Diario",
+    tab_hoy:"Hoy", tab_explorar:"Explorar",
+    // Inicio
+    mensaje_hoy:"Mensaje de hoy", tu_frase_hoy:"Tu frase de hoy", arma_tuya:"Arma la tuya",
+    compartir:"Compartir", ahora_mismo:"Ahora mismo",
+    // Rituales
+    manana:"Mañana", nucleo:"Núcleo", noche:"Noche",
+    // Explorar
+    afirmaciones:"Afirmaciones", manifestacion:"Manifestación", meditacion:"Meditación",
+    historias:"Historias", ancla:"Ancla", para_leer:"Para leer y reflexionar", tu_practica:"Tu práctica",
+    // Botones comunes
+    cerrar:"Cerrar", listo:"Listo", guardar:"Guardar", otra:"Otra", todas:"Todas",
+    mi_contenido:"Mi contenido", ver_otras_trad:"Ver también otras tradiciones", ver_solo_mi_trad:"Ver solo mi tradición",
+    // Ajustes
+    ajustes:"Ajustes", idioma:"Idioma"
+  },
+  en: {},
+  pt: {}
+};
+function t(k, fb){
+  const cur = TXT[LANG] && TXT[LANG][k];
+  if(cur != null) return cur;
+  const es = TXT.es && TXT.es[k];
+  if(es != null) return es;
+  return fb != null ? fb : k;
+}
+function aplicarTextos(){
+  try{
+    document.querySelectorAll("#tabsSup .tab-sup").forEach(b=>{ if(b.dataset.vista==="inicio") b.textContent = t("tab_hoy"); if(b.dataset.vista==="explorar") b.textContent = t("tab_explorar"); });
+    const ha = document.getElementById("hoyArmar"); if(ha) ha.innerHTML = '<span class="hoy-armar-ic">✦</span>' + t("arma_tuya");
+    document.querySelectorAll("#tabbar .tab").forEach(b=>{ const m = {inicio:"nav_inicio",sonido:"nav_sonido",diario:"nav_diario"}[b.dataset.tab]; if(m) b.setAttribute("aria-label", t(m)); });
+  }catch(e){}
+}
+function aplicarIdioma(){
+  try{ document.documentElement.setAttribute("lang", LANG); }catch(e){}
+  aplicarTextos();
+}
+function setIdioma(lang){
+  if(IDIOMAS.indexOf(lang) < 0) return;
+  E.ajustes.idioma = lang; guardar();
+  location.reload();   // recargar para re-enlazar todo el texto y el contenido en el nuevo idioma
+}
+
 /* ════════════════ ALMACENAMIENTO ════════════════ */
 const Guardado = (() => {
   const memoria = {};
@@ -1256,7 +1311,9 @@ async function cargar(){
   const g = await Guardado.leer(CLAVE);
   if(g && typeof g === "object"){
     E = Object.assign({}, E, g);
-    E.ajustes = Object.assign({}, {nombre:"",onboarded:false,intereses:[],tema:"sistema",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{},respiroPatron:"serena",respiroVoz:false}, g.ajustes||{});
+    E.ajustes = Object.assign({}, {nombre:"",onboarded:false,intereses:[],tema:"sistema",idioma:"",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{},respiroPatron:"serena",respiroVoz:false}, g.ajustes||{});
+    if(!E.ajustes.idioma){ E.ajustes.idioma = detectarIdioma(); }
+    LANG = IDIOMAS.indexOf(E.ajustes.idioma) >= 0 ? E.ajustes.idioma : "es";
     if(!E.ajustes.recordatorios || typeof E.ajustes.recordatorios !== "object") E.ajustes.recordatorios = {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
     if(!E.ajustes.alarma || typeof E.ajustes.alarma !== "object") E.ajustes.alarma = {on:false,hora:"07:00",escena:"eter"};
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
@@ -3126,7 +3183,7 @@ function render(){
   const nom = (E.ajustes.nombre || "").trim();
   const coma = nom ? ", " + nom : "";
   $("#saludo").textContent = (h < 12 ? "Buenos días" : h < 19 ? "Buenas tardes" : "Buenas noches") + coma;
-  const _hoy = $("#hoyTxt"); if(_hoy){ const th = textoHoy(); _hoy.textContent = th.texto; const _lb = $("#hoyLabel"); if(_lb) _lb.textContent = th.propia ? "Tu frase de hoy" : "Mensaje de hoy"; }
+  const _hoy = $("#hoyTxt"); if(_hoy){ const th = textoHoy(); _hoy.textContent = th.texto; const _lb = $("#hoyLabel"); if(_lb) _lb.textContent = th.propia ? t("tu_frase_hoy") : t("mensaje_hoy"); }
   const _cont = $("#continua");
   if(_cont){
     const _r = (E.registro.reflexiones || []), _u = _r.length ? _r[_r.length-1] : null;
@@ -4547,6 +4604,7 @@ function hojaAjustes(){
   const opcVoz = '<option value="">Automática (mejor disponible)</option>' + voces.map(v=>'<option value="'+esc(v.name)+'"'+(a.vozNombre===v.name?' selected':'')+'>'+esc(v.name)+' · '+v.lang+(Voz.mejor(v)?' · mejorada':'')+'</option>').join("");
   hoja("Ajustes", "",
     '<div class="campo"><label class="campo-et" for="sNombre">Tu nombre</label><input class="campo-in" type="text" id="sNombre" placeholder="¿Cómo te llamas?" value="'+esc(a.nombre||"")+'" style="border:1px solid var(--linea-fuerte);border-radius:12px;padding:12px 14px"><p class="campo-ayuda">Con lo que la app te saluda cada día.</p></div>' +
+    '<div class="campo"><label class="campo-et">'+t("idioma")+'</label><div class="segmento" id="segIdioma">' + IDIOMAS.map(l=>'<button type="button" class="seg'+(LANG===l?' activo':'')+'" data-idioma="'+l+'">'+IDIOMA_NOM[l]+'</button>').join("") + '</div><p class="campo-ayuda">Cambiar el idioma recarga la aplicación. (Inglés y portugués llegan pronto.)</p></div>' +
     '<div class="fila" data-abrir="rituales" style="cursor:pointer"><div><div class="fila-txt">Personalizar rituales</div><div class="fila-ayuda">Cambia, quita o agrega las frases de Mañana, Noche y Núcleo.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="fila" data-abrir="editor" style="cursor:pointer"><div><div class="fila-txt">Mi contenido</div><div class="fila-ayuda">Crea tus propias frases, historias, doctrina y salmos.</div></div><span class="nav-card-ch">›</span></div>' +
     '<div class="fila" data-abrir="preferencias" style="cursor:pointer"><div><div class="fila-txt">Preferencias de contenido</div><div class="fila-ayuda">Lo que elegiste al empezar: categorías, tono y temas.</div></div><span class="nav-card-ch">›</span></div>' +
@@ -4624,6 +4682,7 @@ function hojaAjustes(){
       [["rMan","manana"],["rNuc","nucleo"],["rNoc","noche"]].forEach(p=>{ const el = $("#"+p[0]); if(el) el.addEventListener("change", ()=>{ E.ajustes.recordatorios = E.ajustes.recordatorios||{on:true,manana:"07:00",nucleo:"13:00",noche:"21:00"}; E.ajustes.recordatorios[p[1]] = el.value; guardar(); }); });
       $("#sDormir").addEventListener("change", e=>{ E.ajustes.dormir = +e.target.value; guardar(); });
       $("#sExportar").addEventListener("click", exportarDatos);
+      document.querySelectorAll("#segIdioma .seg").forEach(b=>b.addEventListener("click", ()=>{ if(b.dataset.idioma !== LANG) setIdioma(b.dataset.idioma); }));
       const _ics = $("#rIcs"); if(_ics) _ics.addEventListener("click", ()=>{ const rm=$("#rMan"),rn=$("#rNuc"),ro=$("#rNoc"); if(rm&&rn&&ro){ E.ajustes.recordatorios=E.ajustes.recordatorios||{}; E.ajustes.recordatorios.manana=rm.value; E.ajustes.recordatorios.nucleo=rn.value; E.ajustes.recordatorios.noche=ro.value; guardar(); } exportarRecordatorios(); });
       const _aja = $("#ajAyuda"); if(_aja) _aja.addEventListener("click", hojaAyuda);
       const imp = $("#sImportar"); if(imp) imp.addEventListener("change", e=>{ if(e.target.files && e.target.files[0]) importarDatos(e.target.files[0]); });
@@ -5232,6 +5291,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   nodos();
   await cargar();
   aplicarTema();
+  aplicarIdioma();
   render();
   if(!E.perfil.hecho){ mostrarOnboarding(); }
   setInterval(()=>{ if(!$("#inicio").classList.contains("oculto")) render(); }, 60000);
