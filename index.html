@@ -1217,6 +1217,7 @@ const APP_VER = "v6";  // subir junto con VERSION en sw.js en cada despliegue
 // en/pt caen a es hasta que se traduzcan. NUNCA se traduce copiando el español: cada idioma usa su convención nativa.
 const IDIOMAS = ["es", "en", "pt"];
 const IDIOMA_NOM = { es:"Español", en:"English", pt:"Português" };
+const VOZ_LOCALE = { es:"es-MX", en:"en-US", pt:"pt-BR" };
 function detectarIdioma(){
   try{ const l = (navigator.language || "es").slice(0,2).toLowerCase(); return IDIOMAS.indexOf(l) >= 0 ? l : "es"; }catch(e){ return "es"; }
 }
@@ -1314,6 +1315,7 @@ async function cargar(){
     E.ajustes = Object.assign({}, {nombre:"",onboarded:false,intereses:[],tema:"sistema",idioma:"",voz:true,vozNombre:"",ritmo:.82,velocidad:1,pausa:3000,pad:true,padVol:.5,escena:"auto",ambienteApp:true,dormir:0,recordatorios:{on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"},alarma:{on:false,hora:"07:00",escena:"eter"},urlAudio:{},ritual:{},respiroPatron:"serena",respiroVoz:false}, g.ajustes||{});
     if(!E.ajustes.idioma){ E.ajustes.idioma = detectarIdioma(); }
     LANG = IDIOMAS.indexOf(E.ajustes.idioma) >= 0 ? E.ajustes.idioma : "es";
+    try{ aplicarContenido(); }catch(e){}
     if(!E.ajustes.recordatorios || typeof E.ajustes.recordatorios !== "object") E.ajustes.recordatorios = {on:false,manana:"07:00",nucleo:"13:00",noche:"21:00"};
     if(!E.ajustes.alarma || typeof E.ajustes.alarma !== "object") E.ajustes.alarma = {on:false,hora:"07:00",escena:"eter"};
     E.vision  = Object.assign({ser:"",hacer:"",fecha:null,tener:""}, g.vision||{});
@@ -1593,7 +1595,7 @@ function litPaso(slot, n){
 // Declaración: el movimiento donde la persona "pone algo hacia adelante". Se guía por "¿Qué necesitas hoy?"
 // (o el enfoque permanente, o universal serena). NUNCA jala del pool de manifestaciones de la Biblioteca.
 // yo = declaración propia (secular / 1a persona) · crist = petición o confianza (persona → Dios). Cero absolutismo.
-const DECLARACION = {
+let DECLARACION = {
   calma: {
     yo:["Hoy elijo la calma.","Entro al día sin prisa.","Elijo responder con calma a lo que venga.","Hoy me muevo despacio y presente."],
     crist:["Señor, dame hoy tu calma.","Confío en que tu paz va conmigo hoy.","Que tu serenidad guíe mi día.","En tu paz descanso hoy."]
@@ -1646,7 +1648,7 @@ function declaracionRitual(need, n){
 
 // Identidad cristiana: la persona reconociendo quién es ANTE Dios (oración/reflexión, persona→Dios).
 // Reemplaza la afirmación secular solo en tono cristiano, para que la Identidad suene a oración y no a autoayuda.
-const IDENTIDAD_CRIST = [
+let IDENTIDAD_CRIST = [
   "Soy suficiente ante ti, tal como soy.",
   "Me hiciste a tu imagen; en eso descanso.",
   "No tengo que ganarme tu amor; ya es mío.",
@@ -1768,7 +1770,7 @@ function construirRitual(id, sesgo){
 // Re-siembra un ritual completo desde el perfil actual (borra lo guardado y vuelve a armar).
 function regenerarRitual(id){ delete E.ritos[id]; construirRitual(id); guardar(); }
 
-const DOCTRINA = [
+let DOCTRINA = [
   { t:"El bloque sobre «Yo Soy» como mandato creador",
     e:`<p>Cuando Moisés le pregunta a Dios su nombre, la respuesta no es un sustantivo sino un verbo: <span class="escr">«Yo soy el que soy»</span>. El nombre de lo divino es, literalmente, existir. Y en Génesis nada se crea con las manos: se crea hablando. «Y dijo Dios… y fue.» La palabra va antes que la forma.</p>
     <p>Hay frases que no describen la realidad, la instauran. Cuando prometes, cuando nombras, cuando declaras algo sobre ti, no estás reportando un hecho: lo estás empezando a fabricar. «Yo soy» es de esa clase. Lo que pones después de esas dos palabras no es una observación sobre quién eres; es una orden a lo que todavía no existe.</p>
@@ -1856,7 +1858,7 @@ const MENSAJES = [
   "Empieza por lo más difícil. El resto del día se siente ligero.",
   "No tienes que hacerlo todo hoy. Solo lo siguiente que importa."
 ];
-const CALMA = [
+let CALMA = [
   "Respira. Solo esto: el aire que entra, el aire que sale. Nada más por ahora.",
   "Estás a salvo en este momento. Es lo único que tienes que sostener.",
   "No estás solo en esto. Algo más grande te está sosteniendo ahora mismo.",
@@ -1894,7 +1896,7 @@ const CALMA = [
 // ── Afirmaciones (primera persona) — etiquetadas por subtema del perfil ──
 // Contenido budista (mindfulness, impermanencia, desapego, compasión). Voz en primera persona —
 // autenticidad de la práctica: entrenas tu propia atención, no te habla una deidad.
-const AFIRMACIONES_BUD = [
+let AFIRMACIONES_BUD = [
   { t:"budista", x:"Todo cambia; este momento también pasará." },
   { t:"budista", x:"Suelto el apego a lo que no puedo controlar." },
   { t:"budista", x:"Observo mis pensamientos sin creerles todo." },
@@ -1920,7 +1922,7 @@ const AFIRMACIONES_BUD = [
   { t:"budista", x:"Mi respiración siempre está aquí para volver a empezar." },
   { t:"budista", x:"Ofrezco bondad a los demás, empezando por mí." }
 ];
-const CALMA_BUD = [
+let CALMA_BUD = [
   "Respira. Este momento es lo único que existe.",
   "Como una ola, esto surge y también pasará.",
   "Suelta. Nada tienes que sostener ahora mismo.",
@@ -1935,7 +1937,7 @@ const CALMA_BUD = [
   "Haz espacio para lo que sientes; no tienes que empujarlo."
 ];
 
-const AFIRMACIONES = [
+let AFIRMACIONES = [
   { t:"confianza", x:"Confío en lo que sé y en lo que soy capaz de aprender." },
   { t:"confianza", x:"Tengo lo que se necesita para lo que tengo enfrente." },
   { t:"confianza", x:"Hablo y actúo desde mi valor, no desde el miedo." },
@@ -2042,7 +2044,7 @@ const AFIRMACIONES = [
   { t:"cuerpo", x:"Hago las paces con mi cuerpo hoy." }
 ];
 // ── Manifestación (declaraciones en presente) — etiquetadas por tema ──
-const MANIFESTACIONES = [
+let MANIFESTACIONES = [
   { t:"abundancia", x:"El dinero llega a mí con facilidad y desde muchas fuentes.", tuC:"Confío en que proveerás para mí, con abundancia y por caminos que no espero.", tuU:"Recibo con facilidad, y la abundancia me llega por muchos caminos." },
   { t:"abundancia", x:"Vivo en abundancia y comparto desde lo que me sobra.", tuC:"Gracias por la abundancia con que me llenas; desde ella comparto.", tuU:"Vivo en abundancia, y desde lo que me sobra, comparto." },
   { t:"abundancia", x:"Soy un imán para las oportunidades que me hacen crecer.", tuC:"Abre ante mí las puertas que me hacen crecer; las cruzaré.", tuU:"Las oportunidades que me hacen crecer se acercan a mí." },
@@ -2102,7 +2104,7 @@ const MANIFESTACIONES = [
 ];
 // Audio alojado en el repo (rutas relativas). Un archivo por ritual; se puede dividir por sección después.
 const AUDIO_RITUAL = { manana:"audio/manana-01.mp3", noche:"audio/noche-01.mp3", nucleo:"audio/nucleo-01.mp3" };
-const SALMOS = [
+let SALMOS = [
   'El Señor es mi pastor; nada me faltará.<br>En lugares de verdes pastos me hace descansar; junto a aguas de reposo me conduce.<br>Aunque ande en valle de sombra de muerte, no temeré mal alguno, porque tú estás conmigo.<br>Ciertamente el bien y la misericordia me seguirán todos los días de mi vida.<span class="ancla-ref">Salmo 23</span>',
   'El que habita al abrigo del Altísimo morará bajo la sombra del Todopoderoso.<br>Diré yo al Señor: esperanza mía y castillo mío; mi Dios, en quien confiaré.<br>No temerás el terror de la noche, ni la saeta que vuele de día.<br>Porque a sus ángeles mandará que te guarden en todos tus caminos.<span class="ancla-ref">Salmo 91</span>',
   'Alzaré mis ojos a los montes: ¿de dónde vendrá mi socorro?<br>Mi socorro viene del Señor, que hizo los cielos y la tierra.<br>No dará tu pie al resbaladero, ni se dormirá el que te guarda.<br>El Señor te guardará de todo mal; él guardará tu alma.<span class="ancla-ref">Salmo 121</span>',
@@ -2133,7 +2135,7 @@ const BIBLIA = [
   { t:"La creación", x:"Al principio no había nada, y sobre el vacío se movía el Espíritu de Dios. «Que haya luz», dijo, y hubo luz. Separó el día de la noche, el mar de la tierra; llenó el cielo de estrellas y la tierra de árboles, aves y animales. Y al final formó al ser humano a su imagen, y le entregó todo. Miró lo hecho y dijo que era bueno. No fuiste un accidente: fuiste la última palabra de algo llamado bueno." }
 ];
 const HIST_TEMAS = [["amor","Amor"],["abundancia","Abundancia"],["biblia","Bíblicas"],["budismo","Budismo"],["estoicismo","Estoica"]];
-const HISTORIAS = [
+let HISTORIAS = [
   { tema:"budismo", titulo:"El segundo dardo", texto:`El Buda preguntó: si te hieren con una flecha, ¿duele? Sí. ¿Y si te hieren con una segunda flecha en el mismo lugar? Duele más.
 La primera flecha es el dolor que la vida trae, y es inevitable: la pérdida, la enfermedad, el golpe que no viste venir. La segunda te la clavas tú: la resistencia, el «por qué a mí», la historia que le agregas al dolor, la pelea con lo que ya pasó.
 El dolor no siempre se elige. El sufrimiento que le sumas encima, casi siempre sí.
@@ -2223,7 +2225,7 @@ Lo que nos pesa casi nunca es lo que pasó, sino lo que seguimos cargando despu�
   { tema:"biblia", titulo:"La oveja perdida", texto:"Un pastor tenía cien ovejas, y una se perdió. Dejó las noventa y nueve a salvo y fue a buscar la que faltaba, por barrancos y espinas, hasta encontrarla. Volvió con ella sobre los hombros, feliz, y reunió a sus amigos para celebrar. Así, dijo Jesús, hay fiesta en el cielo por uno que regresa. Nadie es un número. A ti te irían a buscar." },
   { tema:"biblia", titulo:"La creación", texto:"Al principio no había nada, y sobre el vacío se movía el Espíritu de Dios. «Que haya luz», dijo, y hubo luz. Separó el día de la noche, el mar de la tierra; llenó el cielo de estrellas y la tierra de árboles, aves y animales. Y al final formó al ser humano a su imagen, y le entregó todo. Miró lo hecho y dijo que era bueno. No fuiste un accidente: fuiste la última palabra de algo llamado bueno." }
 ];
-const AUDIO_MED = [
+let AUDIO_MED = [
   { trad:"cristiano", id:"m1", titulo:"Anclaje matutino", dur:"~4 min", src:"audio/med-01.mp3",
     texto:`Antes de que el día te reclame… quédate un momento aquí. Solo aquí.
 Cierra los ojos si puedes… y deja que tus hombros bajen.
@@ -2274,7 +2276,7 @@ Elige la próxima cosa. Una sola. La que de verdad importa.
 Cuando abras los ojos… empieza por esa. Con calma. Con foco.
 Respira una vez más… y vuelve.` }
 ];
-const ANCLAS = [
+let ANCLAS = [
   'Estás aquí. Es suficiente para empezar.',
   'Respira. Nada de lo que importa se decide con prisa.',
   'No tienes que cargar mañana el día de hoy.',
@@ -2466,7 +2468,7 @@ document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ Pad.de
 const Voz = (() => {
   const soporte = ("speechSynthesis" in window);
   let voces = [];
-  function refrescar(){ if(soporte) voces = speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang)); }
+  function refrescar(){ if(soporte) voces = speechSynthesis.getVoices().filter(v=>new RegExp("^"+LANG,"i").test(v.lang)); }
   if(soporte){ refrescar(); speechSynthesis.onvoiceschanged = refrescar; }
   function mejor(v){ return /(enhanced|premium|neural|natural|siri|realistic)/i.test(v.name||"") || /google/i.test(v.name||""); }
   function puntua(v){
@@ -2489,7 +2491,7 @@ const Voz = (() => {
     try{
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(texto);
-      const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = "es-MX"; }
+      const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = VOZ_LOCALE[LANG] || "es-MX"; }
       u.rate = Math.min(1.3, Math.max(.5, E.ajustes.ritmo * (E.ajustes.velocidad||1))); u.pitch = 1; u.volume = 1;
       if(alPalabra){ u.onboundary = (e)=>{ try{ if(!e.name || e.name === "word") alPalabra(e.charIndex||0); }catch(err){} }; }
       let listo = false;
@@ -2504,7 +2506,7 @@ const Voz = (() => {
     if(!soporte) return;
     try{
       const u = new SpeechSynthesisUtterance(texto);
-      const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = "es-MX"; }
+      const v = elegir(); if(v){ u.voice = v; u.lang = v.lang; } else { u.lang = VOZ_LOCALE[LANG] || "es-MX"; }
       u.rate = .9; u.pitch = 1; u.volume = 1;
       speechSynthesis.speak(u);
     }catch(e){}
@@ -2618,7 +2620,7 @@ function iniciarMovimientos(){
   mostrar();
 }
 // Niveles de conciencia — la vela crece con la práctica acumulada (rituales + pausas). Solo sube; nunca cuenta días ni rachas.
-const NIVELES = [
+let NIVELES = [
   { min:0,  nom:"Chispa",    desc:"Apenas comienzas. La llama es pequeña, y así está bien." },
   { min:6,  nom:"Llama",     desc:"Tu práctica empieza a arder con constancia." },
   { min:15, nom:"Presencia", desc:"Vuelves con intención. Estás aquí, más seguido." },
@@ -2633,7 +2635,7 @@ function nivelActual(){
   return { nivel:NIVELES[idx], indice:idx, total:NIVELES.length, puntos:p };
 }
 function sumarProgreso(n){ E.progreso = E.progreso || { puntos:0 }; E.progreso.puntos = (E.progreso.puntos||0) + (n||1); guardar(); }
-const VUELTAS = [
+let VUELTAS = [
   { nom:"",                flama:"#E0942A", glow:"#E0942A", fdur:"2.6s", desc:"" },
   { nom:"la llama honda",  flama:"#C8821E", glow:"#D89235", fdur:"3.4s", desc:"Has recorrido el camino una vez. Tu luz es más honda ahora." },
   { nom:"la llama serena", flama:"#EBC876", glow:"#F1D68E", fdur:"4.4s", desc:"Una luz que ya no tiene prisa. Serena, y tuya." }
@@ -3233,8 +3235,8 @@ function leerAlto(texto, btn){
   if(lectorU || speechSynthesis.speaking){ detenerLector(); return; }
   try{
     const u = new SpeechSynthesisUtterance(texto);
-    const vs = speechSynthesis.getVoices(), v = vs.find(x=>/es[-_]MX/i.test(x.lang)) || vs.find(x=>/^es/i.test(x.lang));
-    if(v){ u.voice = v; u.lang = v.lang; } else u.lang = "es-MX";
+    const vs = speechSynthesis.getVoices(), loc = VOZ_LOCALE[LANG] || "es-MX", v = vs.find(x=>x.lang.replace("_","-").toLowerCase()===loc.toLowerCase()) || vs.find(x=>new RegExp("^"+LANG,"i").test(x.lang));
+    if(v){ u.voice = v; u.lang = v.lang; } else u.lang = VOZ_LOCALE[LANG] || "es-MX";
     u.rate = Math.min(1.15, Math.max(.6, (E.ajustes.ritmo||.82) * (E.ajustes.velocidad||1)));
     u.onend = ()=>{ lectorU = null; if(btn) btn.textContent = btn.dataset.lbl || "Escuchar"; };
     u.onerror = u.onend;
@@ -3758,7 +3760,7 @@ function filtraTexto(lista){
 function calmaActivas(){ let l = filtraTexto(CALMA); const perm = tradPermitidas(); if(perm.budista) l = l.concat(CALMA_BUD); if(!esNoche()) l = l.filter(f=>CALMA_NOCHE.indexOf(CALMA.indexOf(f)) < 0); return l; }
 // Mensaje de hoy: 3 bancos por momento del día (mañana / día / noche), alineados a la intención de cada ritual.
 // Se elige por la hora del sistema y se filtra por tono. Banco grande para que no se repita en semanas.
-const MENSAJES_DIA = {
+let MENSAJES_DIA = {
   manana: {
     universal:[
       "Hoy no tiene que ser perfecto para ser bueno.","Un día nuevo, sin estrenar. Empieza donde estás.","No cargas el día entero de golpe; solo el siguiente paso.","Lo que hagas hoy con calma vale más que lo que hagas con prisa.","No tienes que sentirte listo para empezar. Solo empieza.","Hoy elige una cosa que importe, y suéltate del resto.","El día apenas abre. Aún cabe todo lo bueno.","Entra al día como quien entra a algo suyo, sin apuro.","Lo que ayer pesó no tiene que pesar hoy.","Hoy puedes ser amable contigo mientras avanzas.","No se trata de hacerlo todo, sino de estar presente en lo que haces.","Un buen día no es uno sin problemas, es uno que atraviesas con calma.","Hoy tienes permiso de ir a tu ritmo.","Empieza suave. La fuerza llega andando."
@@ -3788,11 +3790,11 @@ const MENSAJES_DIA = {
 // Mensaje de hoy según el momento del día (hora del sistema) y el tono. Banco grande para no repetir.
 // Constructor de la frase del día: tallos (verbos que toman objeto directo) + palabras (frases nominales)
 // que encajan gramaticalmente y respetan la tradición. La frase se siente co-creada, no impuesta.
-const FRASE_TALLOS = {
+let FRASE_TALLOS = {
   universal: ["Hoy elijo", "Hoy recibo", "Agradezco", "Celebro", "Hoy abrazo", "Hoy honro"],
   cristiano: ["Gracias, Señor, por", "Hoy recibo", "Celebro", "Hoy honro", "Descanso en", "Hoy abrazo"]
 };
-const FRASE_PALABRAS = {
+let FRASE_PALABRAS = {
   universal: ["la calma","mi fuerza","este día","lo que viene","mi paz","lo bueno","mi camino","el presente","mi cuerpo","cada paso","lo que soy","mi voz","mi luz","lo simple"],
   cristiano: ["tu paz","tu fuerza","este día","tu presencia","tu amor","tu guía","tu cuidado","tu luz","tu tiempo","mi fe","tu voz","tu gracia","tu palabra","tu descanso"]
 };
@@ -3847,7 +3849,7 @@ function histTemasActivos(verTodo){
   return base;
 }
 // Voz "hacia ti": lo divino te habla en 2ª persona. c = cristiano (tú-divino directo), u = universal.
-const DIALOGO = {
+let DIALOGO = {
   // ── Autoestima / merecer ──
   "Soy suficiente hoy, antes de lograr nada.": { c:"Eres suficiente hoy, antes de lograr nada; te hice a mi imagen.", u:"Eres suficiente hoy, antes de lograr nada." },
   "No tengo que ganarme mi valor; ya lo tengo.": { c:"No tienes que ganarte tu valor: yo ya te lo di.", u:"No tienes que ganarte tu valor; ya lo tienes." },
@@ -4551,12 +4553,44 @@ function hojaRitualesElegir(){
     });
 }
 
-const LINEAS_AYUDA = [
+let LINEAS_AYUDA = [
   { pais:"México", nom:"Línea de la Vida", tel:"8009112000", telMuestra:"800 911 2000", nota:"24 h · gratuita" },
   { pais:"México", nom:"SAPTEL", tel:"5552598121", telMuestra:"55 5259 8121", nota:"apoyo psicológico" },
   { pais:"Estados Unidos", nom:"988 Suicide & Crisis Lifeline", tel:"988", telMuestra:"988", nota:"en español: marca 988 y elige la opción 2 · 24 h" },
   { pais:"Brasil", nom:"CVV — Centro de Valorização da Vida", tel:"188", telMuestra:"188", nota:"24 h · gratuita" }
 ];
+
+/* ════════════════ CONTENIDO POR IDIOMA (i18n · fase 0b) ════════════════ */
+// El español ya está poblado; en/pt se llenan en la fase de traducción (enfoque nativo, no copiar el español).
+const CONTENIDO = {
+  es: { AFIRMACIONES, AFIRMACIONES_BUD, MANIFESTACIONES, MENSAJES_DIA, HISTORIAS, DOCTRINA, SALMOS, ANCLAS, CALMA, CALMA_BUD, DIALOGO, FRASE_TALLOS, FRASE_PALABRAS, AUDIO_MED, NIVELES, VUELTAS, LINEAS_AYUDA, IDENTIDAD_CRIST, DECLARACION },
+  en: {},
+  pt: {}
+};
+// Reenlaza los nombres al idioma activo. Sin traducción disponible, se queda el español (respaldo).
+function aplicarContenido(){
+  const C = CONTENIDO[LANG] || {};
+  if(C.AFIRMACIONES) AFIRMACIONES = C.AFIRMACIONES;
+  if(C.AFIRMACIONES_BUD) AFIRMACIONES_BUD = C.AFIRMACIONES_BUD;
+  if(C.MANIFESTACIONES) MANIFESTACIONES = C.MANIFESTACIONES;
+  if(C.MENSAJES_DIA) MENSAJES_DIA = C.MENSAJES_DIA;
+  if(C.HISTORIAS) HISTORIAS = C.HISTORIAS;
+  if(C.DOCTRINA) DOCTRINA = C.DOCTRINA;
+  if(C.SALMOS) SALMOS = C.SALMOS;
+  if(C.ANCLAS) ANCLAS = C.ANCLAS;
+  if(C.CALMA) CALMA = C.CALMA;
+  if(C.CALMA_BUD) CALMA_BUD = C.CALMA_BUD;
+  if(C.DIALOGO) DIALOGO = C.DIALOGO;
+  if(C.FRASE_TALLOS) FRASE_TALLOS = C.FRASE_TALLOS;
+  if(C.FRASE_PALABRAS) FRASE_PALABRAS = C.FRASE_PALABRAS;
+  if(C.AUDIO_MED) AUDIO_MED = C.AUDIO_MED;
+  if(C.NIVELES) NIVELES = C.NIVELES;
+  if(C.VUELTAS) VUELTAS = C.VUELTAS;
+  if(C.LINEAS_AYUDA) LINEAS_AYUDA = C.LINEAS_AYUDA;
+  if(C.IDENTIDAD_CRIST) IDENTIDAD_CRIST = C.IDENTIDAD_CRIST;
+  if(C.DECLARACION) DECLARACION = C.DECLARACION;
+}
+
 function hojaAyuda(){
   hoja("Ayuda ahora", "Práctica te acompaña, pero no es un servicio de emergencia ni de salud. Si estás en peligro o pensando en hacerte daño, habla con alguien ahora. Estas líneas son gratuitas y atendidas por personas.",
     '<div class="ayuda-lista">' + LINEAS_AYUDA.map(l=>'<a class="ayuda-linea" href="tel:'+l.tel+'"><span class="ayuda-pais">'+esc(l.pais)+'</span><span class="ayuda-nom">'+esc(l.nom)+'</span><span class="ayuda-row"><span class="ayuda-tel">'+esc(l.telMuestra)+'</span><span class="ayuda-nota">'+esc(l.nota)+'</span></span></a>').join("") + '</div>' +
@@ -4817,7 +4851,7 @@ try{
   const i192 = icono(192), i512 = icono(512);
   if(i192){
     const m = { name:"Práctica", short_name:"Práctica", start_url:".", display:"standalone",
-      background_color:"#0B0A09", theme_color:"#0B0A09", orientation:"portrait", lang:"es",
+      background_color:"#0B0A09", theme_color:"#0B0A09", orientation:"portrait", lang:LANG,
       icons:[{src:i192,sizes:"192x192",type:"image/png"},{src:i512,sizes:"512x512",type:"image/png",purpose:"any maskable"}] };
     const l = document.createElement("link"); l.rel = "manifest";
     l.href = URL.createObjectURL(new Blob([JSON.stringify(m)], {type:"application/manifest+json"}));
