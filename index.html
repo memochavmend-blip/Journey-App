@@ -955,7 +955,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
     <button class="ahora" id="ahoraBtn">
       <span class="ahora-ic" aria-hidden="true"></span>
-      <span class="ahora-tx"><span class="ahora-t">Ahora mismo</span><span class="ahora-s">Un momento difícil o un impulso · haz una pausa</span></span>
+      <span class="ahora-tx"><span class="ahora-t" data-i18n="ahora_mismo">Ahora mismo</span><span class="ahora-s" data-i18n="ahora_sub">Un momento difícil o un impulso · haz una pausa</span></span>
     </button>
 
     <div class="ritos" id="ritos"></div>
@@ -1022,50 +1022,50 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <div class="sos oculto" id="sos">
   <div class="sos-paso" id="sosP1">
-    <p class="sos-intro">Vamos a crear un poco de espacio.</p>
-    <p class="sos-preg">¿Qué tan fuerte se siente ahora?</p>
+    <p class="sos-intro" data-i18n="sos_intro">Vamos a crear un poco de espacio.</p>
+    <p class="sos-preg" data-i18n="sos_preg1">¿Qué tan fuerte se siente ahora?</p>
     <div class="sos-nivel" id="sosNivelA">
-      <button type="button" class="sos-niv" data-int="3">Suave</button>
-      <button type="button" class="sos-niv" data-int="5">Medio</button>
-      <button type="button" class="sos-niv" data-int="7">Fuerte</button>
-      <button type="button" class="sos-niv" data-int="9">Muy fuerte</button>
+      <button type="button" class="sos-niv" data-int="3" data-i18n="int_3">Suave</button>
+      <button type="button" class="sos-niv" data-int="5" data-i18n="int_5">Medio</button>
+      <button type="button" class="sos-niv" data-int="7" data-i18n="int_7">Fuerte</button>
+      <button type="button" class="sos-niv" data-int="9" data-i18n="int_9">Muy fuerte</button>
     </div>
-    <button class="m369-listo" id="sosRespirar">Respira conmigo</button>
-    <button class="sos-skip" id="sosSaltarInt">Prefiero no decir</button>
+    <button class="m369-listo" id="sosRespirar" data-i18n="sos_respirar">Respira conmigo</button>
+    <button class="sos-skip" id="sosSaltarInt" data-i18n="sos_nodecir">Prefiero no decir</button>
     <button class="sos-ayuda-link" id="sosAyuda1">¿Necesitas ayuda ahora?</button>
   </div>
   <div class="sos-paso oculto" id="sosP2">
-    <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia">Respira</span><span class="sos-num" id="sosNum"></span></div>
+    <div class="sos-respira" id="sosRespira"><span class="sos-guia" id="sosGuia" data-i18n="sos_guia">Respira</span><span class="sos-num" id="sosNum"></span></div>
     <div id="respChipsSos"></div>
     <p class="sos-linea" id="sosLinea"></p>
     <div class="sos-acc">
-      <button class="sos-btn" id="sosOtra">Otra</button>
-      <button class="sos-btn" id="sosCompartir">Compartir</button>
-      <button class="sos-btn" id="sosListo">Terminar</button>
+      <button class="sos-btn" id="sosOtra" data-i18n="otra">Otra</button>
+      <button class="sos-btn" id="sosCompartir" data-i18n="compartir">Compartir</button>
+      <button class="sos-btn" id="sosListo" data-i18n="sos_terminar">Terminar</button>
     </div>
   </div>
   <div class="sos-paso oculto" id="sosP3">
-    <p class="sos-espacio">Creaste un poco de espacio.</p>
+    <p class="sos-espacio" data-i18n="sos_espacio">Creaste un poco de espacio.</p>
     <div id="sosDespuesInt">
-      <p class="sos-preg">¿Cómo se siente ahora?</p>
+      <p class="sos-preg" data-i18n="sos_preg2">¿Cómo se siente ahora?</p>
       <div class="sos-nivel" id="sosNivelB">
-        <button type="button" class="sos-niv" data-int="3">Suave</button>
-        <button type="button" class="sos-niv" data-int="5">Medio</button>
-        <button type="button" class="sos-niv" data-int="7">Fuerte</button>
-        <button type="button" class="sos-niv" data-int="9">Muy fuerte</button>
+        <button type="button" class="sos-niv" data-int="3" data-i18n="int_3">Suave</button>
+        <button type="button" class="sos-niv" data-int="5" data-i18n="int_5">Medio</button>
+        <button type="button" class="sos-niv" data-int="7" data-i18n="int_7">Fuerte</button>
+        <button type="button" class="sos-niv" data-int="9" data-i18n="int_9">Muy fuerte</button>
       </div>
       <p class="sos-comparo oculto" id="sosComparo"></p>
     </div>
-    <p class="sos-preg sos-preg-sug">Algo que puede ayudarte estos minutos:</p>
+    <p class="sos-preg sos-preg-sug" data-i18n="sos_sug">Algo que puede ayudarte estos minutos:</p>
     <div class="sos-sug">
-      <span class="sos-sug-i">Camina un poco</span>
-      <span class="sos-sug-i">Toma agua</span>
-      <span class="sos-sug-i">Cambia de espacio</span>
-      <span class="sos-sug-i">Espera unos minutos</span>
+      <span class="sos-sug-i" data-i18n="sug_1">Camina un poco</span>
+      <span class="sos-sug-i" data-i18n="sug_2">Toma agua</span>
+      <span class="sos-sug-i" data-i18n="sug_3">Cambia de espacio</span>
+      <span class="sos-sug-i" data-i18n="sug_4">Espera unos minutos</span>
     </div>
     <div class="sos-acc sos-acc-cierre">
-      <button class="sos-btn" id="sosOtraPractica">Otra práctica</button>
-      <button class="sos-btn sos-salir" id="sosCerrar">Cerrar</button>    </div>
+      <button class="sos-btn" id="sosOtraPractica" data-i18n="sos_otra_practica">Otra práctica</button>
+      <button class="sos-btn sos-salir" id="sosCerrar" data-i18n="cerrar">Cerrar</button>    </div>
     <button class="sos-ayuda-link" id="sosAyuda3">¿Necesitas ayuda ahora?</button>
   </div>
 </div>
@@ -1240,12 +1240,14 @@ const TXT = {
     mi_contenido:"Mi contenido", ver_otras_trad:"Ver también otras tradiciones", ver_solo_mi_trad:"Ver solo mi tradición",
     // Ajustes
     ajustes:"Ajustes", idioma:"Idioma",
+voz_guiada:"Voz guiada",
+ahora_sub:"Un momento difícil o un impulso · haz una pausa", sos_intro:"Vamos a crear un poco de espacio.", sos_preg1:"¿Qué tan fuerte se siente ahora?", sos_preg2:"¿Cómo se siente ahora?", int_3:"Suave", int_5:"Medio", int_7:"Fuerte", int_9:"Muy fuerte", intl_3:"suave", intl_5:"medio", intl_7:"fuerte", intl_9:"muy fuerte", sos_respirar:"Respira conmigo", sos_nodecir:"Prefiero no decir", sos_guia:"Respira", sos_terminar:"Terminar", sos_espacio:"Creaste un poco de espacio.", sos_sug:"Algo que puede ayudarte estos minutos:", sug_1:"Camina un poco", sug_2:"Toma agua", sug_3:"Cambia de espacio", sug_4:"Espera unos minutos", sos_otra_practica:"Otra práctica", sos_antes:"Antes", sos_ahora:"ahora",
 rit_tres_cosas:"Y ahora, tres cosas concretas de hoy.", rit_tres_nota:"Específicas de este día, no genéricas. Dilas en voz alta. Toca la flecha cuando termines.", rit_estoy_aqui:"Estoy aquí.", vis_ser:"Yo soy ", vis_hacer:"Yo hago ", vis_tener:"Yo tengo ", vis_vacio:"Este bloque está vacío.", vis_vacio_nota:"Es la única parte de tu sistema que quedó en forma de pregunta. Tres líneas: quién eres, qué construyes, qué se manifiesta. Se re-graban cada trimestre.", nec_default:"¿Qué necesitas hoy?", gracias_dios:"Gracias, Señor", gracias_universo:"Gracias, vida", gracias_yo:"Gracias, mi fuerza interior", gracias_base:"Gracias",
     cn_mezcla:"Otras palabras", cn_usar:"Usar hoy", cn_toast_usar:"Tu frase te acompaña hoy.", cn_toast_guardada:"Guardada en tus afirmaciones.", cn_toast_ya:"Ya la tienes guardada.",
     ayuda_titulo:"Ayuda ahora", ayuda_intro:"Práctica te acompaña, pero no es un servicio de emergencia ni de salud. Si estás en peligro o pensando en hacerte daño, habla con alguien ahora. Estas líneas son gratuitas y atendidas por personas.", ayuda_emergencia:"Si es una emergencia inmediata, llama a los servicios de emergencia de tu país (911 en México y EE. UU.; 192 en Brasil).", ayuda_otro:"¿En otro país? Encuentra una línea de ayuda →", ayuda_link:"¿Necesitas ayuda ahora?"
   },
-  en: { rit_tres_cosas:"And now, three specific things from today.", rit_tres_nota:"Specific to today, not generic. Say them out loud. Tap the arrow when you're done.", rit_estoy_aqui:"I am here.", vis_ser:"I am ", vis_hacer:"I do ", vis_tener:"I have ", vis_vacio:"This section is empty.", vis_vacio_nota:"It's the only part of your system still left as a question. Three lines: who you are, what you're building, what's coming to life. Rewrite them every quarter.", nec_default:"What do you need today?", gracias_dios:"Thank You, Lord,", gracias_universo:"Thank you, life,", gracias_yo:"Thank you, strength within me,", gracias_base:"Thank you", nav_inicio:"Home", nav_sonido:"Sound", nav_diario:"Journal", tab_hoy:"Today", tab_explorar:"Explore", mensaje_hoy:"Today's word", tu_frase_hoy:"Your phrase for today", arma_tuya:"Make your own", compartir:"Share", ahora_mismo:"Right Now", manana:"Morning", nucleo:"Midday", noche:"Night", afirmaciones:"Affirmations", manifestacion:"Manifestation", meditacion:"Meditation", historias:"Stories", ancla:"Anchor", para_leer:"Read & reflect", tu_practica:"Your practice", cerrar:"Close", listo:"Done", guardar:"Save", otra:"Another", todas:"All", mi_contenido:"My content", ver_otras_trad:"Show other traditions too", ver_solo_mi_trad:"Show only my tradition", ajustes:"Settings", idioma:"Language", cn_mezcla:"More words", cn_usar:"Use today", cn_toast_usar:"Your phrase is with you today.", cn_toast_guardada:"Saved to your affirmations.", cn_toast_ya:"You've already saved this one.", ayuda_titulo:"Get help now", ayuda_intro:"Práctica is here with you, but it's not an emergency or health service. If you're in danger or thinking about hurting yourself, talk to someone now. These lines are free and answered by real people.", ayuda_emergencia:"If this is an immediate emergency, call your local emergency number (911 in the US and Mexico; 192 in Brazil).", ayuda_otro:"In another country? Find a helpline →", ayuda_link:"Need help right now?" },
-  pt: { rit_tres_cosas:"E agora, três coisas concretas de hoje.", rit_tres_nota:"Específicas deste dia, não genéricas. Diga em voz alta. Toque na seta quando terminar.", rit_estoy_aqui:"Estou aqui.", vis_ser:"Eu sou ", vis_hacer:"Eu faço ", vis_tener:"Eu tenho ", vis_vacio:"Este bloco está vazio.", vis_vacio_nota:"É a única parte do seu sistema que ainda está em forma de pergunta. Três linhas: quem você é, o que você constrói, o que se manifesta. Reescreva a cada trimestre.", nec_default:"Do que você precisa hoje?", gracias_dios:"Graças te dou, Senhor,", gracias_universo:"Gratidão, vida,", gracias_yo:"Gratidão, força que há em mim,", gracias_base:"Gratidão", nav_inicio:"Início", nav_sonido:"Som", nav_diario:"Diário", tab_hoy:"Hoje", tab_explorar:"Explorar", mensaje_hoy:"Mensagem do dia", tu_frase_hoy:"Sua frase de hoje", arma_tuya:"Crie a sua", compartir:"Compartilhar", ahora_mismo:"Agora", manana:"Manhã", nucleo:"Pausa", noche:"Noite", afirmaciones:"Afirmações", manifestacion:"Manifestação", meditacion:"Meditação", historias:"Histórias", ancla:"Âncora", para_leer:"Para ler e refletir", tu_practica:"Sua prática", cerrar:"Fechar", listo:"Pronto", guardar:"Salvar", otra:"Outra", todas:"Todas", mi_contenido:"Meu conteúdo", ver_otras_trad:"Ver também outras tradições", ver_solo_mi_trad:"Ver só a minha tradição", ajustes:"Ajustes", idioma:"Idioma", cn_mezcla:"Outras palavras", cn_usar:"Usar hoje", cn_toast_usar:"Sua frase acompanha você hoje.", cn_toast_guardada:"Salva nas suas afirmações.", cn_toast_ya:"Você já salvou esta.", ayuda_titulo:"Ajuda agora", ayuda_intro:"O Práctica está com você, mas não é um serviço de emergência nem de saúde. Se você está em perigo ou pensando em se machucar, fale com alguém agora. Estas linhas são gratuitas e atendidas por pessoas.", ayuda_emergencia:"Se for uma emergência imediata, ligue para o serviço de emergência do seu país (192, SAMU, no Brasil; 911 nos EUA e no México).", ayuda_otro:"Em outro país? Encontre uma linha de ajuda →", ayuda_link:"Precisa de ajuda agora?" }
+  en: { voz_guiada:"Voice guidance", ahora_sub:"A hard moment or an urge · take a pause", sos_intro:"Let's make a little space.", sos_preg1:"How strong does it feel right now?", sos_preg2:"How does it feel now?", int_3:"Mild", int_5:"Moderate", int_7:"Strong", int_9:"Very strong", intl_3:"mild", intl_5:"moderate", intl_7:"strong", intl_9:"very strong", sos_respirar:"Breathe with me", sos_nodecir:"I'd rather not say", sos_guia:"Breathe", sos_terminar:"Finish", sos_espacio:"You made a little space.", sos_sug:"Something that might help in the next few minutes:", sug_1:"Take a short walk", sug_2:"Drink some water", sug_3:"Change your surroundings", sug_4:"Wait a few minutes", sos_otra_practica:"Another practice", sos_antes:"Before", sos_ahora:"now", rit_tres_cosas:"And now, three specific things from today.", rit_tres_nota:"Specific to today, not generic. Say them out loud. Tap the arrow when you're done.", rit_estoy_aqui:"I am here.", vis_ser:"I am ", vis_hacer:"I do ", vis_tener:"I have ", vis_vacio:"This section is empty.", vis_vacio_nota:"It's the only part of your system still left as a question. Three lines: who you are, what you're building, what's coming to life. Rewrite them every quarter.", nec_default:"What do you need today?", gracias_dios:"Thank You, Lord,", gracias_universo:"Thank you, life,", gracias_yo:"Thank you, strength within me,", gracias_base:"Thank you", nav_inicio:"Home", nav_sonido:"Sound", nav_diario:"Journal", tab_hoy:"Today", tab_explorar:"Explore", mensaje_hoy:"Today's word", tu_frase_hoy:"Your phrase for today", arma_tuya:"Make your own", compartir:"Share", ahora_mismo:"Right Now", manana:"Morning", nucleo:"Midday", noche:"Night", afirmaciones:"Affirmations", manifestacion:"Manifestation", meditacion:"Meditation", historias:"Stories", ancla:"Anchor", para_leer:"Read & reflect", tu_practica:"Your practice", cerrar:"Close", listo:"Done", guardar:"Save", otra:"Another", todas:"All", mi_contenido:"My content", ver_otras_trad:"Show other traditions too", ver_solo_mi_trad:"Show only my tradition", ajustes:"Settings", idioma:"Language", cn_mezcla:"More words", cn_usar:"Use today", cn_toast_usar:"Your phrase is with you today.", cn_toast_guardada:"Saved to your affirmations.", cn_toast_ya:"You've already saved this one.", ayuda_titulo:"Get help now", ayuda_intro:"Práctica is here with you, but it's not an emergency or health service. If you're in danger or thinking about hurting yourself, talk to someone now. These lines are free and answered by real people.", ayuda_emergencia:"If this is an immediate emergency, call your local emergency number (911 in the US and Mexico; 192 in Brazil).", ayuda_otro:"In another country? Find a helpline →", ayuda_link:"Need help right now?" },
+  pt: { voz_guiada:"Voz guiada", ahora_sub:"Um momento difícil ou um impulso · faça uma pausa", sos_intro:"Vamos criar um pouco de espaço.", sos_preg1:"Quão forte isso está agora?", sos_preg2:"Como está agora?", int_3:"Leve", int_5:"Moderado", int_7:"Forte", int_9:"Muito forte", intl_3:"leve", intl_5:"moderado", intl_7:"forte", intl_9:"muito forte", sos_respirar:"Respire comigo", sos_nodecir:"Prefiro não dizer", sos_guia:"Respire", sos_terminar:"Encerrar", sos_espacio:"Você criou um pouco de espaço.", sos_sug:"Algo que pode ajudar nestes minutos:", sug_1:"Caminhe um pouco", sug_2:"Beba água", sug_3:"Mude de ambiente", sug_4:"Espere alguns minutos", sos_otra_practica:"Outra prática", sos_antes:"Antes", sos_ahora:"agora", rit_tres_cosas:"E agora, três coisas concretas de hoje.", rit_tres_nota:"Específicas deste dia, não genéricas. Diga em voz alta. Toque na seta quando terminar.", rit_estoy_aqui:"Estou aqui.", vis_ser:"Eu sou ", vis_hacer:"Eu faço ", vis_tener:"Eu tenho ", vis_vacio:"Este bloco está vazio.", vis_vacio_nota:"É a única parte do seu sistema que ainda está em forma de pergunta. Três linhas: quem você é, o que você constrói, o que se manifesta. Reescreva a cada trimestre.", nec_default:"Do que você precisa hoje?", gracias_dios:"Graças te dou, Senhor,", gracias_universo:"Gratidão, vida,", gracias_yo:"Gratidão, força que há em mim,", gracias_base:"Gratidão", nav_inicio:"Início", nav_sonido:"Som", nav_diario:"Diário", tab_hoy:"Hoje", tab_explorar:"Explorar", mensaje_hoy:"Mensagem do dia", tu_frase_hoy:"Sua frase de hoje", arma_tuya:"Crie a sua", compartir:"Compartilhar", ahora_mismo:"Agora", manana:"Manhã", nucleo:"Pausa", noche:"Noite", afirmaciones:"Afirmações", manifestacion:"Manifestação", meditacion:"Meditação", historias:"Histórias", ancla:"Âncora", para_leer:"Para ler e refletir", tu_practica:"Sua prática", cerrar:"Fechar", listo:"Pronto", guardar:"Salvar", otra:"Outra", todas:"Todas", mi_contenido:"Meu conteúdo", ver_otras_trad:"Ver também outras tradições", ver_solo_mi_trad:"Ver só a minha tradição", ajustes:"Ajustes", idioma:"Idioma", cn_mezcla:"Outras palavras", cn_usar:"Usar hoje", cn_toast_usar:"Sua frase acompanha você hoje.", cn_toast_guardada:"Salva nas suas afirmações.", cn_toast_ya:"Você já salvou esta.", ayuda_titulo:"Ajuda agora", ayuda_intro:"O Práctica está com você, mas não é um serviço de emergência nem de saúde. Se você está em perigo ou pensando em se machucar, fale com alguém agora. Estas linhas são gratuitas e atendidas por pessoas.", ayuda_emergencia:"Se for uma emergência imediata, ligue para o serviço de emergência do seu país (192, SAMU, no Brasil; 911 nos EUA e no México).", ayuda_otro:"Em outro país? Encontre uma linha de ajuda →", ayuda_link:"Precisa de ajuda agora?" }
 };
 function t(k, fb){
   const cur = TXT[LANG] && TXT[LANG][k];
@@ -1256,6 +1258,9 @@ function t(k, fb){
 }
 function aplicarTextos(){
   try{
+    document.querySelectorAll("[data-i18n]").forEach(e=>{ e.textContent = t(e.dataset.i18n); });
+    document.querySelectorAll(".resp-chip[data-patron]").forEach(b=>{ const r = RESPIROS[b.dataset.patron]; if(r) b.textContent = r.nom; });
+    document.querySelectorAll(".resp-voz").forEach(b=>b.setAttribute("aria-label", t("voz_guiada")));
     document.querySelectorAll("#tabsSup .tab-sup").forEach(b=>{ if(b.dataset.vista==="inicio") b.textContent = t("tab_hoy"); if(b.dataset.vista==="explorar") b.textContent = t("tab_explorar"); });
     ["sosAyuda1","sosAyuda3"].forEach(id=>{ const e = document.getElementById(id); if(e) e.textContent = t("ayuda_link"); });
     const _cr = document.querySelector("#constructor .cn-rubrica"); if(_cr) _cr.textContent = t("tu_frase_hoy");
@@ -2872,7 +2877,7 @@ function esperar(ms){
   P.raf = requestAnimationFrame(paso);
 }
 
-const RESPIROS = {
+let RESPIROS = {
   serena:    { nom:"Serena",    fases:[["Inhala",4000,1],["Sostén",1000,1],["Exhala",6000,0]] },
   caja:      { nom:"Caja",      fases:[["Inhala",4000,1],["Sostén",4000,1],["Exhala",4000,0],["Sostén",4000,0]] },
   "478":     { nom:"4·7·8",     fases:[["Inhala",4000,1],["Sostén",7000,1],["Exhala",8000,0]] },
@@ -2920,7 +2925,7 @@ function breathEngine(circle, label, opts){
 function respChipsHTML(){
   return '<div class="resp-barra"><div class="resp-chips">' +
     RESP_ORDEN.map(k=>'<button type="button" class="resp-chip" data-patron="'+k+'">'+RESPIROS[k].nom+'</button>').join("") +
-    '</div><button type="button" class="resp-voz" aria-pressed="false" aria-label="Voz guiada"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/></svg></button></div>';
+    '</div><button type="button" class="resp-voz" aria-pressed="false" aria-label="'+t("voz_guiada")+'"><svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5zM15 9a3 3 0 010 6M18 6a7 7 0 010 12"/></svg></button></div>';
 }
 function respMarcarChips(){
   const p = E.ajustes.respiroPatron || "serena";
@@ -4571,7 +4576,7 @@ let LINEAS_AYUDA = [
 /* ════════════════ CONTENIDO POR IDIOMA (i18n · fase 0b) ════════════════ */
 // El español ya está poblado; en/pt se llenan en la fase de traducción (enfoque nativo, no copiar el español).
 const CONTENIDO = {
-  es: { AFIRMACIONES, AFIRMACIONES_BUD, MANIFESTACIONES, MENSAJES_DIA, HISTORIAS, DOCTRINA, SALMOS, ANCLAS, CALMA, CALMA_BUD, DIALOGO, FRASE_TALLOS, FRASE_PALABRAS, AUDIO_MED, NIVELES, VUELTAS, LINEAS_AYUDA, IDENTIDAD_CRIST, DECLARACION, RITUALES, LIT, NUCLEO2, NOCHE_LIT, GRACIAS_SUF, RESPALDO, PUENTES, NECESITAS_RIT, NEC_PREG, APERTURA, TEMA_AF, TEMA_MAN },
+  es: { AFIRMACIONES, AFIRMACIONES_BUD, MANIFESTACIONES, MENSAJES_DIA, HISTORIAS, DOCTRINA, SALMOS, ANCLAS, CALMA, CALMA_BUD, DIALOGO, FRASE_TALLOS, FRASE_PALABRAS, AUDIO_MED, NIVELES, VUELTAS, LINEAS_AYUDA, IDENTIDAD_CRIST, DECLARACION, RITUALES, LIT, NUCLEO2, NOCHE_LIT, GRACIAS_SUF, RESPALDO, PUENTES, NECESITAS_RIT, NEC_PREG, APERTURA, TEMA_AF, TEMA_MAN, RESPIROS },
   en: {},
   pt: {}
 };
@@ -4629,6 +4634,14 @@ CONTENIDO.pt.TEMA_AF = {"calma": "Calma", "confianza": "Confiança", "merecer": 
 CONTENIDO.en.TEMA_MAN = {"abundancia": "Abundance", "salud": "Health", "relaciones": "Relationships", "proposito": "Purpose", "mio": "Mine"};
 CONTENIDO.pt.TEMA_MAN = {"abundancia": "Abundância", "salud": "Saúde", "relaciones": "Relacionamentos", "proposito": "Propósito", "mio": "Meus"};
 /* /i18n:lote3 */
+/* i18n:lote4 */
+CONTENIDO.en.CALMA = ["Breathe. Just this: the air coming in, the air going out. Nothing else for now.", "You're safe in this moment. It's the only thing you need to hold on to.", "You're not alone in this. Something greater is holding you right now.", "This will pass too. You are not what you're feeling today.", "You don't have to solve it all tonight. You only have to breathe.", "“Fear thou not; for I am with thee.”<span class=\"ancla-ref\">Isaiah 41</span>", "Drop your shoulders. Unclench your jaw. You're okay for now.", "One breath at a time. That's all that's being asked of you.", "“God is our refuge and strength, a very present help in trouble.”<span class=\"ancla-ref\">Psalm 46</span>", "Your mind is racing to the future. Bring it back here: in this moment, you're still okay.", "You don't have to feel strong. Just stay. Breathe. Stay.", "This fear isn't a fact. It's a wave, and waves come down.", "Put a hand on your chest. Feel that you're still here. That's enough.", "“Come unto me, all ye that labour and are heavy laden, and I will give you rest.”<span class=\"ancla-ref\">Matthew 11</span>", "You are safe. You are held. This will pass.", "Nothing has to be decided right now. Just breathe until the wave comes down.", "It's night and your mind is racing. You don't have to believe everything it says at this hour.", "Nothing gets fixed at 3 a.m. Rest; tomorrow it will look different.", "Loosen your chest. Let go. You only have to get through this night, one breath at a time.", "Leave the problem for tomorrow. Right now, just breathe and rest.", "Put your feet on the floor. Feel the ground holding you up.", "You don't have to feel good. You only have to keep breathing.", "This is hard, and you're getting through it anyway.", "Name five things you can see. Come back to the room, back to now.", "Panic lies about the future. Here, in this second, you're okay.", "Loosen your hands. Lower your shoulders. Unclench your jaw.", "You're not in danger right now. Only your body thinks you are.", "Breathe slower than you want to. Your body follows your breath.", "This has an end. It won't always feel like this.", "Drink a little water. A small, kind gesture toward yourself.", "You don't have to win this battle today. Just rest from it for a moment.", "You're doing the best you can with what you have today. It's enough.", "A hand on your belly. Feel it rise and fall. Just that."];
+CONTENIDO.en.CALMA_BUD = ["Breathe. This moment is all that exists.", "Like a wave, this rises, and it will pass.", "Let go. There's nothing you need to hold right now.", "Notice the thought, and let it drift away like a cloud.", "Come back to the breath. That's your anchor.", "Discomfort is impermanent, too.", "Don't fight what you feel; just watch it pass.", "In the breath, you find the now.", "This moment asks nothing of you but to be in it.", "Thoughts come and go; you remain.", "Like the mountain before the storm, stay still.", "Make room for what you feel; you don't have to push it away."];
+CONTENIDO.en.RESPIROS = {"478": {"nom": "4·7·8", "fases": [["Inhale", 4000, 1], ["Hold", 7000, 1], ["Exhale", 8000, 0]]}, "serena": {"nom": "Gentle", "fases": [["Inhale", 4000, 1], ["Hold", 1000, 1], ["Exhale", 6000, 0]]}, "caja": {"nom": "Box", "fases": [["Inhale", 4000, 1], ["Hold", 4000, 1], ["Exhale", 4000, 0], ["Hold", 4000, 0]]}, "coherente": {"nom": "Coherent", "fases": [["Inhale", 5500, 1], ["Exhale", 5500, 0]]}};
+CONTENIDO.pt.CALMA = ["Respire. Só isto: o ar que entra, o ar que sai. Nada mais por agora.", "Você está em segurança neste momento. É a única coisa que você precisa sustentar.", "Você não está só nisso. Algo maior está sustentando você agora mesmo.", "Isso também vai passar. Você não é o que está sentindo hoje.", "Você não precisa resolver tudo esta noite. Só precisa respirar.", "“Não temas, porque eu sou contigo.”<span class=\"ancla-ref\">Isaías 41</span>", "Solte os ombros. Relaxe a mandíbula. Por agora, você está bem.", "Uma respiração de cada vez. É só isso que se pede de você.", "“Deus é o nosso refúgio e fortaleza, socorro bem presente na angústia.”<span class=\"ancla-ref\">Salmo 46</span>", "Sua mente corre para o futuro. Traga-a para cá: neste instante, você ainda está bem.", "Você não precisa se sentir forte. Só fique. Respire. Fique.", "Esse medo não é um fato. É uma onda, e as ondas baixam.", "Ponha uma mão no peito. Sinta que você continua aqui. Isso basta.", "“Vinde a mim, todos os que estais cansados e oprimidos, e eu vos aliviarei.”<span class=\"ancla-ref\">Mateus 11</span>", "Você está em segurança. Algo sustenta você. Isso vai passar.", "Nada precisa ser decidido agora. Só respire até a onda baixar.", "É noite e sua mente está acelerada. Você não precisa acreditar em tudo o que ela diz a esta hora.", "Nada se resolve às 3 da manhã. Descanse; amanhã você vai ver diferente.", "Solte o peito. Relaxe. Você só precisa atravessar esta noite, uma respiração de cada vez.", "Deixe o problema para amanhã. Agora, só respire e descanse.", "Coloque os pés no chão. Sinta que a terra sustenta você.", "Você não precisa se sentir bem. Só precisa continuar respirando.", "Isso é difícil, e mesmo assim você está atravessando.", "Diga cinco coisas que você vê. Volte para o quarto, volte para o agora.", "O pânico mente sobre o futuro. Aqui, neste segundo, você está bem.", "Solte as mãos. Baixe os ombros. Relaxe a mandíbula.", "Você não está em perigo agora. Só o seu corpo acha que sim.", "Respire mais devagar do que você quer. O corpo segue a respiração.", "Isso tem fim. Não vai ser sempre assim.", "Beba um pouco de água. Um gesto pequeno e gentil com você.", "Você não precisa vencer essa batalha hoje. Só descansar dela por um momento.", "Você está fazendo o melhor que pode com o que tem hoje. É suficiente.", "Uma mão na barriga. Sinta subir e descer. Só isso."];
+CONTENIDO.pt.CALMA_BUD = ["Respire. Este momento é tudo o que existe.", "Como uma onda, isso surge e também vai passar.", "Solte. Você não precisa sustentar nada agora.", "Observe o pensamento e deixe-o ir como uma nuvem.", "Volte à respiração. Ali está a sua âncora.", "O desconforto também é impermanente.", "Não lute com o que você sente; só observe passar.", "Na respiração, você encontra o agora.", "Este momento não pede nada além de você estar nele.", "Os pensamentos vêm e vão; você permanece.", "Como a montanha diante da tempestade, permaneça em quietude.", "Abra espaço para o que você sente; não precisa empurrar para longe."];
+CONTENIDO.pt.RESPIROS = {"478": {"nom": "4·7·8", "fases": [["Inspire", 4000, 1], ["Segure", 7000, 1], ["Expire", 8000, 0]]}, "serena": {"nom": "Suave", "fases": [["Inspire", 4000, 1], ["Segure", 1000, 1], ["Expire", 6000, 0]]}, "caja": {"nom": "Quadrada", "fases": [["Inspire", 4000, 1], ["Segure", 4000, 1], ["Expire", 4000, 0], ["Segure", 4000, 0]]}, "coherente": {"nom": "Coerente", "fases": [["Inspire", 5500, 1], ["Expire", 5500, 0]]}};
+/* /i18n:lote4 */
 // Reenlaza los nombres al idioma activo. Sin traducción disponible, se queda el español (respaldo).
 function aplicarContenido(){
   const C = CONTENIDO[LANG] || {};
@@ -4651,6 +4664,7 @@ function aplicarContenido(){
   if(C.LINEAS_AYUDA) LINEAS_AYUDA = C.LINEAS_AYUDA;
   if(C.IDENTIDAD_CRIST) IDENTIDAD_CRIST = C.IDENTIDAD_CRIST;
   if(C.DECLARACION) DECLARACION = C.DECLARACION;
+  if(C.RESPIROS) RESPIROS = C.RESPIROS;
   if(C.TEMA_AF) TEMA_AF = C.TEMA_AF;
   if(C.TEMA_MAN) TEMA_MAN = C.TEMA_MAN;
   if(C.RITUALES) RITUALES = C.RITUALES;
@@ -5357,12 +5371,12 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
     });
   });
   const li = $("#sosListo"); if(li) li.addEventListener("click", sosIrDespues);
-  const INT_LBL = {3:"suave", 5:"medio", 7:"fuerte", 9:"muy fuerte"};
+  const INT_LBL = n => t("intl_" + n, String(n));   // se resuelve al mostrarse, ya con el idioma fijado
   document.querySelectorAll("#sosNivelB .sos-niv").forEach(b=>b.addEventListener("click", ()=>{
     document.querySelectorAll("#sosNivelB .sos-niv").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
     pausaDespues = +b.dataset.int;
     const cmp = $("#sosComparo");
-    if(pausaAntes !== null && cmp){ cmp.textContent = "Antes " + (INT_LBL[pausaAntes]||pausaAntes) + "  →  ahora " + (INT_LBL[pausaDespues]||pausaDespues); cmp.classList.remove("oculto"); }
+    if(pausaAntes !== null && cmp){ cmp.textContent = t("sos_antes") + " " + INT_LBL(pausaAntes) + "  →  " + t("sos_ahora") + " " + INT_LBL(pausaDespues); cmp.classList.remove("oculto"); }
     const ay = $("#sosAyuda3"); if(ay) ay.classList.toggle("destacado", pausaDespues >= 7);
   }));
   const gp = $("#sosOtraPractica"); if(gp) gp.addEventListener("click", ()=>{ cerrarSOS(); mostrarTab("explorar"); });
