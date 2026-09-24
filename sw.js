@@ -4,7 +4,7 @@
    Al desplegar una versión nueva: subir VERSION (cambia los bytes del archivo) para que el navegador
    detecte el SW nuevo, limpie la caché vieja y (con la recarga del cliente) entregue el HTML nuevo. */
 
-const VERSION = "practica-v7";
+const VERSION = "practica-v7-1";
 const SHELL = ["./", "./index.html"];
 
 self.addEventListener("install", e => {
