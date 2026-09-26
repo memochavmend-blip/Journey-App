@@ -1233,7 +1233,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 
 <script>
 "use strict";
-const APP_VER = "v7.4";  // subir junto con VERSION en sw.js en cada despliegue
+const APP_VER = "v7.5";  // subir junto con VERSION en sw.js en cada despliegue
 
 /* ════════════════ IDIOMA (i18n) ════════════════ */
 // Fase 0: la infraestructura. El texto de interfaz vive en TXT; el contenido se externaliza en la fase 0b.
@@ -1267,7 +1267,9 @@ const TXT = {
     mi_contenido:"Mi contenido", ver_otras_trad:"Ver también otras tradiciones", ver_solo_mi_trad:"Ver solo mi tradición",
     // Ajustes
     ajustes:"Ajustes", idioma:"Idioma",
-sos_preg0:"¿Qué buscas ahora?", prop_centro:"Centrarme", prop_centro_s:"Volver al foco, sin más", prop_calma:"Calmarme", prop_calma_s:"Ansiedad o inquietud", prop_mal:"No me siento bien", prop_mal_s:"Algo más serio",
+rp_pausar:"Pausar", rp_continuar:"Continuar", rp_silencio:"Silencio", rp_reproducir:"Reproducir", rp_detener:"Detener", rp_guardado:"Guardado", rp_error_audio:"No se pudo cargar el audio.", pomo_iniciar:"Iniciar concentración", pref_reset_ok:"Listo — se reinició",
+vela_comenzar:"Toca la vela para comenzar", vela_lleves:"Que la lleves contigo.",
+sos_preg0:"¿Qué buscas ahora?", prop_centro:"Centrarme", prop_centro_s:"Nada está mal. Solo quieres estar aquí.", prop_calma:"Calmarme", prop_calma_s:"Tu mente no para. Bajemos el ritmo.", prop_mal:"No me siento bien", prop_mal_s:"Esto pesa más de lo normal.",
 vela_descansar:"Toca la vela para descansar", vela_cerrar:"Toca la vela para cerrar",
 cierre_amen:"Amén.", cierre_asisea:"Que así sea.", cierre_buenasnoches:"Buenas noches.",
 hist_biblia_nota:"Relatos narrados con nuestras palabras. Las citas textuales están en Salmos y Anclas.",
@@ -1284,8 +1286,8 @@ rit_tres_cosas:"Y ahora, tres cosas concretas de hoy.", rit_tres_nota:"Específi
     cn_mezcla:"Otras palabras", cn_usar:"Usar hoy", cn_toast_usar:"Tu frase te acompaña hoy.", cn_toast_guardada:"Guardada en tus afirmaciones.", cn_toast_ya:"Ya la tienes guardada.",
     ayuda_titulo:"Ayuda ahora", ayuda_intro:"Denha te acompaña, pero no es un servicio de emergencia ni de salud. Si estás en peligro o pensando en hacerte daño, habla con alguien ahora. Estas líneas son gratuitas y atendidas por personas.", ayuda_emergencia:"Si es una emergencia inmediata, llama a los servicios de emergencia de tu país (911 en México y EE. UU.; 192 en Brasil).", ayuda_otro:"¿En otro país? Encuentra una línea de ayuda →", ayuda_link:"¿Necesitas ayuda ahora?"
   },
-  en: { sos_preg0:"What are you looking for right now?", prop_centro:"Refocus", prop_centro_s:"Just come back to center", prop_calma:"Calm down", prop_calma_s:"Anxious or restless", prop_mal:"I don't feel well", prop_mal_s:"Something more serious", vela_descansar:"Tap the candle to rest", vela_cerrar:"Tap the candle to close", cierre_amen:"Amen.", cierre_asisea:"So be it.", cierre_buenasnoches:"Good night.", hist_biblia_nota:"Stories told in our own words. Direct quotations are in Psalms and Anchors.", ayuda_hablar:"Talk to someone", ayuda_repetida_t:"It's been intense more than once today. Talking to someone can help:", ics_manana:"Open the day.", ics_nucleo:"Come back to center.", ics_noche:"Let go and rest.", blq_peticion:"Petition", blq_peticion_r:"What you place in God's hands", blq_proposito:"Purpose", blq_proposito_r:"What He's calling you to today", blq_confianza:"Trust", blq_confianza_r:"You rest in His care", resp_cuenta:"Breath {n} of {t}", ayuda_inline_t:"If this feels like too much, you don't have to go through it alone. You can talk to someone:", onb_idioma_t:"Which language would you like to use?", onb_idioma_p:"You can change it anytime in Settings.", continuar:"Continue", tab_doctrina:"Reflections", voz_guiada:"Voice guidance", ahora_sub:"A hard moment or an urge · take a pause", sos_intro:"Let's make a little space.", sos_preg1:"How strong does it feel right now?", sos_preg2:"How does it feel now?", int_3:"Mild", int_5:"Moderate", int_7:"Strong", int_9:"Very strong", intl_3:"mild", intl_5:"moderate", intl_7:"strong", intl_9:"very strong", sos_respirar:"Breathe with me", sos_nodecir:"I'd rather not say", sos_guia:"Breathe", sos_terminar:"Finish", sos_espacio:"You made a little space.", sos_sug:"Something that might help in the next few minutes:", sug_1:"Take a short walk", sug_2:"Drink some water", sug_3:"Change your surroundings", sug_4:"Wait a few minutes", sos_otra_practica:"Another practice", sos_antes:"Before", sos_ahora:"now", rit_tres_cosas:"And now, three specific things from today.", rit_tres_nota:"Specific to today, not generic. Say them out loud. Tap the arrow when you're done.", rit_estoy_aqui:"I am here.", vis_ser:"I am ", vis_hacer:"I do ", vis_tener:"I have ", vis_vacio:"This section is empty.", vis_vacio_nota:"It's the only part of your system still left as a question. Three lines: who you are, what you're building, what's coming to life. Rewrite them every quarter.", nec_default:"What do you need today?", gracias_dios:"Thank You, Lord,", gracias_universo:"Thank you, life,", gracias_yo:"Thank you, strength within me,", gracias_base:"Thank you", nav_inicio:"Home", nav_sonido:"Sound", nav_diario:"Journal", tab_hoy:"Today", tab_explorar:"Explore", mensaje_hoy:"Today's word", tu_frase_hoy:"Your phrase for today", arma_tuya:"Make your own", compartir:"Share", ahora_mismo:"Right Now", manana:"Morning", nucleo:"Midday", noche:"Night", afirmaciones:"Affirmations", manifestacion:"Manifestation", meditacion:"Meditation", historias:"Stories", ancla:"Anchor", para_leer:"Read & reflect", tu_practica:"Your practice", cerrar:"Close", listo:"Done", guardar:"Save", otra:"Another", todas:"All", mi_contenido:"My content", ver_otras_trad:"Show other traditions too", ver_solo_mi_trad:"Show only my tradition", ajustes:"Settings", idioma:"Language", cn_mezcla:"More words", cn_usar:"Use today", cn_toast_usar:"Your phrase is with you today.", cn_toast_guardada:"Saved to your affirmations.", cn_toast_ya:"You've already saved this one.", ayuda_titulo:"Get help now", ayuda_intro:"Denha is here with you, but it's not an emergency or health service. If you're in danger or thinking about hurting yourself, talk to someone now. These lines are free and answered by real people.", ayuda_emergencia:"If this is an immediate emergency, call your local emergency number (911 in the US and Mexico; 192 in Brazil).", ayuda_otro:"In another country? Find a helpline →", ayuda_link:"Need help right now?" },
-  pt: { sos_preg0:"O que você busca agora?", prop_centro:"Focar", prop_centro_s:"Só voltar ao centro", prop_calma:"Me acalmar", prop_calma_s:"Ansiedade ou inquietação", prop_mal:"Não estou bem", prop_mal_s:"Algo mais sério", vela_descansar:"Toque na vela para descansar", vela_cerrar:"Toque na vela para encerrar", cierre_amen:"Amém.", cierre_asisea:"Que assim seja.", cierre_buenasnoches:"Boa noite.", hist_biblia_nota:"Relatos contados com nossas palavras. As citações literais estão em Salmos e Âncoras.", ayuda_hablar:"Falar com alguém", ayuda_repetida_t:"Hoje foi intenso mais de uma vez. Conversar com alguém pode ajudar:", ics_manana:"Abrir o dia.", ics_nucleo:"Voltar ao centro.", ics_noche:"Soltar e descansar.", blq_peticion:"Petição", blq_peticion_r:"O que você coloca nas mãos de Deus", blq_proposito:"Propósito", blq_proposito_r:"Para o que Ele chama você hoje", blq_confianza:"Confiança", blq_confianza_r:"Você descansa no cuidado Dele", resp_cuenta:"Respiração {n} de {t}", ayuda_inline_t:"Se isso parecer demais, você não precisa passar por isso sem companhia. Você pode falar com alguém:", onb_idioma_t:"Em que idioma você quer usar o Denha?", onb_idioma_p:"Você pode mudar quando quiser em Ajustes.", continuar:"Continuar", tab_doctrina:"Reflexões", voz_guiada:"Voz guiada", ahora_sub:"Um momento difícil ou um impulso · faça uma pausa", sos_intro:"Vamos criar um pouco de espaço.", sos_preg1:"Quão forte isso está agora?", sos_preg2:"Como está agora?", int_3:"Leve", int_5:"Moderado", int_7:"Forte", int_9:"Muito forte", intl_3:"leve", intl_5:"moderado", intl_7:"forte", intl_9:"muito forte", sos_respirar:"Respire comigo", sos_nodecir:"Prefiro não dizer", sos_guia:"Respire", sos_terminar:"Encerrar", sos_espacio:"Você criou um pouco de espaço.", sos_sug:"Algo que pode ajudar nestes minutos:", sug_1:"Caminhe um pouco", sug_2:"Beba água", sug_3:"Mude de ambiente", sug_4:"Espere alguns minutos", sos_otra_practica:"Outra prática", sos_antes:"Antes", sos_ahora:"agora", rit_tres_cosas:"E agora, três coisas concretas de hoje.", rit_tres_nota:"Específicas deste dia, não genéricas. Diga em voz alta. Toque na seta quando terminar.", rit_estoy_aqui:"Estou aqui.", vis_ser:"Eu sou ", vis_hacer:"Eu faço ", vis_tener:"Eu tenho ", vis_vacio:"Este bloco está vazio.", vis_vacio_nota:"É a única parte do seu sistema que ainda está em forma de pergunta. Três linhas: quem você é, o que você constrói, o que se manifesta. Reescreva a cada trimestre.", nec_default:"Do que você precisa hoje?", gracias_dios:"Graças te dou, Senhor,", gracias_universo:"Gratidão, vida,", gracias_yo:"Gratidão, força que há em mim,", gracias_base:"Gratidão", nav_inicio:"Início", nav_sonido:"Som", nav_diario:"Diário", tab_hoy:"Hoje", tab_explorar:"Explorar", mensaje_hoy:"Mensagem do dia", tu_frase_hoy:"Sua frase de hoje", arma_tuya:"Crie a sua", compartir:"Compartilhar", ahora_mismo:"Agora", manana:"Manhã", nucleo:"Pausa", noche:"Noite", afirmaciones:"Afirmações", manifestacion:"Manifestação", meditacion:"Meditação", historias:"Histórias", ancla:"Âncora", para_leer:"Para ler e refletir", tu_practica:"Sua prática", cerrar:"Fechar", listo:"Pronto", guardar:"Salvar", otra:"Outra", todas:"Todas", mi_contenido:"Meu conteúdo", ver_otras_trad:"Ver também outras tradições", ver_solo_mi_trad:"Ver só a minha tradição", ajustes:"Ajustes", idioma:"Idioma", cn_mezcla:"Outras palavras", cn_usar:"Usar hoje", cn_toast_usar:"Sua frase acompanha você hoje.", cn_toast_guardada:"Salva nas suas afirmações.", cn_toast_ya:"Você já salvou esta.", ayuda_titulo:"Ajuda agora", ayuda_intro:"O Denha está com você, mas não é um serviço de emergência nem de saúde. Se você está em perigo ou pensando em se machucar, fale com alguém agora. Estas linhas são gratuitas e atendidas por pessoas.", ayuda_emergencia:"Se for uma emergência imediata, ligue para o serviço de emergência do seu país (192, SAMU, no Brasil; 911 nos EUA e no México).", ayuda_otro:"Em outro país? Encontre uma linha de ajuda →", ayuda_link:"Precisa de ajuda agora?" }
+  en: { rp_pausar:"Pause", rp_continuar:"Continue", rp_silencio:"Silence", rp_reproducir:"Play", rp_detener:"Stop", rp_guardado:"Saved", rp_error_audio:"The audio couldn't load.", pomo_iniciar:"Start focus", pref_reset_ok:"Done — it was reset", vela_comenzar:"Tap the candle to begin", vela_lleves:"May you carry it with you.", sos_preg0:"What are you looking for right now?", prop_centro:"Refocus", prop_centro_s:"Nothing's wrong. You just want to be here.", prop_calma:"Calm down", prop_calma_s:"Your mind won't stop. Let's slow it down.", prop_mal:"I don't feel well", prop_mal_s:"This feels heavier than usual.", vela_descansar:"Tap the candle to rest", vela_cerrar:"Tap the candle to close", cierre_amen:"Amen.", cierre_asisea:"So be it.", cierre_buenasnoches:"Good night.", hist_biblia_nota:"Stories told in our own words. Direct quotations are in Psalms and Anchors.", ayuda_hablar:"Talk to someone", ayuda_repetida_t:"It's been intense more than once today. Talking to someone can help:", ics_manana:"Open the day.", ics_nucleo:"Come back to center.", ics_noche:"Let go and rest.", blq_peticion:"Petition", blq_peticion_r:"What you place in God's hands", blq_proposito:"Purpose", blq_proposito_r:"What He's calling you to today", blq_confianza:"Trust", blq_confianza_r:"You rest in His care", resp_cuenta:"Breath {n} of {t}", ayuda_inline_t:"If this feels like too much, you don't have to go through it alone. You can talk to someone:", onb_idioma_t:"Which language would you like to use?", onb_idioma_p:"You can change it anytime in Settings.", continuar:"Continue", tab_doctrina:"Reflections", voz_guiada:"Voice guidance", ahora_sub:"A hard moment or an urge · take a pause", sos_intro:"Let's make a little space.", sos_preg1:"How strong does it feel right now?", sos_preg2:"How does it feel now?", int_3:"Mild", int_5:"Moderate", int_7:"Strong", int_9:"Very strong", intl_3:"mild", intl_5:"moderate", intl_7:"strong", intl_9:"very strong", sos_respirar:"Breathe with me", sos_nodecir:"I'd rather not say", sos_guia:"Breathe", sos_terminar:"Finish", sos_espacio:"You made a little space.", sos_sug:"Something that might help in the next few minutes:", sug_1:"Take a short walk", sug_2:"Drink some water", sug_3:"Change your surroundings", sug_4:"Wait a few minutes", sos_otra_practica:"Another practice", sos_antes:"Before", sos_ahora:"now", rit_tres_cosas:"And now, three specific things from today.", rit_tres_nota:"Specific to today, not generic. Say them out loud. Tap the arrow when you're done.", rit_estoy_aqui:"I am here.", vis_ser:"I am ", vis_hacer:"I do ", vis_tener:"I have ", vis_vacio:"This section is empty.", vis_vacio_nota:"It's the only part of your system still left as a question. Three lines: who you are, what you're building, what's coming to life. Rewrite them every quarter.", nec_default:"What do you need today?", gracias_dios:"Thank You, Lord,", gracias_universo:"Thank you, life,", gracias_yo:"Thank you, strength within me,", gracias_base:"Thank you", nav_inicio:"Home", nav_sonido:"Sound", nav_diario:"Journal", tab_hoy:"Today", tab_explorar:"Explore", mensaje_hoy:"Today's word", tu_frase_hoy:"Your phrase for today", arma_tuya:"Make your own", compartir:"Share", ahora_mismo:"Right Now", manana:"Morning", nucleo:"Midday", noche:"Night", afirmaciones:"Affirmations", manifestacion:"Manifestation", meditacion:"Meditation", historias:"Stories", ancla:"Anchor", para_leer:"Read & reflect", tu_practica:"Your practice", cerrar:"Close", listo:"Done", guardar:"Save", otra:"Another", todas:"All", mi_contenido:"My content", ver_otras_trad:"Show other traditions too", ver_solo_mi_trad:"Show only my tradition", ajustes:"Settings", idioma:"Language", cn_mezcla:"More words", cn_usar:"Use today", cn_toast_usar:"Your phrase is with you today.", cn_toast_guardada:"Saved to your affirmations.", cn_toast_ya:"You've already saved this one.", ayuda_titulo:"Get help now", ayuda_intro:"Denha is here with you, but it's not an emergency or health service. If you're in danger or thinking about hurting yourself, talk to someone now. These lines are free and answered by real people.", ayuda_emergencia:"If this is an immediate emergency, call your local emergency number (911 in the US and Mexico; 192 in Brazil).", ayuda_otro:"In another country? Find a helpline →", ayuda_link:"Need help right now?" },
+  pt: { rp_pausar:"Pausar", rp_continuar:"Continuar", rp_silencio:"Silêncio", rp_reproducir:"Reproduzir", rp_detener:"Parar", rp_guardado:"Salvo", rp_error_audio:"Não foi possível carregar o áudio.", pomo_iniciar:"Iniciar concentração", pref_reset_ok:"Pronto — foi reiniciado", vela_comenzar:"Toque na vela para começar", vela_lleves:"Que você a leve com você.", sos_preg0:"O que você busca agora?", prop_centro:"Focar", prop_centro_s:"Nada está errado. Você só quer estar aqui.", prop_calma:"Me acalmar", prop_calma_s:"Sua mente não para. Vamos desacelerar.", prop_mal:"Não estou bem", prop_mal_s:"Isso pesa mais do que o normal.", vela_descansar:"Toque na vela para descansar", vela_cerrar:"Toque na vela para encerrar", cierre_amen:"Amém.", cierre_asisea:"Que assim seja.", cierre_buenasnoches:"Boa noite.", hist_biblia_nota:"Relatos contados com nossas palavras. As citações literais estão em Salmos e Âncoras.", ayuda_hablar:"Falar com alguém", ayuda_repetida_t:"Hoje foi intenso mais de uma vez. Conversar com alguém pode ajudar:", ics_manana:"Abrir o dia.", ics_nucleo:"Voltar ao centro.", ics_noche:"Soltar e descansar.", blq_peticion:"Petição", blq_peticion_r:"O que você coloca nas mãos de Deus", blq_proposito:"Propósito", blq_proposito_r:"Para o que Ele chama você hoje", blq_confianza:"Confiança", blq_confianza_r:"Você descansa no cuidado Dele", resp_cuenta:"Respiração {n} de {t}", ayuda_inline_t:"Se isso parecer demais, você não precisa passar por isso sem companhia. Você pode falar com alguém:", onb_idioma_t:"Em que idioma você quer usar o Denha?", onb_idioma_p:"Você pode mudar quando quiser em Ajustes.", continuar:"Continuar", tab_doctrina:"Reflexões", voz_guiada:"Voz guiada", ahora_sub:"Um momento difícil ou um impulso · faça uma pausa", sos_intro:"Vamos criar um pouco de espaço.", sos_preg1:"Quão forte isso está agora?", sos_preg2:"Como está agora?", int_3:"Leve", int_5:"Moderado", int_7:"Forte", int_9:"Muito forte", intl_3:"leve", intl_5:"moderado", intl_7:"forte", intl_9:"muito forte", sos_respirar:"Respire comigo", sos_nodecir:"Prefiro não dizer", sos_guia:"Respire", sos_terminar:"Encerrar", sos_espacio:"Você criou um pouco de espaço.", sos_sug:"Algo que pode ajudar nestes minutos:", sug_1:"Caminhe um pouco", sug_2:"Beba água", sug_3:"Mude de ambiente", sug_4:"Espere alguns minutos", sos_otra_practica:"Outra prática", sos_antes:"Antes", sos_ahora:"agora", rit_tres_cosas:"E agora, três coisas concretas de hoje.", rit_tres_nota:"Específicas deste dia, não genéricas. Diga em voz alta. Toque na seta quando terminar.", rit_estoy_aqui:"Estou aqui.", vis_ser:"Eu sou ", vis_hacer:"Eu faço ", vis_tener:"Eu tenho ", vis_vacio:"Este bloco está vazio.", vis_vacio_nota:"É a única parte do seu sistema que ainda está em forma de pergunta. Três linhas: quem você é, o que você constrói, o que se manifesta. Reescreva a cada trimestre.", nec_default:"Do que você precisa hoje?", gracias_dios:"Graças te dou, Senhor,", gracias_universo:"Gratidão, vida,", gracias_yo:"Gratidão, força que há em mim,", gracias_base:"Gratidão", nav_inicio:"Início", nav_sonido:"Som", nav_diario:"Diário", tab_hoy:"Hoje", tab_explorar:"Explorar", mensaje_hoy:"Mensagem do dia", tu_frase_hoy:"Sua frase de hoje", arma_tuya:"Crie a sua", compartir:"Compartilhar", ahora_mismo:"Agora", manana:"Manhã", nucleo:"Pausa", noche:"Noite", afirmaciones:"Afirmações", manifestacion:"Manifestação", meditacion:"Meditação", historias:"Histórias", ancla:"Âncora", para_leer:"Para ler e refletir", tu_practica:"Sua prática", cerrar:"Fechar", listo:"Pronto", guardar:"Salvar", otra:"Outra", todas:"Todas", mi_contenido:"Meu conteúdo", ver_otras_trad:"Ver também outras tradições", ver_solo_mi_trad:"Ver só a minha tradição", ajustes:"Ajustes", idioma:"Idioma", cn_mezcla:"Outras palavras", cn_usar:"Usar hoje", cn_toast_usar:"Sua frase acompanha você hoje.", cn_toast_guardada:"Salva nas suas afirmações.", cn_toast_ya:"Você já salvou esta.", ayuda_titulo:"Ajuda agora", ayuda_intro:"O Denha está com você, mas não é um serviço de emergência nem de saúde. Se você está em perigo ou pensando em se machucar, fale com alguém agora. Estas linhas são gratuitas e atendidas por pessoas.", ayuda_emergencia:"Se for uma emergência imediata, ligue para o serviço de emergência do seu país (192, SAMU, no Brasil; 911 nos EUA e no México).", ayuda_otro:"Em outro país? Encontre uma linha de ajuda →", ayuda_link:"Precisa de ajuda agora?" }
 };
 function t(k, fb){
   const cur = TXT[LANG] && TXT[LANG][k];
@@ -2832,7 +2834,7 @@ function velaRito(modo){
   if(modo === "encender"){
     obj.classList.remove("viva");
     instr.style.opacity = "1";
-    instr.textContent = "Toca la vela para comenzar";
+    instr.textContent = t("vela_comenzar");
     velaAccion = ()=>{
       velaAccion = null;
       obj.classList.add("viva");                 // la llama y el resplandor crecen (CSS .viva)
@@ -2851,7 +2853,7 @@ function velaRito(modo){
     velaAccion = ()=>{
       velaAccion = null;
       obj.classList.remove("viva");
-      instr.textContent = "Que la lleves contigo.";
+      instr.textContent = t("vela_lleves");
       setTimeout(mostrarReflexion, 1500);
     };
   }
@@ -3053,17 +3055,17 @@ function pintar(frac){
 function alternarPlay(){
   if(P.modoAudio){
     const a = $("#reproductor");
-    if(a.paused){ a.play(); $("#pPlay").textContent = "Pausar"; }
-    else { a.pause(); $("#pPlay").textContent = "Continuar"; }
+    if(a.paused){ a.play(); $("#pPlay").textContent = t("rp_pausar"); }
+    else { a.pause(); $("#pPlay").textContent = t("rp_continuar"); }
     return;
   }
   if(P.corriendo){
     P.corriendo = false;
     if(P.objetivo > 0) P.acumulado += performance.now() - P.t0;
     cancelAnimationFrame(P.raf); Voz.callar(); clearInterval(P.karTick); P.karTick = null;
-    $("#pPlay").textContent = "Continuar";
+    $("#pPlay").textContent = t("rp_continuar");
   } else {
-    P.corriendo = true; $("#pPlay").textContent = "Pausar";
+    P.corriendo = true; $("#pPlay").textContent = t("rp_pausar");
     const resto = P.objetivo - P.acumulado;
     if(P.objetivo > 0 && resto > 120) esperar(resto);
     else { P.objetivo = 0; P.acumulado = 0; mostrar(); }
@@ -3076,7 +3078,7 @@ function saltar(d){
   if(siguiente >= P.plan.length){ P.i = P.plan.length; terminar(); return; }
   P.i = Math.max(0, siguiente);
   P.acumulado = 0; P.objetivo = 0;
-  if(!P.corriendo){ P.corriendo = true; $("#pPlay").textContent = "Pausar"; }
+  if(!P.corriendo){ P.corriendo = true; $("#pPlay").textContent = t("rp_pausar"); }
   mostrar();
 }
 
@@ -3100,14 +3102,14 @@ function terminar(){
   const cierreDia = (E.perfil.tono === "cristiano" || E.perfil.dirige === "dios") ? t("cierre_amen") : t("cierre_asisea");
   el.textContent = P.med ? "…" : (P.rito && P.rito.tema === "noche" ? t("cierre_buenasnoches") : cierreDia);
   $("#pNota").classList.add("oculto");
-  $("#pPlay").textContent = "Terminar";
+  $("#pPlay").textContent = t("sos_terminar");
   P.corriendo = false;
   if(!P.med && P.rito){
     setTimeout(()=>{ if(!P.corriendo && !$("#practica").classList.contains("oculto")) velaRito("apagar"); }, 2800);
     return;
   }
   if(P.rito && P.rito.tema === "noche" && Pad.activo()){
-    $("#pPlay").textContent = "Silencio";
+    $("#pPlay").textContent = t("rp_silencio");
   } else {
     setTimeout(()=>{ if(!P.corriendo) cerrarPractica(); }, 4500);
   }
@@ -3130,7 +3132,7 @@ function cerrarPractica(){
   $("#velaQuemada").style.height = "0%"; $("#velaLlama").style.top = "0%";
   $("#practica").classList.add("oculto");
   $("#inicio").classList.remove("oculto");
-  $("#pPlay").textContent = "Pausar";
+  $("#pPlay").textContent = t("rp_pausar");
   render();
   ambienteBed();
 }
@@ -3159,14 +3161,14 @@ function montarAudio(url){
     if(cargado) return; cargado = true; clearTimeout(tiempoMax);
     $("#pAudioLista").classList.add("oculto");
     $("#pCentro").classList.remove("oculto");
-    $("#pLinea").textContent = "No se pudo cargar el audio.";
+    $("#pLinea").textContent = t("rp_error_audio");
     P.modoAudio = false;
   };
   const tiempoMax = setTimeout(falla, 15000);
   a.onloadedmetadata = ()=>{
     cargado = true; clearTimeout(tiempoMax);
     try{ a.playbackRate = E.ajustes.velocidad || 1; }catch(e){}
-    a.play().catch(()=>{ $("#pPlay").textContent = "Reproducir"; });
+    a.play().catch(()=>{ $("#pPlay").textContent = t("rp_reproducir"); });
   };
   a.ontimeupdate = ()=>{
     const p = a.duration ? a.currentTime/a.duration : 0;
@@ -3309,7 +3311,7 @@ function leerAlto(texto, btn){
     lectorU = u;
     try{ if(navigator.audioSession) navigator.audioSession.type = "playback"; }catch(e){}
     speechSynthesis.cancel(); speechSynthesis.speak(u);
-    if(btn) btn.textContent = "Detener";
+    if(btn) btn.textContent = t("rp_detener");
   }catch(e){}
 }
 function cerrarHoja(){ detenerLector(); $("#hojas").innerHTML = ""; }
@@ -3369,7 +3371,7 @@ function campoArea(id, label, val, ph){
 let guardadoT = null;
 function marcarGuardado(){
   const el = $("#regGuardado"); if(!el) return;
-  el.textContent = "Guardado"; el.style.opacity = "1";
+  el.textContent = t("rp_guardado"); el.style.opacity = "1";
   clearTimeout(guardadoT); guardadoT = setTimeout(()=>{ if($("#regGuardado")) $("#regGuardado").style.opacity = "0"; }, 1400);
 }
 function historialDiario(){
@@ -3673,7 +3675,7 @@ function pintarSonNow(){
   const s = $("#sonStop"); if(s) s.addEventListener("click", ()=>{ detenerSonido(); refrescarChips(); pintarSonNow(); });
 }
 function pintarPomo(){
-  const b = $("#pomoBtn"); if(b) b.textContent = "Iniciar concentración";
+  const b = $("#pomoBtn"); if(b) b.textContent = t("pomo_iniciar");
   pintarSonNow();
 }
 function concentraMensaje(){
@@ -4485,7 +4487,7 @@ function hojaPreferenciasContenido(){
         document.querySelectorAll("[data-psub]").forEach(b=>b.addEventListener("click", ()=>{ const p = b.dataset.psub.split("|"), c = p[0], tag = p[1]; b.classList.toggle("on"); E.perfil.sub[c] = E.perfil.sub[c] || []; toggleArr(E.perfil.sub[c], tag); guardar(); }));
       }
       cablear();
-      const rst = $("#prefReset"); if(rst) rst.addEventListener("click", ()=>{ E.feedback = { pesos:{}, ocultos:[] }; guardar(); rst.textContent = "Listo — se reinició"; });
+      const rst = $("#prefReset"); if(rst) rst.addEventListener("click", ()=>{ E.feedback = { pesos:{}, ocultos:[] }; guardar(); rst.textContent = t("pref_reset_ok"); });
       $("#prefCerrar").addEventListener("click", cerrarHoja);
     });
 }
@@ -5228,7 +5230,7 @@ function abrirSOS(){
 }
 function sosBreath(){
   sosPaso(2);
-  P.sosCalma = (P.sosProposito === "centro") ? calmaSecuenciaCentro() : calmaSecuencia(pausaAntes); P.sosIdx = 0;
+  P.sosCalma = (P.sosProposito === "centro") ? calmaSecuenciaCentro() : calmaSecuencia(pausaAntes, P.sosProposito); P.sosIdx = 0;
   $("#sosLinea").innerHTML = P.sosCalma[0] || fraseCalma();
   $("#sosLinea").style.opacity = "1";
   const aro = $("#sosRespira"), txt = $("#sosGuia");
@@ -5451,6 +5453,7 @@ const CALMA_CENTRO_EXCLUIR = new Set([5,8,9,11,13,16,17,18,24,26,28,30]);
 function calmaSecuenciaCentro(){
   let base = filtraTexto(CALMA).filter(f=>!CALMA_CENTRO_EXCLUIR.has(CALMA.indexOf(f)));
   if(!esNoche()) base = base.filter(f=>CALMA_NOCHE.indexOf(CALMA.indexOf(f)) < 0);
+  if(tradPermitidas().budista) base = base.concat(CALMA_BUD);   // paridad con calmaActivas(): mismo acceso al banco budista
   base = base.concat(CALMA_CENTRO).filter(f=>!fbOculto(f));
   return elegirN(base, base.length);
 }
@@ -5460,14 +5463,20 @@ function esNoche(){ const h = new Date().getHours(); return h >= 21 || h < 6; }
 // Construye la cadena de "Ahora mismo": recorre las etapas en orden (round-robin), con variedad dentro de cada etapa.
 // El nivel de intensidad decide DÓNDE entra el arco: alta → contención (rescate completo);
 // media → respiro/soltar; baja → perspectiva/paz (reencuadre suave). Sin decir → media.
-function entradaEtapa(intensidad){
+function entradaEtapa(intensidad, proposito){
+  if(proposito === "mal"){
+    // "No me siento bien" ya es una señal por sí sola: se accede antes al nivel que incluye el lenguaje de seguridad.
+    if(intensidad == null) return 1;
+    if(intensidad >= 5) return 1;
+    return 3;
+  }
   if(intensidad == null) return 3;
   if(intensidad >= 8) return 1;
   if(intensidad >= 5) return 3;
   return 5;
 }
-function calmaSecuencia(intensidad){
-  const entrada = entradaEtapa(intensidad);
+function calmaSecuencia(intensidad, proposito){
+  const entrada = entradaEtapa(intensidad, proposito);
   const pool = calmaActivas().filter(f=>!fbOculto(f));
   const base = pool.length ? pool : calmaActivas();
   const grupos = {};
@@ -5506,9 +5515,10 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
   document.querySelectorAll("#sosNivelA .sos-niv").forEach(b=>b.addEventListener("click", ()=>{
     document.querySelectorAll("#sosNivelA .sos-niv").forEach(x=>x.classList.remove("activo")); b.classList.add("activo");
     pausaAntes = +b.dataset.int;
-    const ay2b = $("#sosAyuda2"); if(ay2b) ay2b.classList.toggle("oculto", !(pausaAntes >= 9));   // solo con "Muy fuerte"
+    const alerta = (P.sosProposito === "mal" && pausaAntes >= 5) || pausaAntes >= 9;
+    const ay2b = $("#sosAyuda2"); if(ay2b) ay2b.classList.toggle("oculto", !alerta);
     const inl = $("#sosAyudaInline");
-    if(inl){ if(pausaAntes >= 9){
+    if(inl){ if(alerta){
         inl.innerHTML = '<p class="sos-ayuda-t">' + esc(t("ayuda_inline_t")) + '</p>' +
           LINEAS_AYUDA.slice(0,2).map(l=>'<a class="ayuda-linea" href="tel:'+l.tel+'"><span class="ayuda-nom">'+esc(l.nom)+'</span><span class="ayuda-row"><span class="ayuda-tel">'+esc(l.telMuestra)+'</span><span class="ayuda-nota">'+esc(l.nota)+'</span></span></a>').join("");
         inl.classList.remove("oculto");
@@ -5524,7 +5534,7 @@ function fraseCalma(){ const l = calmaActivas(); return l[Math.floor(Math.random
     l.style.transition = "opacity .34s ease";
     l.style.opacity = "0";
     setTimeout(()=>{
-      if(!P.sosCalma || !P.sosCalma.length) P.sosCalma = calmaSecuencia(pausaAntes);
+      if(!P.sosCalma || !P.sosCalma.length) P.sosCalma = calmaSecuencia(pausaAntes, P.sosProposito);
       P.sosIdx = (P.sosIdx||0) + 1;
       l.textContent = P.sosCalma[P.sosIdx % P.sosCalma.length];
       void l.offsetWidth;
