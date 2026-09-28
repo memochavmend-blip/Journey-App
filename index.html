@@ -23,7 +23,13 @@ try{
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Denha">
 <title>Denha</title>
+<link rel="preload" href="denha-serif.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Tipografía de Denha: Fraunces (SIL Open Font License 1.1, © The Fraunces Project Authors),
+   instanciada en SOFT 100 / WONK 0, pesos 300–600, tamaño óptico 9–72, recortada a latín (ES/EN/PT).
+   Archivos locales: sin llamadas a terceros. Si faltan, cae a la serif del sistema. */
+@font-face{font-family:"Denha Serif";src:url("denha-serif.woff2") format("woff2");font-weight:300 600;font-style:normal;font-display:swap}
+@font-face{font-family:"Denha Serif";src:url("denha-serif-italic.woff2") format("woff2");font-weight:300 500;font-style:italic;font-display:swap}
 :root{
   color-scheme:light;
   --noche:#F3EADA;
@@ -40,10 +46,11 @@ try{
   --linea-fuerte:rgba(42,30,20,.21);
   --amb-min:.46;
   --vidrio:color-mix(in srgb, var(--panel) 72%, transparent);
+  --cera-luz:#FBF3E4; --cera-sombra:#E2CFAE; --cera-boca:#F6D9A6;
   --velo-hoja:rgba(42,28,16,.5);
   --hogar:radial-gradient(ellipse 120% 55% at 50% 112%, rgba(214,132,40,.30) 0%, transparent 68%),
           radial-gradient(ellipse 95% 48% at 50% -6%, rgba(214,132,40,.16) 0%, transparent 70%);
-  --serif:ui-serif,"New York",Georgia,"Iowan Old Style","Palatino Linotype",serif;
+  --serif:"Denha Serif",ui-serif,"New York",Georgia,"Iowan Old Style","Palatino Linotype",serif;
   --sans:ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
   --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace;
   --vela-x:20px;
@@ -73,12 +80,13 @@ html[data-modo="oscuro"]{
   --cera:#D4BC94;
   --llama:#F2A33A;
   --llama-texto:#F2A33A;
-  --brasa:#E77A42;
+  --brasa:#F4955F;
   --oro:#C99A5E;
   --linea:rgba(243,230,208,.09);
   --linea-fuerte:rgba(243,230,208,.17);
   --amb-min:.5;
   --vidrio:color-mix(in srgb, var(--panel) 66%, transparent);
+  --cera-luz:#E9D6B4; --cera-sombra:#6E5334; --cera-boca:#F2C27A;
   --velo-hoja:rgba(8,5,3,.74);
   --hogar:radial-gradient(ellipse 120% 55% at 50% 112%, rgba(226,128,40,.30) 0%, transparent 68%),
           radial-gradient(ellipse 95% 48% at 50% -6%, rgba(226,128,40,.14) 0%, transparent 70%);
@@ -263,15 +271,15 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 /* Vela ceremonial (encender / apagar) */
 .vela-rito{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px}
 .vela-obj{position:relative;width:70px;height:172px;cursor:pointer}
-.vela-cuerpo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:52px;height:120px;border-radius:10px 10px 4px 4px;background:linear-gradient(180deg,#F3E7CE,#E6D3A8);box-shadow:inset 0 -8px 16px rgba(150,110,50,.18),0 2px 10px rgba(0,0,0,.08)}
-.vela-cuerpo::after{content:"";position:absolute;top:-7px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:#5a4a34;border-radius:1px}
-.vela-flama{position:absolute;bottom:116px;left:50%;width:20px;height:34px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;
-  background:radial-gradient(ellipse at 50% 72%, #FFF3C4 0%, #FCC64B 42%, #E0942A 80%, transparent 100%);
+.vela-cuerpo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:50px;height:120px;border-radius:6px 6px 4px 4px;background:radial-gradient(ellipse 50% 6px at 50% 4px, var(--cera-boca,#F6D9A6) 0 70%, transparent 100%),linear-gradient(90deg,var(--cera-sombra,#E2CFAE),var(--cera-luz,#FBF3E4) 38%,var(--cera-luz,#FBF3E4) 62%,var(--cera-sombra,#E2CFAE));-webkit-mask-image:linear-gradient(to bottom,#000 40%,rgba(0,0,0,.7) 70%,transparent);mask-image:linear-gradient(to bottom,#000 40%,rgba(0,0,0,.7) 70%,transparent)}
+.vela-obj::after{content:"";position:absolute;top:45px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:#5a4a34;border-radius:1px;opacity:.8}   /* mecha: fuera del cuerpo porque la máscara de la cera la ocultaría */
+.vela-flama{position:absolute;bottom:116px;left:50%;width:22px;height:40px;clip-path:path("M11 0 C22 16.3 22 32.6 11 40 C0 32.6 0 16.3 11 0 Z");
+  background:radial-gradient(ellipse 34% 30% at 50% 76%, #FFF3D4 0 62%, transparent 72%),linear-gradient(to bottom,#E9782A,#F2A33A 55%,#F7BE5E);
   opacity:0;transform:translateX(-50%) scale(.15);transform-origin:50% 100%;transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.3,1);filter:blur(.4px)}
 .vela-obj.viva .vela-flama{opacity:1;transform:translateX(-50%) scale(1);animation:llamita 2.6s ease-in-out infinite}
-.vela-flama::before{content:"";position:absolute;top:-58px;left:50%;transform:translateX(-50%);width:160px;height:170px;border-radius:50%;
+.vela-obj::before{content:"";position:absolute;top:-52px;left:50%;transform:translateX(-50%);width:170px;height:180px;border-radius:50%;
   background:radial-gradient(circle, rgba(224,148,42,.30) 0%, rgba(224,148,42,0) 66%);opacity:0;transition:opacity 1.1s ease;pointer-events:none}
-.vela-obj.viva .vela-flama::before{opacity:1}
+.vela-obj.viva::before{opacity:1}
 @keyframes llamita{0%,100%{transform:translateX(-50%) scale(1) rotate(-1.5deg)}50%{transform:translateX(-50%) scale(1.07) rotate(1.5deg)}}
 .vela-instr{font-family:var(--serif);font-size:1.15rem;color:var(--tinta-baja);text-align:center;transition:opacity .4s ease;min-height:1.5rem}
 .reflexion{flex:1;display:flex;flex-direction:column;justify-content:center;gap:20px;max-width:460px;margin:0 auto;width:100%;animation:onbIn .6s ease}
@@ -385,7 +393,7 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 }
 @keyframes sube{from{transform:translateY(26px)}to{transform:none}}
 .hoja-tirador{width:38px;height:4px;border-radius:2px;background:var(--linea-fuerte);margin:-14px auto 18px;opacity:.8}
-.hoja-tit{font-family:var(--serif);font-size:1.5rem;margin:0 0 6px;letter-spacing:-.01em}
+.hoja-tit{font-family:var(--serif);font-size:1.5rem;margin:0 0 6px;letter-spacing:-.01em;font-weight:450;letter-spacing:-.01em}
 .hoja-sub{font-size:13px;color:var(--tinta-baja);line-height:1.6;margin:0 0 26px}
 .campo{margin-bottom:24px}
 .campo-et{display:block;font-size:13px;letter-spacing:0;text-transform:none;font-weight:600;color:var(--tinta);margin-bottom:10px}
@@ -586,7 +594,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 
 /* ── Navegación inferior (tabs) ── */
 #inicio{padding-bottom:40px}
-.panel-titulo{font-family:var(--serif);font-size:1.75rem;color:var(--tinta);margin:8px 0 24px}
+.panel-titulo{font-family:var(--serif);font-size:1.85rem;font-weight:450;letter-spacing:-.015em;color:var(--tinta);margin:8px 0 24px}
 .nav-cards{display:flex;flex-direction:column;gap:10px}
 .biblia-t{font-family:var(--serif);font-size:1.1rem;color:var(--oro);margin:0 0 14px;letter-spacing:.01em}
 .nav-grupo{font-size:12px;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-baja);margin:6px 2px 12px}
@@ -599,7 +607,7 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .nav-card-s{font-size:12.5px;color:var(--tinta-baja)}
 .nav-card-ch{color:var(--tinta-tenue);font-size:22px;flex-shrink:0}
 .app-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top) + 14px) 26px 10px 52px}
-.hoy-acc{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hoy-acc{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:18px}
 .hoy-armar{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;border:1px solid var(--llama);border-radius:100px;background:color-mix(in srgb,var(--llama) 10%,transparent);color:var(--llama-texto);font-family:var(--sans);font-size:13px;font-weight:600;transition:background .2s,transform .12s}
 .hoy-armar:hover{background:color-mix(in srgb,var(--llama) 18%,transparent)}
 .hoy-armar:active{transform:scale(.97)}
@@ -640,8 +648,16 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 .app-header{display:none}
 .gear{position:fixed;top:calc(env(safe-area-inset-top) + 12px);right:16px;z-index:50;width:40px;height:40px;display:flex;align-items:center;justify-content:center;font-size:19px;color:var(--tinta-baja);opacity:.72;transition:opacity .2s}
 #recibimiento{margin-bottom:6px}
+/* ── Inicio: la vela es la protagonista y el origen de la luz ── */
+.hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:4px}
+.hero .rubrica{margin:6px 0 0}
+.hero-vela{width:146px;height:171px;margin:0 auto;border-radius:40px}
+.hero-vela .nivel-glow{filter:blur(15px)}
+.hero-vela .hv-boca{fill:var(--cera-boca)}
+.hero .saludo{font-size:clamp(1.9rem,8vw,2.45rem);line-height:1.08;font-weight:400;letter-spacing:-.02em;margin:4px 0 10px;max-width:13ch;text-wrap:balance}
+.hero .fecha{margin:0 0 24px}
 .tabs-sup{position:sticky;top:0;z-index:20;display:flex;gap:26px;justify-content:center;align-items:baseline;margin:0 -26px 14px;padding:13px 0 15px;background:color-mix(in srgb, var(--noche) 22%, transparent);backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);-webkit-mask-image:linear-gradient(to bottom, transparent 0, #000 22%, #000 72%, transparent 100%);mask-image:linear-gradient(to bottom, transparent 0, #000 22%, #000 72%, transparent 100%)}
-.tab-sup{font-family:var(--serif);font-size:1.32rem;color:var(--tinta-tenue);background:none;border:none;padding:0;line-height:1;transition:color .25s,opacity .25s;opacity:.7}
+.tab-sup{font-family:var(--serif);font-size:1.32rem;color:var(--tinta-tenue);background:none;border:none;padding:0;line-height:1;transition:color .25s,opacity .25s}
 .tab-sup.activo{color:var(--tinta);opacity:1}
 .tab-sup:focus-visible{outline:2px solid var(--llama);outline-offset:4px;border-radius:6px}
 .gear svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round}
@@ -671,7 +687,7 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .onb-cont h1,.onb-cont p{animation:onbIn .35s ease}
 @keyframes onbIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .onb-mark{font-size:2.4rem;color:var(--llama-texto);margin-bottom:18px;line-height:1}
-.onb-t{font-family:var(--serif);font-size:2rem;line-height:1.15;color:var(--tinta);margin:0 0 14px}
+.onb-t{font-family:var(--serif);font-size:2rem;line-height:1.12;font-weight:450;letter-spacing:-.015em;color:var(--tinta);margin:0 0 14px;text-wrap:balance}
 .onb-p{font-size:15px;line-height:1.6;color:var(--tinta-baja);margin:0 0 28px}
 .onb-input{width:100%;background:transparent;border:1px solid var(--linea-fuerte);border-radius:14px;padding:15px 16px;font-family:var(--serif);font-size:1.25rem;color:var(--tinta);outline:none;margin-bottom:28px}
 .onb-input:focus{border-color:var(--llama)}
@@ -706,9 +722,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
 .pref-bloque .onb-chips,.pref-bloque .onb-opts{margin-bottom:0}
 
 /* ── Mensaje de hoy + Ahora mismo (inicio) ── */
-.hoy{display:flex;align-items:center;gap:15px;background:var(--vidrio,var(--panel));-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);border:1px solid var(--linea);border-radius:16px;padding:18px 20px;margin-bottom:16px}
-.hoy-cont{flex:1;min-width:0}
-.velita{flex-shrink:0;display:block;width:66px;height:84px;margin:0;background:none;border:none;padding:0;transition:opacity .2s}
+.hoy{display:block;max-width:31ch;margin:0 auto 22px;text-align:center}
+.velita{flex-shrink:0;display:block;margin:0;background:none;border:none;padding:0;transition:opacity .2s}
 .velita:hover,.velita:focus-visible{opacity:.85}
 .continua{border-left:2px solid var(--llama);padding:4px 0 4px 16px;margin-bottom:20px}
 /* La llama es el fondo de la app: un resplandor que respira detrás de todo el contenido */
@@ -720,8 +735,8 @@ body.encendida .tabbar,body.encendida .gear{display:none}
   opacity:min(1, calc(var(--amb-min,.3) + var(--amb-op,0) * .6));
   transition:opacity 1.8s ease, --amb-x 1.6s ease, --amb-y 1.6s ease;
   animation:latidoVela 7s ease-in-out infinite}
-@property --amb-x { syntax:"<percentage>"; inherits:false; initial-value:24%; }
-@property --amb-y { syntax:"<percentage>"; inherits:false; initial-value:30%; }
+@property --amb-x { syntax:"<percentage>"; inherits:false; initial-value:50%; }
+@property --amb-y { syntax:"<percentage>"; inherits:false; initial-value:15%; }
 /* En Sonido y Diario la luz sube y se queda sobre el título */
 body[data-tab="sonido"] #velaAmbiente, body[data-tab="diario"] #velaAmbiente{--amb-x:20%;--amb-y:5%}
 @keyframes latidoVela{0%,100%{filter:brightness(1)}38%{filter:brightness(1.1)}62%{filter:brightness(.94)}}
@@ -763,9 +778,10 @@ body[data-tab="sonido"] #velaAmbiente, body[data-tab="diario"] #velaAmbiente{--a
 .nivel-paso:not(.actual) .nivel-paso-nom{color:var(--tinta-baja)}
 .continua-label{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
 .continua-txt{font-family:var(--serif);font-size:1.15rem;line-height:1.45;color:var(--tinta);margin:0;font-style:italic}
-.hoy-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 8px}
-.hoy-txt{font-family:var(--serif);font-size:1.2rem;line-height:1.4;color:var(--tinta);margin:0}
-.hoy-share{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
+.hoy-label{display:flex;align-items:center;justify-content:center;gap:12px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--tinta-baja);margin:0 0 12px}
+.hoy-label::before,.hoy-label::after{content:"";width:22px;height:1px;background:color-mix(in srgb,var(--llama) 55%,transparent)}
+.hoy-txt{font-family:var(--serif);font-size:1.34rem;line-height:1.42;font-weight:380;letter-spacing:-.005em;color:var(--tinta);margin:0;text-wrap:balance}
+.hoy-share{display:inline-flex;align-items:center;gap:7px;margin-top:0;padding:8px 14px;border:1px solid var(--linea-fuerte);border-radius:999px;font-size:12.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
 .hoy-share svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 .hoy-share:hover,.hoy-share:focus-visible{border-color:var(--llama);color:var(--tinta)}
 .rito-editar{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;padding:12px;border:1px solid var(--linea);border-radius:12px;font-size:13.5px;color:var(--tinta-baja);transition:border-color .2s,color .2s}
@@ -966,28 +982,39 @@ body.tema-noche{--amb-min:.3}
 <main class="lienzo" id="inicio">
   <button class="gear" id="btnAjustes" data-abrir="ajustes" aria-label="Ajustes"><svg viewBox="0 0 24 24"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
 
-  <div id="recibimiento">
+  <div id="recibimiento" class="hero">
     <p class="rubrica" id="rubricaHora">Antes de empezar</p>
+    <button class="velita hero-vela" id="velita" aria-label="Tu vela">
+      <svg viewBox="0 0 120 176" aria-hidden="true">
+        <defs>
+          <linearGradient id="hvCera" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" style="stop-color:var(--cera-sombra)"/><stop offset=".38" style="stop-color:var(--cera-luz)"/><stop offset=".62" style="stop-color:var(--cera-luz)"/><stop offset="1" style="stop-color:var(--cera-sombra)"/>
+          </linearGradient>
+          <linearGradient id="hvFunde" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".45" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+          </linearGradient>
+          <mask id="hvMask" maskContentUnits="userSpaceOnUse"><rect x="0" y="100" width="120" height="76" fill="url(#hvFunde)"/></mask>
+        </defs>
+        <ellipse class="nivel-glow" id="nivelGlow" cx="60" cy="66" rx="54" ry="60"></ellipse>
+        <g class="hv-cuerpo" mask="url(#hvMask)">
+          <rect x="39" y="103" width="42" height="73" rx="4" fill="url(#hvCera)"></rect>
+          <ellipse cx="60" cy="103.5" rx="21" ry="4" class="hv-boca"></ellipse>
+        </g>
+        <path class="nivel-flama" id="nivelFlama" d="M60 18 C80 52 80 82 60 98 C40 82 40 52 60 18 Z"></path>
+        <path class="nivel-nucleo" d="M60 51 C71 69 71 86 60 96 C49 86 49 69 60 51 Z"></path>
+        <line class="nivel-mecha" x1="60" y1="93" x2="60" y2="104"></line>
+        <rect class="nivel-lleno" id="nivelLleno" x="0" y="0" width="0" height="0"></rect>
+      </svg>
+    </button>
     <h1 class="saludo" id="saludo">Buenos días</h1>
     <p class="fecha" id="fecha"></p>
 
     <div class="hoy" id="hoy">
-      <button class="velita" id="velita" aria-label="Tu vela">
-        <svg viewBox="6 4 32 40" aria-hidden="true">
-          <ellipse class="nivel-glow" id="nivelGlow" cx="22" cy="26" rx="19" ry="21"></ellipse>
-          <path class="nivel-flama" id="nivelFlama" d="M22 8 C29.5 19 29.5 30 22 35 C14.5 30 14.5 19 22 8 Z"></path>
-          <path class="nivel-nucleo" d="M22 19 C25.8 25 25.8 31 22 34.2 C18.2 31 18.2 25 22 19 Z"></path>
-          <line class="nivel-mecha" x1="22" y1="33.4" x2="22" y2="36.8"></line>
-          <rect class="nivel-lleno" id="nivelLleno" x="0" y="0" width="0" height="0"></rect>
-        </svg>
-      </button>
-      <div class="hoy-cont">
-        <p class="hoy-label" id="hoyLabel">Mensaje de hoy</p>
-        <p class="hoy-txt" id="hoyTxt"></p>
-        <div class="hoy-acc">
-          <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
-          <button class="hoy-armar" id="hoyArmar"><span class="hoy-armar-ic">✦</span>Arma la tuya</button>
-        </div>
+      <p class="hoy-label" id="hoyLabel">Mensaje de hoy</p>
+      <p class="hoy-txt" id="hoyTxt"></p>
+      <div class="hoy-acc">
+        <button class="hoy-share" id="hoyShare"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 6l-4-4-4 4M12 2v13M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"/></svg>Compartir</button>
+        <button class="hoy-armar" id="hoyArmar"><span class="hoy-armar-ic">✦</span>Arma la tuya</button>
       </div>
     </div>
   </div>
@@ -1276,7 +1303,7 @@ body.tema-noche{--amb-min:.3}
 
 <script>
 "use strict";
-const APP_VER = "v7.7";  // subir junto con VERSION en sw.js en cada despliegue
+const APP_VER = "v7.8";  // subir junto con VERSION en sw.js en cada despliegue
 
 /* ════════════════ IDIOMA (i18n) ════════════════ */
 // Fase 0: la infraestructura. El texto de interfaz vive en TXT; el contenido se externaliza en la fase 0b.
@@ -2796,7 +2823,7 @@ function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot){
 function pintarNivel(){
   const g = progresoVela();
   const v = VUELTAS[g.vuelta] || VUELTAS[0];
-  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 35, 54);
+  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 98, 120);
   const amb = $("#velaAmbiente");
   if(amb){ amb.style.setProperty("--amb-op", (0.10 + g.total * 0.22 + g.vuelta * 0.03).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
 }
