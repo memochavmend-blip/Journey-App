@@ -4,13 +4,15 @@
    Al desplegar una versión nueva: subir VERSION (cambia los bytes del archivo) para que el navegador
    detecte el SW nuevo, limpie la caché vieja y (con la recarga del cliente) entregue el HTML nuevo. */
 
-const VERSION = "denha-v7-7";
+const VERSION = "denha-v7-8";
 const SHELL = ["./", "./index.html"];
+// Tipografía de Denha: se guarda aparte para que un archivo faltante no impida guardar la app.
+const EXTRA = ["./denha-serif.woff2", "./denha-serif-italic.woff2"];
 
 self.addEventListener("install", e => {
   e.waitUntil(
     caches.open(VERSION)
-      .then(c => c.addAll(SHELL))
+      .then(c => c.addAll(SHELL).then(() => Promise.all(EXTRA.map(u => c.add(u).catch(() => {})))))
       .then(() => self.skipWaiting())
       .catch(() => self.skipWaiting())
   );
