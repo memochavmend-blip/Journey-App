@@ -4,7 +4,7 @@
    Al desplegar una versión nueva: subir VERSION (cambia los bytes del archivo) para que el navegador
    detecte el SW nuevo, limpie la caché vieja y (con la recarga del cliente) entregue el HTML nuevo. */
 
-const VERSION = "denha-v7-9";
+const VERSION = "denha-v8-0";
 const SHELL = ["./", "./index.html"];
 // Tipografía de Denha: se guarda aparte para que un archivo faltante no impida guardar la app.
 const EXTRA = ["./denha-serif.woff2", "./denha-serif-italic.woff2"];
