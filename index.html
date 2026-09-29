@@ -270,15 +270,15 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 .p-centro.respirando{align-items:center;text-align:center}
 /* Vela ceremonial (encender / apagar) */
 .vela-rito{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px}
-.vela-obj{position:relative;width:70px;height:172px;cursor:pointer}
-.vela-cuerpo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:50px;height:120px;border-radius:6px 6px 4px 4px;background:radial-gradient(ellipse 50% 6px at 50% 4px, var(--cera-boca,#F6D9A6) 0 70%, transparent 100%),linear-gradient(90deg,var(--cera-sombra,#E2CFAE),var(--cera-luz,#FBF3E4) 38%,var(--cera-luz,#FBF3E4) 62%,var(--cera-sombra,#E2CFAE));-webkit-mask-image:linear-gradient(to bottom,#000 40%,rgba(0,0,0,.7) 70%,transparent);mask-image:linear-gradient(to bottom,#000 40%,rgba(0,0,0,.7) 70%,transparent)}
-.vela-obj::after{content:"";position:absolute;top:45px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:#5a4a34;border-radius:1px;opacity:.8}   /* mecha: fuera del cuerpo porque la máscara de la cera la ocultaría */
-.vela-flama{position:absolute;bottom:116px;left:50%;width:22px;height:40px;clip-path:path("M11 0 C22 16.3 22 32.6 11 40 C0 32.6 0 16.3 11 0 Z");
+.vela-obj{position:relative;width:128px;height:236px;cursor:pointer}
+.vela-cuerpo{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:54px;height:50px;border-radius:5px 5px 3px 3px;background:radial-gradient(ellipse 50% 6px at 50% 4px, var(--cera-boca,#F6D9A6) 0 70%, transparent 100%),linear-gradient(90deg,var(--cera-sombra,#E2CFAE),var(--cera-luz,#FBF3E4) 38%,var(--cera-luz,#FBF3E4) 62%,var(--cera-sombra,#E2CFAE));-webkit-mask-image:linear-gradient(to bottom,#000 25%,rgba(0,0,0,.55) 65%,transparent);mask-image:linear-gradient(to bottom,#000 25%,rgba(0,0,0,.55) 65%,transparent)}
+.vela-obj::after{content:"";position:absolute;top:177px;left:50%;transform:translateX(-50%);width:2px;height:9px;background:#5a4a34;border-radius:1px;opacity:.8}   /* mecha: fuera del cuerpo porque la máscara de la cera la ocultaría */
+.vela-flama{position:absolute;bottom:52px;left:50%;width:62px;height:112px;clip-path:path("M31 0 C62 45.7 62 91.4 31 112 C0 91.4 0 45.7 31 0 Z");
   background:radial-gradient(ellipse 34% 30% at 50% 76%, #FFF3D4 0 62%, transparent 72%),linear-gradient(to bottom,#E9782A,#F2A33A 55%,#F7BE5E);
   opacity:0;transform:translateX(-50%) scale(.15);transform-origin:50% 100%;transition:opacity .8s ease, transform .8s cubic-bezier(.2,.8,.3,1);filter:blur(.4px)}
 .vela-obj.viva .vela-flama{opacity:1;transform:translateX(-50%) scale(1);animation:llamita 2.6s ease-in-out infinite}
-.vela-obj::before{content:"";position:absolute;top:-52px;left:50%;transform:translateX(-50%);width:170px;height:180px;border-radius:50%;
-  background:radial-gradient(circle, rgba(224,148,42,.30) 0%, rgba(224,148,42,0) 66%);opacity:0;transition:opacity 1.1s ease;pointer-events:none}
+.vela-obj::before{content:"";position:absolute;top:-22px;left:50%;transform:translateX(-50%);width:290px;height:300px;border-radius:50%;
+  background:radial-gradient(circle, rgba(224,148,42,.34) 0%, rgba(224,148,42,0) 64%);opacity:0;transition:opacity 1.1s ease;pointer-events:none}
 .vela-obj.viva::before{opacity:1}
 @keyframes llamita{0%,100%{transform:translateX(-50%) scale(1) rotate(-1.5deg)}50%{transform:translateX(-50%) scale(1.07) rotate(1.5deg)}}
 .vela-instr{font-family:var(--serif);font-size:1.15rem;color:var(--tinta-baja);text-align:center;transition:opacity .4s ease;min-height:1.5rem}
@@ -651,8 +651,9 @@ input[type=range].campo-in::-moz-range-thumb{width:13px;height:13px;border:none;
 /* ── Inicio: la vela es la protagonista y el origen de la luz ── */
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:4px}
 .hero .rubrica{margin:6px 0 0}
-.hero-vela{width:146px;height:171px;margin:0 auto;border-radius:40px}
-.hero-vela .nivel-glow{filter:blur(15px)}
+.hero-vela{width:164px;height:205px;margin:-2px auto 0;border-radius:40px}
+.hero-vela .nivel-glow{filter:blur(18px)}
+.hero-vela .nivel-mecha{stroke-width:1.6}
 .hero-vela .hv-boca{fill:var(--cera-boca)}
 .hero .saludo{font-size:clamp(1.9rem,8vw,2.45rem);line-height:1.08;font-weight:400;letter-spacing:-.02em;margin:4px 0 10px;max-width:13ch;text-wrap:balance}
 .hero .fecha{margin:0 0 24px}
@@ -757,6 +758,7 @@ body[data-tab="sonido"] #velaAmbiente, body[data-tab="diario"] #velaAmbiente{--a
 .nivel-flama{fill:var(--llama);transition:--fl 1.2s cubic-bezier(.3,.8,.3,1),fill 1.6s ease;animation:llamaViva var(--fdur,2.6s) ease-in-out infinite}
 .nivel-lleno{fill:none}
 .nivel-nucleo{fill:#FFF3D4;opacity:.88;pointer-events:none;transition:--fl 1.2s cubic-bezier(.3,.8,.3,1);animation:llamaViva var(--fdur,2.6s) ease-in-out infinite}
+.nivel-hondo{pointer-events:none;transition:--fl 1.2s cubic-bezier(.3,.8,.3,1);animation:llamaViva var(--fdur,2.6s) ease-in-out infinite}
 .nivel-mecha{stroke:var(--tinta);stroke-width:1.3;stroke-linecap:round;opacity:.5}
 @keyframes llamaViva{0%,100%{transform:scale(var(--fl,.6))}28%{transform:scale(calc(var(--fl,.6) * 1.09)) translateY(-.9px)}52%{transform:scale(calc(var(--fl,.6) * .965)) translateX(.5px)}76%{transform:scale(calc(var(--fl,.6) * 1.045)) translateX(-.4px) translateY(-.3px)}}
 @keyframes brilloVivo{0%,100%{opacity:var(--go,.3)}50%{opacity:calc(var(--go,.3) * 1.42)}}
@@ -946,7 +948,7 @@ body[data-tab="sonido"] #velaAmbiente, body[data-tab="diario"] #velaAmbiente{--a
   *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.05s !important}
   html{scroll-behavior:auto !important}
   .p-linea .kw{opacity:1 !important;transition:none !important}
-  .nivel-glow,.nivel-flama,.nivel-nucleo,.nivel-lleno,.concentra-prog{transition:none !important}
+  .nivel-glow,.nivel-flama,.nivel-nucleo,.nivel-hondo,.nivel-lleno,.concentra-prog{transition:none !important}
   .respiro-aro,#sosRespira{transition-duration:4s !important}
 }
 @media (min-width:700px){ :root{--vela-x:34px} .lienzo,#practica{padding-left:78px} }
@@ -985,24 +987,28 @@ body.tema-noche{--amb-min:.3}
   <div id="recibimiento" class="hero">
     <p class="rubrica" id="rubricaHora">Antes de empezar</p>
     <button class="velita hero-vela" id="velita" aria-label="Tu vela">
-      <svg viewBox="0 0 120 176" aria-hidden="true">
+      <svg viewBox="0 0 120 150" aria-hidden="true">
         <defs>
           <linearGradient id="hvCera" x1="0" y1="0" x2="1" y2="0">
             <stop offset="0" style="stop-color:var(--cera-sombra)"/><stop offset=".38" style="stop-color:var(--cera-luz)"/><stop offset=".62" style="stop-color:var(--cera-luz)"/><stop offset="1" style="stop-color:var(--cera-sombra)"/>
           </linearGradient>
           <linearGradient id="hvFunde" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".45" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".5" stop-color="#fff" stop-opacity=".6"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
           </linearGradient>
-          <mask id="hvMask" maskContentUnits="userSpaceOnUse"><rect x="0" y="100" width="120" height="76" fill="url(#hvFunde)"/></mask>
+          <mask id="hvMask" maskContentUnits="userSpaceOnUse"><rect x="0" y="120" width="120" height="30" fill="url(#hvFunde)"/></mask>
+          <linearGradient id="hvHondo" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#B8420F" stop-opacity=".55"/><stop offset=".42" stop-color="#C8561A" stop-opacity=".12"/><stop offset=".7" stop-color="#FFE7B0" stop-opacity="0"/><stop offset="1" stop-color="#FFE7B0" stop-opacity=".35"/>
+          </linearGradient>
         </defs>
-        <ellipse class="nivel-glow" id="nivelGlow" cx="60" cy="66" rx="54" ry="60"></ellipse>
+        <ellipse class="nivel-glow" id="nivelGlow" cx="60" cy="76" rx="60" ry="70"></ellipse>
         <g class="hv-cuerpo" mask="url(#hvMask)">
-          <rect x="39" y="103" width="42" height="73" rx="4" fill="url(#hvCera)"></rect>
-          <ellipse cx="60" cy="103.5" rx="21" ry="4" class="hv-boca"></ellipse>
+          <rect x="38" y="124" width="44" height="26" rx="3" fill="url(#hvCera)"></rect>
+          <ellipse cx="60" cy="124.5" rx="22" ry="3.6" class="hv-boca"></ellipse>
         </g>
-        <path class="nivel-flama" id="nivelFlama" d="M60 18 C80 52 80 82 60 98 C40 82 40 52 60 18 Z"></path>
-        <path class="nivel-nucleo" d="M60 51 C71 69 71 86 60 96 C49 86 49 69 60 51 Z"></path>
-        <line class="nivel-mecha" x1="60" y1="93" x2="60" y2="104"></line>
+        <path class="nivel-flama" id="nivelFlama" d="M60 8 C87 57 87 99 60 120 C33 99 33 57 60 8 Z"></path>
+        <path class="nivel-hondo" fill="url(#hvHondo)" d="M60 8 C87 57 87 99 60 120 C33 99 33 57 60 8 Z"></path>
+        <path class="nivel-nucleo" d="M60 63 C75 86 75 107 60 118 C45 107 45 86 60 63 Z"></path>
+        <line class="nivel-mecha" x1="60" y1="114" x2="60" y2="125.5"></line>
         <rect class="nivel-lleno" id="nivelLleno" x="0" y="0" width="0" height="0"></rect>
       </svg>
     </button>
@@ -1303,7 +1309,7 @@ body.tema-noche{--amb-min:.3}
 
 <script>
 "use strict";
-const APP_VER = "v7.8";  // subir junto con VERSION en sw.js en cada despliegue
+const APP_VER = "v7.9";  // subir junto con VERSION en sw.js en cada despliegue
 
 /* ════════════════ IDIOMA (i18n) ════════════════ */
 // Fase 0: la infraestructura. El texto de interfaz vive en TXT; el contenido se externaliza en la fase 0b.
@@ -1972,8 +1978,8 @@ function construirRitual(id, sesgo){
     }
     const txt = ritLineas(id, b, sesgo);
     let lineas = b.hold ? txt.map(t=>({t:t, hold:b.hold})) : txt;
-    // Marcador mínimo y silencioso: un respiro antes del umbral de oración (Sello cristiano), donde la voz pasa a dirigirse a Dios.
-    if(b.slot === "cierre" && esCrist) lineas = [{respiro:2}].concat(lineas);
+    // Un respiro antes del Sello, en todas las tradiciones e idiomas: marca el umbral de cierre del ritual.
+    if(b.slot === "cierre") lineas = [{respiro:2}].concat(lineas);
     return { num:b.num, nom:b.nom, rub:b.rub, lineas:lineas };
   });
   // Puentes (líneas en primera persona, coherentes con la voz YO): bisagra al inicio del movimiento destino.
@@ -1997,10 +2003,23 @@ function construirRitual(id, sesgo){
       if((slot === "cierre" || slot === "cierre_noche") && Array.isArray(bl.lineas)){
         const txt = l => typeof l === "string" ? l : (l && l.t) || "";
         let ls = bl.lineas.filter(l => !univ.has(txt(l)) || txt(l) === "");
+        // El Sello cristiano no se queda corto al quitar las frases universales: se completa con su propio pool.
+        if(slot === "cierre"){
+          const pool = ((LIT.cierre && LIT.cierre.cristiano) || []).filter(x => !amen.test(x) && !fbOculto(x));
+          const ya = new Set(ls.map(txt));
+          for(const x of elegirN(pool, pool.length)){ if(ls.filter(l => txt(l) && !amen.test(txt(l))).length >= 3) break; if(!ya.has(x)){ ls.push(x); ya.add(x); } }
+          if(!ls.some(l => amen.test(txt(l)))){ const a = ((LIT.cierre && LIT.cierre.cristiano) || []).find(x => amen.test(x)); if(a) ls.push(a); }
+        }
         const am = ls.filter(l => amen.test(txt(l))); ls = ls.filter(l => !amen.test(txt(l))).concat(am);
         bl.lineas = ls;
       }
     });
+  } else {
+    // En cualquier tradición, un «Amén» nunca abre el Sello: si aparece, va al final.
+    const amen = /^(Amén|Amen|Amém)\.?$/i, txt = l => typeof l === "string" ? l : (l && l.t) || "";
+    bloques.forEach((bl, i)=>{ const slot = p.bloques[i] && p.bloques[i].slot;
+      if((slot === "cierre" || slot === "cierre_noche") && Array.isArray(bl.lineas)){
+        const am = bl.lineas.filter(l => amen.test(txt(l))); bl.lineas = bl.lineas.filter(l => !amen.test(txt(l))).concat(am); } });
   }
   _vozRitual = null;                                        // fuera del ritual, la voz vuelve a la del usuario
   guardar();
@@ -2799,18 +2818,19 @@ function progresoVela(){
   return { total, vuelta, indice:idx, nivel:NIVELES[idx], total_pts:p };
 }
 // Pinta una vela SVG (glow, llama, relleno de cera) según el progreso total. bodyTop/bodyBot = geometría del cuerpo.
-function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot){
+function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot, rango){
   const v = VUELTAS[g.vuelta || 0] || VUELTAS[0];
   if(lleno){ lleno.setAttribute("height", "0"); }                 // sin llenado de cera: el foco es la llama
   if(flama){
-    const esc = (0.7 + g.total * 0.65).toFixed(3);                // desde el primer día una llama presente; crece hasta llama plena
+    const r0 = rango ? rango[0] : 0.7, r1 = rango ? rango[1] : 1.35;
+    const esc = (r0 + g.total * (r1 - r0)).toFixed(3);           // desde el primer día una llama presente; crece hasta llama plena
     flama.style.transformOrigin = "50% " + bodyTop + "px";
     flama.style.setProperty("--fl", esc);
     flama.style.transform = "scale(" + esc + ")";
     flama.style.fill = v.flama;
     flama.style.setProperty("--fdur", v.fdur);
-    const nuc = flama.parentNode && flama.parentNode.querySelector(".nivel-nucleo");
-    if(nuc){ nuc.style.transformOrigin = "50% " + bodyTop + "px"; nuc.style.setProperty("--fl", esc); nuc.style.transform = "scale(" + esc + ")"; nuc.style.setProperty("--fdur", v.fdur); }
+    (flama.parentNode ? flama.parentNode.querySelectorAll(".nivel-nucleo,.nivel-hondo") : []).forEach(nuc=>{
+      nuc.style.transformOrigin = "50% " + bodyTop + "px"; nuc.style.setProperty("--fl", esc); nuc.style.transform = "scale(" + esc + ")"; nuc.style.setProperty("--fdur", v.fdur); });
   }
   if(glow){
     const op = (0.3 + g.total * 0.55).toFixed(3);
@@ -2823,7 +2843,7 @@ function velaVisual(glow, flama, lleno, g, bodyTop, bodyBot){
 function pintarNivel(){
   const g = progresoVela();
   const v = VUELTAS[g.vuelta] || VUELTAS[0];
-  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 98, 120);
+  velaVisual($("#nivelGlow"), $("#nivelFlama"), $("#nivelLleno"), g, 120, 150, [0.84, 1.06]);
   const amb = $("#velaAmbiente");
   if(amb){ amb.style.setProperty("--amb-op", (0.10 + g.total * 0.22 + g.vuelta * 0.03).toFixed(3)); amb.style.setProperty("--amb-col", v.glow); }
 }
