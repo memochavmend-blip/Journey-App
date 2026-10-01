@@ -1,0 +1,47 @@
+{
+ "version": 1,
+ "nota": "Cartas nuevas o con fecha. Se suman a las que trae la app; si un id se repite, gana esta.",
+ "cartas": [
+  {
+   "id": "r-2026-11-02-c",
+   "voz": "cristiano",
+   "fecha": "2026-11-02",
+   "temas": [
+    "fe",
+    "relaciones"
+   ],
+   "texto": "Hoy es día de recordar a quienes ya partieron.\n\nQuizá alguien viene a tu mente con fuerza: un abuelo, una madre, un amigo que se fue antes de tiempo. Extrañar es otra forma de amar, y no tienes que esconderlo. El dolor de la ausencia dice cuánto importaron.\n\nHoy puedes encender una vela, decir su nombre en voz alta y entregarlos a Dios con gratitud por lo que te dieron. La muerte no tiene la última palabra en su historia ni en la tuya.",
+   "cita": {
+    "t": "Yo soy la resurrección y la vida: el que cree en mí, aunque esté muerto, vivirá.",
+    "ref": "Juan 11:25"
+   },
+   "cierre": "El amor no termina con la despedida."
+  },
+  {
+   "id": "r-2026-11-02-b",
+   "voz": "budista",
+   "fecha": "2026-11-02",
+   "temas": [
+    "relaciones",
+    "calma"
+   ],
+   "texto": "Hoy, en muchas casas, se recuerda a quienes ya murieron.\n\nLa impermanencia no es solo una idea: es la ausencia de alguien que amaste. Recordar con atención plena es dejar que el amor y el dolor estén juntos, sin apurarte a quitar ninguno.\n\nHoy dedica unos minutos a esa persona. Respira, trae su rostro a la mente y deséale paz: «que donde estés, estés en paz». Y agradece lo que su vida sembró en la tuya.",
+   "cita": {
+    "t": "Todo lo que surge, pasa; lo que se dio con amor sigue dando fruto.",
+    "ref": "Impermanencia"
+   },
+   "cierre": "Lo que sembraron en ti sigue vivo."
+  },
+  {
+   "id": "r-2026-11-02-u",
+   "voz": "universal",
+   "fecha": "2026-11-02",
+   "temas": [
+    "relaciones"
+   ],
+   "texto": "Hoy es día de recordar a quienes ya no están.\n\nEn México se pone la mesa para ellos: su comida favorita, una foto, una vela, flores de cempasúchil que marcan el camino. Es una forma hermosa de decir que el amor no se va con la persona.\n\nHoy, a tu manera, dedícale un momento a alguien que extrañas. Di su nombre, cuenta una historia suya, haz algo que le habría gustado. Recordar también es mantener encendida una luz.",
+   "cita": null,
+   "cierre": "Recordar también es amar."
+  }
+ ]
+}
