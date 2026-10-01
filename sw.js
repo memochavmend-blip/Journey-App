@@ -4,7 +4,7 @@
    Al desplegar una versión nueva: subir VERSION (cambia los bytes del archivo) para que el navegador
    detecte el SW nuevo, limpie la caché vieja y (con la recarga del cliente) entregue el HTML nuevo. */
 
-const VERSION = "denha-v8-4";
+const VERSION = "denha-v8-5";
 const SHELL = ["./", "./index.html"];
 // Tipografía de Denha: se guarda aparte para que un archivo faltante no impida guardar la app.
 const EXTRA = ["./denha-serif.woff2", "./denha-serif-italic.woff2"];
@@ -36,6 +36,16 @@ self.addEventListener("fetch", e => {
 
   // Audio: dejar pasar a la red (el navegador maneja Range/206 correctamente).
   if (req.destination === "audio" || /\.(mp3|m4a|wav|ogg|aac)$/i.test(url.pathname)) return;
+
+  // Cartas del día (cartas/<idioma>.json): red primero para recibir las nuevas; la copia guardada sirve sin conexión.
+  if (url.pathname.indexOf("/cartas/") >= 0) {
+    e.respondWith(
+      fetch(req)
+        .then(res => { if (res && res.ok) { const copia = res.clone(); caches.open(VERSION).then(c => c.put(req, copia)); } return res; })
+        .catch(() => caches.match(req))
+    );
+    return;
+  }
 
   // HTML / navegación: red primero y SIN caché HTTP, para que una versión recién desplegada
   // cargue de inmediato aunque el navegador tenga una copia vieja cacheada.
