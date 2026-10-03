@@ -1,0 +1,5 @@
+{
+ "version": 1,
+ "nota": "Cartas nuevas o con fecha publicadas a mano. Se suman a la biblioteca; si un id se repite, gana esta. Ver LEEME.md.",
+ "cartas": []
+}
