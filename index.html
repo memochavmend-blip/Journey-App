@@ -990,7 +990,7 @@ body[data-tab="sonido"] #velaAmbiente, body[data-tab="diario"] #velaAmbiente{--a
 .sos-salir{border-color:transparent;color:var(--tinta-tenue)}
 
 /* ── Afirmaciones · repetir + Manifestación · 369 (overlays) ── */
-.rep,.m369{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:95;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
+.rep,.m369{position:fixed;top:0;left:0;right:0;height:100vh;height:100dvh;z-index:130;background:var(--noche);display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:calc(env(safe-area-inset-top) + 40px) 32px calc(env(safe-area-inset-bottom) + 34px)}
 .rep-txt,.m369-decl{font-family:var(--serif);font-size:1.9rem;line-height:1.4;color:var(--tinta);text-align:center;max-width:26ch;margin:0 0 20px}
 .rep-count,.m369-count{font-family:var(--mono);font-size:13px;letter-spacing:.06em;color:var(--tinta-baja);margin:0 0 28px;min-height:1.2em}
@@ -1529,7 +1529,7 @@ body.tema-noche{--amb-min:.3}
 
 <script>
 "use strict";
-const APP_VER = "v8.6";  // subir junto con VERSION en sw.js en cada despliegue
+const APP_VER = "v8.7";  // subir junto con VERSION en sw.js en cada despliegue
 const MED_OK = {};   // id de meditación → su audio existe (se declara arriba: la visibilidad se calcula al arrancar)
 
 /* ════════════════ IDIOMA (i18n) ════════════════ */
@@ -3183,8 +3183,11 @@ const $ = s => document.querySelector(s);
 const P = {
   rito:null, plan:[], i:0, corriendo:false, esperando:false,
   t0:0, acumulado:0, objetivo:0, raf:null, inicioSesion:0,
-  dormirId:null, modoAudio:false, wake:null, vozOn:true, ambOn:true, med:null, karTick:null
+  dormirId:null, modoAudio:false, wake:null, vozOn:true, ambOn:true, med:null, karTick:null,
+  ses:0          // sube al abrir y al cerrar una práctica: lo programado por una sesión anterior ya no corre
 };
+// setTimeout atado a la sesión actual: si la persona sale (o empieza otra), no se ejecuta.
+function enSesion(fn, ms){ const s = P.ses; return setTimeout(()=>{ if(P.ses === s) fn(); }, ms); }
 
 function aplanar(rito){
   const plan = [];
@@ -3224,6 +3227,7 @@ function sonarRitual(car){
 }
 function abrirRitual(id){
   const p = RITUALES[id]; if(!p) return;
+  P.ses++;
   P.pendId = id;
   P.vozOn = vozDe(id); P.ambOn = ambDe(id);
   document.body.classList.toggle("tema-noche", p.tema === "noche");
@@ -3432,12 +3436,12 @@ function velaRito(modo){
       velaAccion = null;
       obj.classList.add("viva");                 // la llama y el resplandor crecen (CSS .viva)
       instr.style.opacity = "0";                 // se desvanece la instrucción
-      setTimeout(()=>{                            // con la llama ya viva, se abre el umbral
+      enSesion(()=>{                              // con la llama ya viva, se abre el umbral
         instr.textContent = mensajeApertura();
         instr.style.opacity = "1";
       }, 560);
-      setTimeout(()=>{ instr.style.transition = "opacity 1.4s ease"; instr.style.opacity = "0"; }, 4200);  // se lee ~3.6 s y se disuelve lento
-      setTimeout(()=>{ instr.style.transition = ""; iniciarMovimientos(); }, 5800);
+      enSesion(()=>{ instr.style.transition = "opacity 1.4s ease"; instr.style.opacity = "0"; }, 4200);  // se lee ~3.6 s y se disuelve lento
+      enSesion(()=>{ instr.style.transition = ""; iniciarMovimientos(); }, 5800);
     };
   } else {
     obj.classList.add("viva");
@@ -3447,7 +3451,7 @@ function velaRito(modo){
       velaAccion = null;
       obj.classList.remove("viva");
       instr.textContent = t("vela_lleves");
-      setTimeout(mostrarReflexion, 1500);
+      enSesion(mostrarReflexion, 1500);
     };
   }
 }
@@ -3501,7 +3505,9 @@ function mostrar(){
   P.karTick = setInterval(()=>{ k.revelarUno(ti); ti++; if(ti >= k.n){ clearInterval(P.karTick); P.karTick = null; } }, paso);
   pintar();
   if(conVoz){
+    const ses = P.ses;
     Voz.hablar(o.t, ()=>{
+      if(P.ses !== ses) return;
       clearInterval(P.karTick); P.karTick = null; k.todas();
       if(!P.corriendo) return;
       esperar(o.hold ? Math.max(o.hold, E.ajustes.pausa) : E.ajustes.pausa);
@@ -3704,18 +3710,20 @@ function terminar(){
   $("#pPlay").textContent = t("sos_terminar");
   P.corriendo = false;
   if(!P.med && P.rito){
-    setTimeout(()=>{ if(!P.corriendo && !$("#practica").classList.contains("oculto")) velaRito("apagar"); }, 2800);
+    enSesion(()=>{ if(!P.corriendo && !$("#practica").classList.contains("oculto")) velaRito("apagar"); }, 2800);
     return;
   }
   if(P.rito && P.rito.tema === "noche" && Pad.activo()){
     $("#pPlay").textContent = t("rp_silencio");
   } else {
-    setTimeout(()=>{ if(!P.corriendo) cerrarPractica(); }, 4500);
+    enSesion(()=>{ if(!P.corriendo) cerrarPractica(); }, 4500);
   }
 }
 
 function cerrarPractica(){
+  P.ses++;
   P.corriendo = false; P.modoAudio = false; P.med = null;
+  try{ breathStop(); }catch(e){} respReiniciar = null;
   cancelAnimationFrame(P.raf); Voz.callar(); Pad.detener(2.5); clearInterval(P.karTick); P.karTick = null;
   clearTimeout(P.dormirId);
   velaAccion = null;
@@ -6586,6 +6594,7 @@ let alarmaFired = {};
 function sonarAlarma(){
   const a = E.ajustes.alarma;
   $("#despTxt").textContent = DESPERTAR[Math.floor(Math.random()*DESPERTAR.length)];
+  try{ cerrarHoja(); }catch(e){}                       // si había una hoja abierta, la alarma no queda debajo
   $("#despertar").classList.remove("oculto");
   document.body.classList.add("encendida");
   padBed = false;
