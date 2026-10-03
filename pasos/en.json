@@ -1,0 +1,5 @@
+{
+ "version": 1,
+ "nota": "Pasos nuevos o con fecha publicados a mano. Se suman a la biblioteca; si un id se repite, gana este. Ver LEEME.md.",
+ "pasos": []
+}
