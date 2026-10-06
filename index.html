@@ -272,6 +272,9 @@ body.encendida .vela-llama{opacity:1;animation:parpadeo 3.4s ease-in-out infinit
 
 .p-centro{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;text-align:center;padding:22px 0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain}
 .p-centro.respirando{align-items:center;text-align:center}
+.p-centro.rodando{justify-content:flex-start;padding-top:4dvh;padding-bottom:46dvh;scrollbar-width:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 9%,#000 78%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 9%,#000 78%,transparent 100%)}
+.p-centro.rodando::-webkit-scrollbar{display:none}
 /* Vela ceremonial (encender / apagar) */
 .vela-rito{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:38px}
 .vela-obj{position:relative;width:128px;height:236px;cursor:pointer}
@@ -1597,7 +1600,7 @@ body.tema-noche{--amb-min:.3}
 
 <script>
 "use strict";
-const APP_VER = "v9.0";  // subir junto con VERSION en sw.js en cada despliegue
+const APP_VER = "v9.0.1";  // subir junto con VERSION en sw.js en cada despliegue
 const MED_OK = {};   // id de meditación → su audio existe (se declara arriba: la visibilidad se calcula al arrancar)
 
 /* ════════════════ IDIOMA (i18n) ════════════════ */
@@ -3254,14 +3257,27 @@ const P = {
 // setTimeout atado a la sesión actual: si la persona sale (o empieza otra), no se ejecuta.
 function enSesion(fn, ms){ const s = P.ses; return setTimeout(()=>{ if(P.ses === s) fn(); }, ms); }
 
+// Una frase guardada en otro idioma (copia de respaldo, cambio de idioma, frase pegada) no se lee dentro del ritual.
+// Solo se aparta lo que es claramente de otro idioma; lo guardado no se borra (sigue en Personalizar rituales).
+function lineaAjena(t){
+  if(!t || typeof t !== "string") return false;
+  const s = " " + t.toLowerCase().replace(/[^a-záéíóúüñãõâêôàç' ]+/g, " ") + " ";
+  const n = l => l.reduce((a, w) => a + (s.split(" " + w + " ").length - 1), 0);
+  const en = n(["the","you","your","yourself","is","are","will","and","of","to","that","with","my","it","never","be","who","what","i'm","you're"]);
+  const ib = n(["el","la","los","las","que","y","tu","te","mi","en","es","con","por","para","lo","un","una","no","se","o","os","as","e","você","seu","sua","meu","minha","em","com","um","uma","não","é","del","al"]);
+  const tilde = /[áéíóúñãõç¿¡]/.test(s);
+  if(LANG === "en") return ib >= 3 && en === 0;
+  return !tilde && en >= 3 && ib === 0;
+}
 function aplanar(rito){
   const plan = [];
   rito.bloques.forEach((b, bi)=>{
     const lineas = b.dinamico ? b.dinamico() : b.lineas;
     lineas.forEach((l, li)=>{
       const o = (typeof l === "string") ? { t:l } : Object.assign({}, l);
+      if(o.t && lineaAjena(o.t)) return;
       if(o.t) o.t = bibliaLinea(o.t);
-      o.bloque = b; o.bi = bi; o.primera = (li===0);
+      o.bloque = b; o.bi = bi; o.primera = !plan.length || plan[plan.length - 1].bi !== bi;
       plan.push(o);
     });
   });
@@ -3555,6 +3571,7 @@ function mostrar(){
   if(o.nota){ nota.textContent = o.nota; nota.classList.remove("oculto"); }
   else nota.classList.add("oculto");
 
+  Rollo.reset();
   if(o.respiro){ respirar(o.respiro); const _fb=$("#pFb"); if(_fb) _fb.classList.add("oculto"); return; }
   $("#pRespiro").classList.add("oculto");
   const _fb = $("#pFb");
@@ -3563,9 +3580,10 @@ function mostrar(){
   el.classList.remove("oculto");
   el.classList.toggle("largo", (o.t||"").length > 200);
   clearInterval(P.karTick); P.karTick = null;
-  if(!P.corriendo){ el.textContent = o.t; el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; pintar(); return; }
+  if(!P.corriendo){ el.textContent = o.t; el.style.animation = "none"; void el.offsetWidth; el.style.animation = ""; Rollo.inicio($("#pCentro")); pintar(); return; }
   const conVoz = P.vozOn && Voz.soporte;
   const k = prepararKaraoke(el, o.t);
+  Rollo.inicio($("#pCentro"));
   const est = conVoz ? Math.max(1500, k.n * 360 / (E.ajustes.velocidad||1)) : Math.max(1400, duracion(o) - E.ajustes.pausa);
   const paso = est / Math.max(1, k.n);
   let ti = 0;
@@ -3584,6 +3602,55 @@ function mostrar(){
     esperar(o.hold ? Math.max(o.hold, base) : base);
   }
 }
+/* Rollo: cuando una línea (oración larga, carta, frase propia) no cabe en pantalla, el texto sube solo,
+   despacio y sin saltos, siguiendo al karaoke: la palabra que se lee se mantiene cerca del centro.
+   Si la persona desliza el dedo, el rollo se detiene unos segundos y luego retoma desde donde va la lectura. */
+const Rollo = (()=>{
+  let cont = null, raf = 0, objetivo = 0, activo = false, manualHasta = 0, ultimo = null;
+  const quieto = () => { try{ return window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){ return false; } };
+  const ANCLA = .42;   // altura de lectura: un poco arriba del centro, como en un teleprompter
+  function parar(){ cancelAnimationFrame(raf); raf = 0; }
+  function reset(){ parar(); activo = false; ultimo = null; objetivo = 0; if(cont){ cont.classList.remove("rodando"); cont.scrollTop = 0; } }
+  function inicio(centro){
+    cont = centro; reset(); if(!cont) return false;
+    activo = cont.scrollHeight > cont.clientHeight + 6;
+    cont.classList.toggle("rodando", activo);
+    return activo;
+  }
+  function meta(nodo){
+    const c = cont.getBoundingClientRect(), r = nodo.getBoundingClientRect(), p = (nodo.parentElement || cont).getBoundingClientRect();
+    // Avanza dentro de la línea según la posición de la palabra: el texto fluye, no salta de renglón en renglón.
+    const frac = p.width ? Math.max(0, Math.min(1, (r.left + r.width / 2 - p.left) / p.width)) : .5;
+    const y = cont.scrollTop + (r.top - c.top) + r.height * frac - cont.clientHeight * ANCLA;
+    return Math.max(0, Math.min(y, cont.scrollHeight - cont.clientHeight));
+  }
+  function seguir(nodo){
+    if(!activo || !cont || !nodo) return;
+    ultimo = nodo; objetivo = Math.max(objetivo, meta(nodo));
+    if(quieto()){ if(Date.now() >= manualHasta) cont.scrollTop = objetivo; return; }
+    if(!raf) raf = requestAnimationFrame(paso);
+  }
+  function paso(){
+    raf = 0; if(!activo || !cont) return;
+    if(typeof P !== "undefined" && !P.corriendo) return;
+    if(Date.now() < manualHasta){ raf = requestAnimationFrame(paso); return; }
+    const d = objetivo - cont.scrollTop;
+    if(Math.abs(d) < .6){ cont.scrollTop = objetivo; return; }
+    cont.scrollTop += d * .045;
+    raf = requestAnimationFrame(paso);
+  }
+  // La persona toma el control un momento: se respeta y luego se retoma donde va la lectura.
+  function manual(){
+    if(!activo) return;
+    manualHasta = Date.now() + 3500;
+    setTimeout(()=>{ if(activo && ultimo){ objetivo = meta(ultimo); if(!raf) raf = requestAnimationFrame(paso); } }, 3600);
+  }
+  return { inicio, seguir, reset, manual, activo:()=>activo };
+})();
+(function cablearRollo(){
+  const c = document.getElementById("pCentro"); if(!c) return;
+  ["wheel","touchstart"].forEach(ev => c.addEventListener(ev, ()=> Rollo.manual(), { passive:true }));
+})();
 function prepararKaraoke(el, texto){
   const partes = texto.split(/(\s+)/); let offset = 0, html = "";
   partes.forEach(p=>{ if(p.trim()){ html += '<span class="kw" data-off="'+offset+'">'+esc(p)+'</span>'; } else { html += p; } offset += p.length; });
@@ -3591,9 +3658,9 @@ function prepararKaraoke(el, texto){
   const nodos = Array.prototype.slice.call(el.querySelectorAll(".kw"));
   return {
     n: nodos.length,
-    revelarUno:(i)=>{ if(nodos[i]) nodos[i].classList.add("on"); },
-    hasta:(ci)=>{ nodos.forEach(n=>{ if(+n.dataset.off <= ci) n.classList.add("on"); }); },
-    todas:()=>nodos.forEach(n=>n.classList.add("on"))
+    revelarUno:(i)=>{ if(nodos[i]){ nodos[i].classList.add("on"); Rollo.seguir(nodos[i]); } },
+    hasta:(ci)=>{ let u = null; nodos.forEach(n=>{ if(+n.dataset.off <= ci){ n.classList.add("on"); u = n; } }); if(u) Rollo.seguir(u); },
+    todas:()=>{ nodos.forEach(n=>n.classList.add("on")); if(nodos.length) Rollo.seguir(nodos[nodos.length - 1]); }
   };
 }
 
