@@ -4,7 +4,7 @@
    Al desplegar una versión nueva: subir VERSION (cambia los bytes del archivo) para que el navegador
    detecte el SW nuevo, limpie la caché vieja y (con la recarga del cliente) entregue el HTML nuevo. */
 
-const VERSION = "denha-v9-0-1";
+const VERSION = "denha-v9-1";
 const SHELL = ["./", "./index.html"];
 // Tipografía de Denha: se guarda aparte para que un archivo faltante no impida guardar la app.
 const EXTRA = ["./denha-serif.woff2", "./denha-serif-italic.woff2"];
@@ -50,6 +50,12 @@ self.addEventListener("fetch", e => {
   // HTML / navegación: red primero y SIN caché HTTP, para que una versión recién desplegada
   // cargue de inmediato aunque el navegador tenga una copia vieja cacheada.
   if (req.mode === "navigate" || req.destination === "document") {
+    // Solo la app vive en index.html; otras páginas del sitio (el manual) se piden tal cual.
+    const alcance = self.registration.scope, base = url.origin + url.pathname;
+    if (base !== alcance && base !== alcance + "index.html") {
+      e.respondWith(fetch(req).catch(() => caches.match(req)));
+      return;
+    }
     e.respondWith(
       fetch("./index.html", { cache: "no-store" })
         .then(res => {
